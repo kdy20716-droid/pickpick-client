@@ -1,0 +1,13 @@
+{
+  "folders": [
+	{
+		"path": ".."
+	},
+	{
+		"path": "../../pickpick-server"
+	}
+],
+  "settings": {
+    "liveServer.settings.multiRootWorkspaceName": "pickpick-server"
+  }
+}
