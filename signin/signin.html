@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <title>PICKPICK 회원가입</title>
-    <link rel="stylesheet" href="/login/login.css" />
+    <link rel="stylesheet" href="/signin/signin.css" />
   </head>
   <body>
     <header>
@@ -16,22 +16,35 @@
       </nav>
     </header>
 
- <div class="checkbox top-check">
-  <label>
-    <input type="checkbox" id="realnameCheck">
-    실명 인증된 아이디로 가입
-  </label>
-</div>
+    <div class="container">
+      <div class="signup-box">
+        <div class="checkbox top-check">
+          <label>
+            <input type="checkbox" id="realnameCheck" />
+            실명 인증된 아이디로 가입
+          </label>
+        </div>
         <h2>회원 가입</h2>
-
         <div class="input-group">
           <span>👤</span>
-          <input type="text" placeholder="아이디" minlength="5" maxlength="15" required>
+          <input
+            type="text"
+            placeholder="아이디"
+            minlength="5"
+            maxlength="15"
+            required
+          />
         </div>
 
         <div class="input-group">
           <span>🔒</span>
-        <input type="password" placeholder="비밀번호" minlength="8" maxlength="20" required>
+          <input
+            type="password"
+            placeholder="비밀번호"
+            minlength="8"
+            maxlength="20"
+            required
+          />
         </div>
 
         <div class="input-group">
@@ -46,8 +59,13 @@
 
         <div class="input-group">
           <span>📅</span>
-          <input type="text" placeholder="생년월일 8자리"
-       pattern="[0-9]{8}" maxlength="8" required>
+          <input
+            type="text"
+            placeholder="생년월일 8자리"
+            pattern="[0-9]{8}"
+            maxlength="8"
+            required
+          />
         </div>
 
         <div class="option-group">
@@ -82,6 +100,6 @@
       </div>
     </div>
 
-    <script src="/login/login.js"></script>
+    <script src="/signin/signin.js"></script>
   </body>
 </html>
