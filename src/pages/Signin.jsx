@@ -1,8 +1,7 @@
 import "./Signin.css";
 import { useState } from "react";
-import "./Signup.css";
 
-export default function Signup() {
+export default function Signin() {
   // ✅ 1️⃣ 입력값 상태 관리
   const [form, setForm] = useState({
     id: "",

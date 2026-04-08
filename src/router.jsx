@@ -2,6 +2,7 @@ import { createBrowserRouter } from "react-router-dom";
 import Result from "./pages/Result";
 import Layout from "./components/Layout";
 import Signin from "./pages/Signin.jsx";
+import Findpass from "./pages/Findpass.jsx";
 
 const router = createBrowserRouter([
   {
@@ -10,7 +11,7 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <main />,
+        element: <main>메인 페이지</main>,
       },
       {
         path: "/result",
@@ -21,8 +22,8 @@ const router = createBrowserRouter([
         element: <Signin />,
       },
       {
-        path: "/",
-        element: <findpass />,
+        path: "/findpass",
+        element: <Findpass />,
       },
     ],
   },
