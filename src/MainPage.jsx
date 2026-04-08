@@ -7,25 +7,25 @@ import rightCandidateImage from "./assets/candidate-right.jpg";
 import { useMainPageAnimations } from "./useMainPageAnimations.js";
 
 const copy = {
-  navLabel: "\uC8FC\uC694 \uBA54\uB274",
-  accountLabel: "\uACC4\uC815",
-  heroLead: "\uACB0\uC815\uD558\uAE30 \uC5B4\uB824\uC6B8 \uB550",
-  heroAccent: "\uD53D\uD53D!",
+  navLabel: "주요 메뉴",
+  accountLabel: "계정",
+  heroLead: "결정하기 어려울 땐",
+  heroAccent: "픽픽!",
   heroDescription:
-    "\uAC00\uBCD1\uAC8C \uBE44\uAD50\uD558\uACE0 \uBE60\uB974\uAC8C \uACE0\uB974\uC138\uC694. \uC9C1\uAD00\uC801\uC778 \uD22C\uD45C \uD55C \uBC88\uC73C\uB85C \uC624\uB298\uC758 \uC120\uD0DD\uC744 \uB05D\uB0BC \uC218 \uC788\uC5B4\uC694.",
-  voteLabel: "\uC778\uAE30 \uD22C\uD45C",
-  voteTitle: "\uC624\uB298\uC758 \uCD5C\uC560 \uACB0\uC815\uC804",
-  candidateSuffix: " \uD6C4\uBCF4",
-  nextVote: "\uB2E4\uC74C \uD22C\uD45C \uBCF4\uB7EC\uAC00\uAE30",
+    "가볍게 비교하고 빠르게 고르세요. 직관적인 투표 한 번으로 오늘의 선택을 끝낼 수 있어요.",
+  voteLabel: "인기 투표",
+  voteTitle: "오늘의 최애 결정전",
+  candidateSuffix: " 후보",
+  nextVote: "다음 투표 보러가기",
 };
 
 const candidates = [
   {
-    name: "\uC0AC\uCD08",
+    name: "사쵸",
     image: leftCandidateImage,
   },
   {
-    name: "\uC678\uB178\uC790",
+    name: "외노자",
     image: rightCandidateImage,
   },
 ];

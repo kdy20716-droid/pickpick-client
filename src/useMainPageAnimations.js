@@ -89,8 +89,8 @@ export function useMainPageAnimations(pageRef) {
             { transform: "translateY(0)" },
           ],
           {
-            duration: 900,
-            delay,
+            duration: 2700,
+            delay: 2700,
             easing: "cubic-bezier(0.2, 0.8, 0.2, 1)",
           },
         ),
