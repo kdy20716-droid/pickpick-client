@@ -1,14 +1,24 @@
-import React, { useState } from "react";
-import CommentModal from "./CommentModal";
+import React from "react";
+import CommentsModal from "./CommentsModal";
 
 function App() {
-  const [open, setOpen] = useState(false);
-
   return (
     <div>
-      <button onClick={() => setOpen(true)}>댓글 열기</button>
+      {/* 헤더 */}
+      <header className="header">
+        <div className="logo">PICKPICK</div>
+        <nav>
+          <a href="#">+ CREATE</a>
+          <a href="#" className="active">
+            RANKING
+          </a>
+          <a href="#">LOG IN</a>
+          <div className="profile-icon"></div>
+        </nav>
+      </header>
 
-      {open && <CommentModal />}
+      {/* 댓글 모달 */}
+      <CommentsModal />
     </div>
   );
 }
