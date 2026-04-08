@@ -65,7 +65,9 @@ export default function MainPage() {
         </section>
 
         <section className="vote-section" aria-label={copy.voteLabel}>
-          <div className="rank-badge">1st</div>
+          <div className="rank-badge">
+            <span className="rank-badge-inner">1st</span>
+          </div>
 
           <article className="vote-card">
             <h2>{copy.voteTitle}</h2>
