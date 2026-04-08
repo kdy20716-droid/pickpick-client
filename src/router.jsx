@@ -9,12 +9,20 @@ const router = createBrowserRouter([
     element: <Layout />,
     children: [
       {
+        index: true,
+        element: <main />,
+      },
+      {
         path: "/result",
         element: <Result />,
       },
       {
         path: "/signin",
         element: <Signin />,
+      },
+      {
+        path: "/",
+        element: <findpass />,
       },
     ],
   },

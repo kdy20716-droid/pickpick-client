@@ -1,5 +1,5 @@
 import { useState } from "react";
-import "./FindPassword.css";
+import "./findpass.css";
 
 export default function FindPassword() {
   const [email, setEmail] = useState("");
