@@ -5,20 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
     <link rel="stylesheet" href="./comments.css" />
+    <script
+      crossorigin
+      src="https://unpkg.com/react@18/umd/react.development.js"
+    ></script>
+    <script
+      crossorigin
+      src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"
+    ></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   </head>
   <body>
     <!-- 헤더 -->
-    <header class="header">
-      <div class="logo">PICKPICK</div>
-      <nav>
-        <a href="#">+ CREATE</a>
-        <a href="#" class="active">RANKING</a>
-        <a href="#">LOG IN</a>
-        <div class="profile-icon"></div>
-      </nav>
-    </header>
+    <div id="header-root"></div>
 
-    <!-- 댓글 모달 -->
+    <!-- 댓글  -->
     <div class="modal">
       <div class="modal-header">
         <span>댓글 133</span>
@@ -100,6 +101,6 @@
         <input type="text" placeholder="댓글 추가..." />
       </div>
     </div>
-    <script src="comments.js"></script>
+    <script type="text/babel" src="comments.js"></script>
   </body>
 </html>

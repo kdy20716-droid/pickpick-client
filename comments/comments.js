@@ -1,4 +1,12 @@
+import Header from "./Header.jsx";
+
 document.addEventListener("DOMContentLoaded", () => {
+  // Header 컴포넌트 렌더링
+  const headerRoot = document.getElementById("header-root");
+  if (headerRoot) {
+    ReactDOM.render(<Header />, headerRoot);
+  }
+
   const commentListEl = document.querySelector(".comment-list");
   const commentInputEl = document.querySelector(".comment-input input");
 

@@ -52,6 +52,7 @@
 
 body {
   margin: 0;
+  background: #f8f8f8;
 }
 
 #root {
@@ -64,6 +65,7 @@ body {
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
+  background: #f8f8f8;
 }
 
 h1,
