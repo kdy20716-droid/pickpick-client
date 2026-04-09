@@ -203,10 +203,46 @@ p {
   gap: 12px;
 }
 
+.reply-input {
+  width: calc(100% + 130px);
+  margin-top: 12px;
+  margin-left: -16px;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  box-sizing: border-box;
+}
+
+.reply-input input {
+  flex: 1 1 0;
+  min-width: 0;
+  background-color: #f0f2f5;
+  border: 1px solid #e2e5e9;
+  padding: 10px 15px;
+  border-radius: 20px;
+  outline: none;
+  font-size: 13px;
+  color: #000;
+}
+
+.reply-input input:focus {
+  background-color: #e4e6eb;
+}
+
+.reply-input .action-button {
+  flex-shrink: 0;
+  padding: 0;
+  margin-left: -90px;
+}
+
+.reply-submit {
+  min-width: 10px;
+}
+
 .reply-item {
   display: flex;
   align-items: flex-start;
-  gap: 10px;
+  gap: 2px;
 }
 
 .reply-content {

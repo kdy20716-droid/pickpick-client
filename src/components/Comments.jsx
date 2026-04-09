@@ -48,7 +48,15 @@ function ReplyItem({ reply }) {
   );
 }
 
-function CommentItem({ comment, isOpen, onLike, onToggleReplies }) {
+function CommentItem({
+  comment,
+  isOpen,
+  replyDraft,
+  onLike,
+  onToggleReplies,
+  onReplyDraftChange,
+  onAddReply,
+}) {
   const replyCount = comment.replyItems.length;
 
   return (
@@ -77,22 +85,50 @@ function CommentItem({ comment, isOpen, onLike, onToggleReplies }) {
               💬 {replyCount > 0 ? replyCount : ""}
             </button>
           </div>
-          {replyCount > 0 && (
-            <button
-              type="button"
-              className="reply"
-              onClick={() => onToggleReplies(comment.id)}
-            >
-              {isOpen ? "답글 숨기기" : `답글 ${replyCount}개`}
-            </button>
-          )}
+          <button
+            type="button"
+            className="reply"
+            onClick={() => onToggleReplies(comment.id)}
+          >
+            {isOpen
+              ? "답글 숨기기"
+              : replyCount > 0
+                ? `답글 ${replyCount}개`
+                : "답글 달기"}
+          </button>
         </div>
-        {isOpen && replyCount > 0 && (
-          <div className="reply-list">
-            {comment.replyItems.map((reply) => (
-              <ReplyItem key={reply.id} reply={reply} />
-            ))}
-          </div>
+        {isOpen && (
+          <>
+            {replyCount > 0 && (
+              <div className="reply-list">
+                {comment.replyItems.map((reply) => (
+                  <ReplyItem key={reply.id} reply={reply} />
+                ))}
+              </div>
+            )}
+            <div className="reply-input">
+              <input
+                type="text"
+                placeholder="답글 추가..."
+                value={replyDraft}
+                onChange={(event) =>
+                  onReplyDraftChange(comment.id, event.target.value)
+                }
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") {
+                    onAddReply(comment.id);
+                  }
+                }}
+              />
+              <button
+                type="button"
+                className="action-button reply-submit"
+                onClick={() => onAddReply(comment.id)}
+              >
+                등록
+              </button>
+            </div>
+          </>
         )}
       </div>
     </div>
@@ -102,6 +138,7 @@ function CommentItem({ comment, isOpen, onLike, onToggleReplies }) {
 export default function Comments({ setOpen }) {
   const [comments, setComments] = useState(initialComments);
   const [openReplies, setOpenReplies] = useState({});
+  const [replyDrafts, setReplyDrafts] = useState({});
   const [newComment, setNewComment] = useState("");
 
   const handleLike = (commentId) => {
@@ -141,6 +178,50 @@ export default function Comments({ setOpen }) {
     setNewComment("");
   };
 
+  const handleReplyDraftChange = (commentId, value) => {
+    setReplyDrafts((prevReplyDrafts) => ({
+      ...prevReplyDrafts,
+      [commentId]: value,
+    }));
+  };
+
+  const handleAddReply = (commentId) => {
+    const trimmedReply = (replyDrafts[commentId] || "").trim();
+
+    if (!trimmedReply) {
+      return;
+    }
+
+    setComments((prevComments) =>
+      prevComments.map((comment) =>
+        comment.id === commentId
+          ? {
+              ...comment,
+              replyItems: [
+                ...comment.replyItems,
+                {
+                  id: Date.now() + commentId,
+                  name: "익명",
+                  text: trimmedReply,
+                  likes: 0,
+                },
+              ],
+            }
+          : comment,
+      ),
+    );
+
+    setReplyDrafts((prevReplyDrafts) => ({
+      ...prevReplyDrafts,
+      [commentId]: "",
+    }));
+
+    setOpenReplies((prevOpenReplies) => ({
+      ...prevOpenReplies,
+      [commentId]: true,
+    }));
+  };
+
   const handleInputKeyDown = (event) => {
     if (event.key === "Enter") {
       handleAddComment();
@@ -167,8 +248,11 @@ export default function Comments({ setOpen }) {
               key={comment.id}
               comment={comment}
               isOpen={Boolean(openReplies[comment.id])}
+              replyDraft={replyDrafts[comment.id] || ""}
               onLike={handleLike}
               onToggleReplies={handleToggleReplies}
+              onReplyDraftChange={handleReplyDraftChange}
+              onAddReply={handleAddReply}
             />
           ))}
         </div>
