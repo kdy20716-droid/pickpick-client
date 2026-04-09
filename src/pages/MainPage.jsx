@@ -38,6 +38,7 @@ export default function MainPage() {
 
   return (
     <div ref={pageRef}>
+      <button>댓글 테스트</button>
       <main className="page-main">
         <section className="hero">
           <h1>

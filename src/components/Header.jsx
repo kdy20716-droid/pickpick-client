@@ -1,16 +1,19 @@
 import "./Header.css";
 import accountIcon from "../assets/account-icon.svg";
+import { Link } from "react-router-dom";
 
 const Header = () => {
   return (
     <header className="site-header">
       <div className="header-inner">
-        <a href="#" className="brand">
+        <Link to="/" className="brand">
           PICKPICK
-        </a>
+        </Link>
         <nav className="site-nav" aria-label="주요 메뉴">
           <a href="#">+ CREATE</a>
-          <a href="#">RANKING</a>
+          <Link to="/ranking" className="active">
+            RANKING
+          </Link>
           <a href="#">LOG IN</a>
           <a href="#" className="account-link" aria-label="계정">
             <img src={accountIcon} alt="" />
