@@ -9,7 +9,8 @@
   --vote-rail-gap: 14px;
   --vote-rail-size: 330px;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 72px;
+  grid-template-columns: 850px 72px;
+  justify-content: center;
   gap: var(--vote-rail-gap);
   align-items: stretch;
 }
@@ -21,8 +22,8 @@
 }
 
 .vote-feed-item {
-  width: min(850px, 100%);
-  margin: 0 auto;
+  width: 100%;
+  margin: 0;
   min-height: calc(100vh - 98px);
   padding: 18px 0 34px;
 }
@@ -335,6 +336,7 @@
 
   .vote-feed-item {
     width: min(760px, 100%);
+    margin: 0 auto;
     min-height: auto;
     padding: 18px 0;
   }

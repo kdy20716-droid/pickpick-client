@@ -378,46 +378,48 @@ export default function VotePage() {
   };
 
   return (
-    <div className={`vote-page${commentsCardId ? " comments-open" : ""}`}>
-      <div className="vote-layout">
-        <div className="vote-feed">
-          {cards.map((card) => (
-            <VoteCard
-              key={card.feedId}
-              card={card}
-              selectedCandidateId={selectedVotes[card.feedId]}
-              onSelect={handleVote}
-              isActive={activeCardId === card.feedId}
-              registerCardRef={registerCardRef}
-            />
-          ))}
-        </div>
-
-        <div className="vote-action-column">
-          <div className="vote-action-rail" aria-label="투표 액션">
-            {actionButtons.map((action) => (
-              <VoteActionButton
-                key={action.id}
-                action={action}
-                active={Boolean(actionStates[activeCardId]?.[action.id])}
-                onToggle={handleToggleAction}
-                onShare={handleShare}
-                onComment={handleOpenComments}
-                copied={copiedCardId === activeCardId}
-                activeCardId={activeCardId}
+    <>
+      <div className={`vote-page${commentsCardId ? " comments-open" : ""}`}>
+        <div className="vote-layout">
+          <div className="vote-feed">
+            {cards.map((card) => (
+              <VoteCard
+                key={card.feedId}
+                card={card}
+                selectedCandidateId={selectedVotes[card.feedId]}
+                onSelect={handleVote}
+                isActive={activeCardId === card.feedId}
+                registerCardRef={registerCardRef}
               />
             ))}
           </div>
-        </div>
-      </div>
 
-      <div ref={loaderRef} className="vote-feed-loader" aria-hidden="true" />
+          <div className="vote-action-column">
+            <div className="vote-action-rail" aria-label="투표 액션">
+              {actionButtons.map((action) => (
+                <VoteActionButton
+                  key={action.id}
+                  action={action}
+                  active={Boolean(actionStates[activeCardId]?.[action.id])}
+                  onToggle={handleToggleAction}
+                  onShare={handleShare}
+                  onComment={handleOpenComments}
+                  copied={copiedCardId === activeCardId}
+                  activeCardId={activeCardId}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div ref={loaderRef} className="vote-feed-loader" aria-hidden="true" />
+      </div>
 
       <CommentApp // Use the CommentApp component
         isOpen={Boolean(commentsCardId)}
         onClose={handleCloseComments}
         cardId={commentsCardId}
       />
-    </div>
+    </>
   );
 }
