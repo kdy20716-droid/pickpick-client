@@ -1,5 +1,6 @@
 import "./Signin.css";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 export default function Signin() {
   // ✅ 1️⃣ 입력값 상태 관리
@@ -223,6 +224,18 @@ export default function Signin() {
         <button className="submit-btn" onClick={handleSubmit}>
           회원 가입
         </button>
+
+        {/* 비밀번호 찾기 연결 */}
+        <div
+          style={{ textAlign: "center", marginTop: "15px", fontSize: "14px" }}
+        >
+          <Link
+            to="/findpass"
+            style={{ color: "#666", textDecoration: "none" }}
+          >
+            비밀번호 찾기
+          </Link>
+        </div>
       </div>
     </div>
   );
