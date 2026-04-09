@@ -1,0 +1,156 @@
+.ranking-section {
+  width: min(1100px, calc(100% - 40px));
+  margin: 0 auto;
+  padding: 36px 0 56px;
+}
+
+.top3 {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 32px;
+  margin-bottom: 60px;
+  flex-wrap: wrap;
+}
+
+.rank-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  gap: 12px;
+}
+
+.rank-card.first {
+  transform: translateY(-20px);
+}
+
+.medal {
+  width: 60px;
+  position: absolute;
+  top: -32px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+}
+
+.rank-label {
+  margin-top: 58px;
+  font-size: 18px;
+  font-weight: 800;
+  color: #444;
+}
+
+.card {
+  width: 180px;
+  height: 230px;
+  background: #fff;
+  border-radius: 24px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  font-size: 0;
+  line-height: 0;
+}
+
+.card.big {
+  width: 200px;
+  height: 260px;
+}
+
+.vote-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #343a40;
+  text-align: center;
+}
+
+.img {
+  display: block;
+  width: 100%;
+  height: 50%;
+  object-fit: cover;
+}
+
+.vs {
+  position: absolute;
+  width: 50px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.ranking-list {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  background: #fff;
+  border-radius: 20px;
+  padding: 18px 22px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+}
+
+.num {
+  width: 36px;
+  font-size: 20px;
+  font-weight: 800;
+  color: #8c8c8c;
+  text-align: center;
+}
+
+.vs-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 160px;
+}
+
+.vs-row img {
+  width: 50px;
+  height: 50px;
+  border-radius: 12px;
+  object-fit: cover;
+}
+
+.vs-small {
+  width: 24px !important;
+  height: 24px !important;
+}
+
+.title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #444;
+}
+
+@media (max-width: 768px) {
+  .ranking-section {
+    width: calc(100% - 24px);
+    padding-top: 28px;
+  }
+
+  .top3 {
+    gap: 24px;
+    margin-bottom: 40px;
+  }
+
+  .rank-card.first {
+    transform: none;
+  }
+
+  .item {
+    flex-wrap: wrap;
+    gap: 14px;
+  }
+
+  .title {
+    width: 100%;
+  }
+}

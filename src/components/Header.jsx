@@ -1,30 +1,26 @@
-import { Link } from "react-router-dom";
 import "./Header.css";
+import accountIcon from "../assets/account-icon.svg";
+import { Link } from "react-router-dom";
 
 const Header = () => {
   return (
-    <>
-      <header className="navbar">
-        <div className="nav-container">
-          <Link to="/" className="logo" style={{ textDecoration: "none" }}>
-            PICK PICK
+    <header className="site-header">
+      <div className="header-inner">
+        <Link to="/" className="brand">
+          PICKPICK
+        </Link>
+        <nav className="site-nav" aria-label="주요 메뉴">
+          <a href="#">+ CREATE</a>
+          <Link to="/ranking" className="active">
+            RANKING
           </Link>
-          <nav className="nav-menu">
-            <a href="index.html" className="active">
-              홈
-            </a>
-            <a href="detail.html">투표하기</a>
-            <a href="#">랭킹</a>
-            <div className="dropdown">
-              <a href="#">마이페이지</a>
-              <div className="dropdown-content">
-                <a href="Result.html">투표 결과 모아보기</a>
-              </div>
-            </div>
-          </nav>
-        </div>
-      </header>
-    </>
+          <a href="#">LOG IN</a>  
+          <Link to="/mypage" className="account-link" aria-label="계정">
+           <img src={accountIcon} alt="" /></Link>
+        </nav>  
+      </div>
+      <div className="header-glow" aria-hidden="true" />
+    </header>
   );
 };
 
