@@ -1,18 +1,8 @@
-import React, { useState } from "react";
-import Header from "../comments/Header.jsx";
-import CommentApp from "../comments/Comments.jsx";
-import "./App.css";
+import React from "react";
+import RankingApp from "../ranking/App.jsx";
 
 function App() {
-  const [open, setOpen] = useState(true);
-
-  return (
-    <div className="app">
-      <Header />
-
-      {open && <CommentApp onClose={() => setOpen(false)} />}
-    </div>
-  );
+  return <RankingApp />;
 }
 
 export default App;
