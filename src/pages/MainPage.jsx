@@ -1,8 +1,9 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import "./MainPage.css";
 import vsLogo from "../assets/vs-logo.svg";
 import leftCandidateImage from "../assets/candidate-left.jpg";
 import rightCandidateImage from "../assets/candidate-right.jpg";
+import Comments from "../components/Comments.jsx";
 import { useMainPageAnimations } from "../hooks/useMainPageAnimations.js";
 
 const copy = {
@@ -29,16 +30,16 @@ const candidates = [
   },
 ];
 
-const [leftCandidate, rightCandidate] = candidates;
-
 export default function MainPage() {
   const pageRef = useRef(null);
+  const [isOpen, setIsOpen] = useState(false);
+  const [leftCandidate, rightCandidate] = candidates;
 
   useMainPageAnimations(pageRef);
 
   return (
     <div ref={pageRef}>
-      <button>댓글 테스트</button>
+      <button onClick={() => setIsOpen(true)}>댓글 테스트</button>
       <main className="page-main">
         <section className="hero">
           <h1>
@@ -85,6 +86,7 @@ export default function MainPage() {
           {copy.nextVote}
         </a>
       </main>
+      {isOpen && <Comments setOpen={setIsOpen} />}
     </div>
   );
 }
