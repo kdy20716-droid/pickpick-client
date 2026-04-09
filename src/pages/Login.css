@@ -83,8 +83,10 @@ body {
   display: flex;
   align-items: center;
   justify-content: flex-start; /* 왼쪽 정렬 */
-  width: 100%;
-  margin: 0 0 20px 0; /* 좌우 여백 제거 */
+  width: 15px; /* 콘텐츠 너비에 맞춤 */
+  /* login-box의 padding(40px) + input의 padding/border(17px) = 57px 지점에 텍스트 시작
+     체크박스(약 16px) + label margin(6px) = 22px. 57px - 22px = 35px. 40px - 35px = 5px 왼쪽으로 이동 */
+  margin: 0 0 20px -5px; /* 왼쪽으로 5px 이동하여 '자동 로그인' 텍스트를 입력 필드 텍스트와 시각적으로 정렬 */
 }
 
 .auto-login input[type="checkbox"] {
@@ -117,6 +119,7 @@ button:hover {
 /* 비밀번호 찾기 */
 .forgot {
   margin-top: 12px;
+  text-align: center;
 }
 
 .forgot a {
