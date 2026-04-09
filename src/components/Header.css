@@ -49,6 +49,11 @@
 }
 
 .header-glow {
+  position: absolute;
+  /* 부모(.site-header)의 아래쪽에 붙도록 설정 */
+  top: 100%;
+  left: 0;
+  right: 0;
   height: 30px;
   background: linear-gradient(
     180deg,
@@ -56,6 +61,8 @@
     rgba(252, 146, 199, 0.12) 45%,
     rgba(252, 146, 199, 0) 100%
   );
+  /* 그림자 영역이 마우스 이벤트를 방해하지 않도록 설정 */
+  pointer-events: none;
 }
 
 /* 마이페이지 드롭다운 스타일 */
