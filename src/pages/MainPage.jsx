@@ -1,10 +1,10 @@
 import { useRef } from "react";
 import "./MainPage.css";
-import accountIcon from "./assets/account-icon.svg";
-import vsLogo from "./assets/vs-logo.svg";
-import leftCandidateImage from "./assets/candidate-left.jpg";
-import rightCandidateImage from "./assets/candidate-right.jpg";
-import { useMainPageAnimations } from "./useMainPageAnimations.js";
+import accountIcon from "../assets/account-icon.svg";
+import vsLogo from "../assets/vs-logo.svg";
+import leftCandidateImage from "../assets/candidate-left.jpg";
+import rightCandidateImage from "../assets/candidate-right.jpg";
+import { useMainPageAnimations } from "../hooks/useMainPageAnimations.js";
 
 const copy = {
   navLabel: "주요 메뉴",

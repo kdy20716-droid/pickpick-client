@@ -1,7 +1,7 @@
 import { createBrowserRouter } from "react-router-dom";
 import Result from "./pages/Result";
 import Layout from "./components/Layout";
-import MainPage from "./MainPage.jsx";
+import MainPage from "./pages/MainPage.jsx";
 import Signin from "./pages/Signin.jsx";
 import Findpass from "./pages/Findpass.jsx";
 
