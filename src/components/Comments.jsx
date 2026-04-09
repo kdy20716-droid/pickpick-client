@@ -60,31 +60,33 @@ function CommentItem({ comment, isOpen, onLike, onToggleReplies }) {
           <span className="menu">⋯</span>
         </div>
         <p className="comment-text">{comment.text}</p>
-        <div className="actions">
-          <button
-            type="button"
-            className="action-button"
-            onClick={() => onLike(comment.id)}
-          >
-            👍 {comment.likes}
-          </button>
-          <button
-            type="button"
-            className="action-button"
-            onClick={() => onToggleReplies(comment.id)}
-          >
-            💬 {replyCount > 0 ? replyCount : ""}
-          </button>
+        <div className="comment-meta">
+          <div className="actions">
+            <button
+              type="button"
+              className="action-button"
+              onClick={() => onLike(comment.id)}
+            >
+              👍 {comment.likes}
+            </button>
+            <button
+              type="button"
+              className="action-button"
+              onClick={() => onToggleReplies(comment.id)}
+            >
+              💬 {replyCount > 0 ? replyCount : ""}
+            </button>
+          </div>
+          {replyCount > 0 && (
+            <button
+              type="button"
+              className="reply"
+              onClick={() => onToggleReplies(comment.id)}
+            >
+              {isOpen ? "답글 숨기기" : `답글 ${replyCount}개`}
+            </button>
+          )}
         </div>
-        {replyCount > 0 && (
-          <button
-            type="button"
-            className="reply"
-            onClick={() => onToggleReplies(comment.id)}
-          >
-            {isOpen ? "답글 숨기기" : `답글 ${replyCount}개`}
-          </button>
-        )}
         {isOpen && replyCount > 0 && (
           <div className="reply-list">
             {comment.replyItems.map((reply) => (

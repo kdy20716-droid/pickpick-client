@@ -138,6 +138,13 @@ p {
 }
 
 /* 좋아요, 답글 버튼 영역 */
+.comment-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+}
+
 .actions {
   display: flex;
   gap: 15px;
@@ -166,7 +173,9 @@ p {
 
 /* 답글 보기 버튼 */
 .reply {
-  margin-top: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   border: none;
   background: none;
   padding: 0;
@@ -174,15 +183,15 @@ p {
   color: #65676b;
   font-weight: 600;
   cursor: pointer;
+  white-space: nowrap;
 }
 
 .reply::before {
   content: "";
-  display: inline-block;
+  display: block;
+  flex-shrink: 0;
   width: 20px;
   border-top: 1px solid #ccc;
-  vertical-align: middle;
-  margin-right: 8px;
 }
 
 .reply-list {
