@@ -2,6 +2,7 @@ import { createBrowserRouter } from "react-router-dom";
 import Result from "./pages/Result";
 import Layout from "./components/Layout";
 import MainPage from "./pages/MainPage";
+import VotePage from "./pages/VotePage";
 
 const router = createBrowserRouter([
   {
@@ -15,6 +16,10 @@ const router = createBrowserRouter([
       {
         path: "/result",
         element: <Result />,
+      },
+      {
+        path: "/vote",
+        element: <VotePage />,
       },
     ],
   },
