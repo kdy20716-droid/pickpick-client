@@ -1,9 +1,11 @@
 import { createBrowserRouter } from "react-router-dom";
 import Result from "./pages/Result";
 import Layout from "./components/Layout";
+import MainPage from "./pages/MainPage.jsx";
 import Signin from "./pages/Signin.jsx";
 import Findpass from "./pages/Findpass.jsx";
-import MainPage from "./pages/MainPage.jsx";
+import Rainking from "./pages/Ranking.jsx";
+import MyPage from "./pages/MyPage.jsx";
 
 const router = createBrowserRouter([
   {
@@ -25,6 +27,14 @@ const router = createBrowserRouter([
       {
         path: "/findpass",
         element: <Findpass />,
+      },
+      {
+        path: "/ranking",
+        element: <Rainking />,
+      },
+      {
+        path: "/mypage",
+        element: <MyPage />,
       },
     ],
   },

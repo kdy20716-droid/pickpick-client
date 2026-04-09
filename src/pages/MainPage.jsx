@@ -3,7 +3,7 @@ import "./MainPage.css";
 import vsLogo from "../assets/vs-logo.svg";
 import leftCandidateImage from "../assets/candidate-left.jpg";
 import rightCandidateImage from "../assets/candidate-right.jpg";
-import { useMainPageAnimations } from "../useMainPageAnimations.js";
+import { useMainPageAnimations } from "../hooks/useMainPageAnimations.js";
 
 const copy = {
   navLabel: "주요 메뉴",
@@ -38,6 +38,7 @@ export default function MainPage() {
 
   return (
     <div ref={pageRef}>
+      <button>댓글 테스트</button>
       <main className="page-main">
         <section className="hero">
           <h1>
