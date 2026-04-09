@@ -97,6 +97,7 @@ body {
   display: inline-block;
   margin-left: 6px; /* 체크박스와 간격 */
   cursor: pointer;
+  flex-shrink: 0; /* 라벨 텍스트가 줄어들어 세로로 표시되는 것을 방지 */
 }
 
 /* 버튼 */
