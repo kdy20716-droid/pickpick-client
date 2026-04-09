@@ -7,21 +7,27 @@
 .vote-layout {
   --vote-rail-gap: 14px;
   --vote-rail-size: 330px;
+  --vote-feed-width: min(850px, calc(100vw - 170px));
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 72px;
+  width: fit-content;
+  max-width: 100%;
+  margin: 0 auto;
+  grid-template-columns: minmax(0, var(--vote-feed-width)) 72px;
   gap: var(--vote-rail-gap);
   align-items: stretch;
 }
 
 .vote-feed {
+  width: var(--vote-feed-width);
+  max-width: 100%;
   display: flex;
   flex-direction: column;
   gap: 0;
 }
 
 .vote-feed-item {
-  width: min(850px, 100%);
-  margin: 0 auto;
+  width: 100%;
+  margin: 0;
   min-height: calc(100vh - 98px);
   padding: 18px 0 34px;
 }
@@ -57,9 +63,6 @@
   inset: -22px;
   z-index: -1;
   border-radius: 34px;
-  background:
-    radial-gradient(circle at top left, rgba(148, 197, 255, 0.2), transparent 48%),
-    radial-gradient(circle at right center, rgba(252, 146, 199, 0.22), transparent 42%);
   filter: blur(12px);
 }
 
@@ -124,12 +127,7 @@
 .vote-choice-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    180deg,
-    rgba(17, 17, 17, 0) 0%,
-    rgba(17, 17, 17, 0.06) 48%,
-    rgba(17, 17, 17, 0.42) 100%
-  );
+  background: transparent;
 }
 
 .vote-choice-name {
@@ -280,7 +278,6 @@
 
 .vote-action-button:hover {
   transform: translateY(-2px);
-  background: rgba(252, 146, 199, 0.16);
   box-shadow: 0 16px 30px rgba(252, 146, 199, 0.22);
 }
 
@@ -318,12 +315,16 @@
 
 @media (max-width: 980px) {
   .vote-layout {
+    width: 100%;
     grid-template-columns: 1fr;
     align-items: start;
   }
 
+  .vote-feed {
+    width: 100%;
+  }
+
   .vote-feed-item {
-    width: min(760px, 100%);
     min-height: auto;
     padding: 18px 0;
   }
