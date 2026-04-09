@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "./Create.css";
+import "./create.css"; // 🔥 실제 존재하는 CSS 파일명으로 수정
 
 const Create = () => {
   const [selectedTag, setSelectedTag] = useState("영화 / 드라마");
@@ -24,22 +24,21 @@ const Create = () => {
   ];
 
   return (
-    <div className="create-page-container">
+    <div className="container">
+      {/* Main Contents */}
       <main className="main-content">
         {/* Left: Preview Area */}
         <section className="editor-card preview-section">
-          <div className="title-input-wrapper">
-            <input
-              type="text"
-              className="editor-card__title-input"
-              placeholder="제목을 입력하세요"
-            />
-          </div>
+          <input
+            type="text"
+            className="editor-card__title-input"
+            placeholder="제목을 입력하세요"
+          />
 
           <div className="vs-container">
             <div className="candidate-box">
               <div className="candidate-box__upload">
-                <span className="icon-placeholder">+</span>
+                <span className="material-icons">add_photo_alternate</span>
               </div>
               <div className="candidate-box__label">
                 {candidate1 || "후보군 이름"}
@@ -52,7 +51,7 @@ const Create = () => {
 
             <div className="candidate-box">
               <div className="candidate-box__upload">
-                <span className="icon-placeholder">+</span>
+                <span className="material-icons">add_photo_alternate</span>
               </div>
               <div className="candidate-box__label">
                 {candidate2 || "후보군 이름"}
@@ -120,7 +119,7 @@ const Create = () => {
 
           {/* Floating Action Button */}
           <button className="fab-button">
-            <span className="icon-placeholder">↑</span>
+            <span className="material-icons">publish</span>
           </button>
         </section>
       </main>

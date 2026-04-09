@@ -7,7 +7,7 @@ import Findpass from "./pages/Findpass.jsx";
 import Ranking from "./pages/Ranking.jsx";
 import MyPage from "./pages/MyPage.jsx";
 import Create from "./pages/Create.jsx";
-import VotePage from "./pages/VotePage";
+import VotePage from "./pages/VotePage.jsx";
 
 const router = createBrowserRouter([
   {
