@@ -2,6 +2,7 @@
   width: min(1180px, calc(100% - 50px));
   margin: 0 auto;
   padding: 18px 0 54px;
+  transition: transform 0.3s ease-out;
 }
 
 .vote-layout {
@@ -58,8 +59,16 @@
   z-index: -1;
   border-radius: 34px;
   background:
-    radial-gradient(circle at top left, rgba(148, 197, 255, 0.2), transparent 48%),
-    radial-gradient(circle at right center, rgba(252, 146, 199, 0.22), transparent 42%);
+    radial-gradient(
+      circle at top left,
+      rgba(148, 197, 255, 0.2),
+      transparent 48%
+    ),
+    radial-gradient(
+      circle at right center,
+      rgba(252, 146, 199, 0.22),
+      transparent 42%
+    );
   filter: blur(12px);
 }
 
@@ -80,7 +89,9 @@
   flex: 1;
   min-height: 0;
   align-items: stretch;
-  transition: min-height 220ms ease, padding-bottom 220ms ease;
+  transition:
+    min-height 220ms ease,
+    padding-bottom 220ms ease;
 }
 
 .vote-sheet.has-results .vote-sheet-match {
@@ -393,5 +404,12 @@
   .vote-action-button img {
     width: 34px;
     height: 34px;
+  }
+}
+
+/* 넓은 화면에서 댓글창이 열렸을 때 투표 화면을 왼쪽으로 부드럽게 밀어냄 */
+@media (min-width: 1200px) {
+  .vote-page.comments-open {
+    transform: translateX(-230px);
   }
 }

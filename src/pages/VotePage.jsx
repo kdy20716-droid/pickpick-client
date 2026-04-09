@@ -378,7 +378,7 @@ export default function VotePage() {
   };
 
   return (
-    <div className="vote-page">
+    <div className={`vote-page${commentsCardId ? " comments-open" : ""}`}>
       <div className="vote-layout">
         <div className="vote-feed">
           {cards.map((card) => (
