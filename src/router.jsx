@@ -5,6 +5,7 @@ import MainPage from "./pages/MainPage.jsx";
 import Signin from "./pages/Signin.jsx";
 import Findpass from "./pages/Findpass.jsx";
 import Rainking from "./pages/Ranking.jsx";
+import MyPage from "./pages/MyPage.jsx";
 
 const router = createBrowserRouter([
   {
@@ -31,6 +32,10 @@ const router = createBrowserRouter([
         path: "/ranking",
         element: <Rainking />,
       },
+      {
+        path: "/mypage",
+        element: <MyPage />
+      }
     ],
   },
 ]);
