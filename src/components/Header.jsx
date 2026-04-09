@@ -14,10 +14,11 @@ const Header = () => {
           <Link to="/ranking" className="active">
             RANKING
           </Link>
-          <a href="#">LOG IN</a>  
+          <Link to="/login">LOG IN</Link>
           <Link to="/mypage" className="account-link" aria-label="계정">
-           <img src={accountIcon} alt="" /></Link>
-        </nav>  
+            <img src={accountIcon} alt="" />
+          </Link>
+        </nav>
       </div>
       <div className="header-glow" aria-hidden="true" />
     </header>
