@@ -1,10 +1,12 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./findpass.css";
 
 export default function FindPassword() {
   const [email, setEmail] = useState("");
   const [isValid, setIsValid] = useState(false);
   const [msg, setMsg] = useState("");
+  const navigate = useNavigate();
 
   const validDomains = [
     "gmail.com",
@@ -63,17 +65,6 @@ export default function FindPassword() {
 
   return (
     <div>
-      {/* 헤더 */}
-      <header className="header">
-        <div className="logo">PICKPICK</div>
-        <nav>
-          <a href="#">+ CREATE</a>
-          <a href="#">RANKING</a>
-          <a href="#">LOG IN</a>
-          <div className="profile"></div>
-        </nav>
-      </header>
-
       {/* 메인 */}
       <div className="container">
         <div className="card">
@@ -92,7 +83,9 @@ export default function FindPassword() {
           />
 
           <div className="buttons">
-            <button className="back">뒤로 가기</button>
+            <button className="back" onClick={() => navigate(-1)}>
+              뒤로 가기
+            </button>
             <button
               className={`submit ${isValid ? "active" : ""}`}
               disabled={!isValid}
