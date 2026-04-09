@@ -97,7 +97,7 @@ const CommentItem = ({ comment, isOpen, onLike, onToggleReplies }) => {
   );
 };
 
-const CommentApp = ({ setOpen }) => {
+const CommentApp = ({ isOpen, onClose, cardId }) => {
   const [comments, setComments] = useState(initialComments);
   const [openReplies, setOpenReplies] = useState({});
   const [newComment, setNewComment] = useState("");
@@ -145,36 +145,68 @@ const CommentApp = ({ setOpen }) => {
     }
   };
 
+  if (!isOpen) {
+    return null;
+  }
+
+  const handleOverlayClick = (e) => {
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
+  };
+
   return (
-    <div className="modal">
-      <div className="modal-header">
-        <span>댓글 {comments.length}</span>
-        <button className="close" onClick={() => setOpen(false)}>
-          ×
-        </button>
-      </div>
+    <div className="comments-modal-overlay" onClick={handleOverlayClick}>
+      <div
+        className="modal"
+        onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="comments-title"
+      >
+        <div className="modal-header">
+          <h3 id="comments-title">댓글 ({comments.length})</h3>
+          <button className="close" onClick={onClose} aria-label="닫기">
+            &times;
+          </button>
+        </div>
 
-      <div className="comment-list">
-        {comments.map((comment) => (
-          <CommentItem
-            key={comment.id}
-            comment={comment}
-            isOpen={Boolean(openReplies[comment.id])}
-            onLike={handleLike}
-            onToggleReplies={handleToggleReplies}
+        <div className="comment-list">
+          {comments.map((comment) => (
+            <CommentItem
+              key={comment.id}
+              comment={comment}
+              isOpen={Boolean(openReplies[comment.id])}
+              onLike={handleLike}
+              onToggleReplies={handleToggleReplies}
+            />
+          ))}
+        </div>
+
+        <p
+          style={{
+            color: "#999",
+            fontSize: "12px",
+            marginTop: "20px",
+            textAlign: "center",
+          }}
+        >
+          (투표 ID: {cardId})
+        </p>
+
+        <div className="comment-input">
+          <div className="avatar small"></div>
+          <input
+            type="text"
+            placeholder="댓글 추가..."
+            value={newComment}
+            onChange={(event) => setNewComment(event.target.value)}
+            onKeyDown={handleInputKeyDown}
           />
-        ))}
-      </div>
-
-      <div className="comment-input">
-        <div className="avatar small"></div>
-        <input
-          type="text"
-          placeholder="댓글 추가..."
-          value={newComment}
-          onChange={(event) => setNewComment(event.target.value)}
-          onKeyDown={handleInputKeyDown}
-        />
+          <button className="comment-submit" onClick={handleAddComment}>
+            등록
+          </button>
+        </div>
       </div>
     </div>
   );

@@ -13,6 +13,7 @@ import dislikeIcon from "../assets/thumb_down.svg";
 import commentIcon from "../assets/comment.svg";
 import shareIcon from "../assets/share.svg";
 import { voteTemplates } from "../data/votes.js";
+import CommentApp from "../components/Comments.jsx"; // Import the existing Comments.jsx
 
 const INITIAL_CARD_COUNT = 4;
 const LOAD_MORE_COUNT = 3;
@@ -34,9 +35,8 @@ const actionButtons = [
     id: "comment",
     label: "댓글",
     icon: commentIcon,
-    kind: "link",
-    to: "/result",
-  },
+    kind: "button",
+  }, // Removed kind: "link", to: "/result"
   {
     id: "share",
     label: "공유",
@@ -65,6 +65,7 @@ function VoteActionButton({
   active,
   onToggle,
   onShare,
+  onComment,
   copied,
   activeCardId,
 }) {
@@ -87,6 +88,11 @@ function VoteActionButton({
 
     if (action.id === "share") {
       onShare(activeCardId);
+      return;
+    }
+
+    if (action.id === "comment") {
+      onComment(activeCardId);
       return;
     }
 
@@ -177,7 +183,9 @@ function VoteCard({
 }
 
 export default function VotePage() {
-  const [cards, setCards] = useState(() => createVoteBatch(0, INITIAL_CARD_COUNT));
+  const [cards, setCards] = useState(() =>
+    createVoteBatch(0, INITIAL_CARD_COUNT),
+  );
   const [selectedVotes, setSelectedVotes] = useState({});
   const [actionStates, setActionStates] = useState({});
   const [copiedCardId, setCopiedCardId] = useState("");
@@ -185,6 +193,8 @@ export default function VotePage() {
     const initialCards = createVoteBatch(0, INITIAL_CARD_COUNT);
     return initialCards[0]?.feedId ?? "";
   });
+  const [commentsCardId, setCommentsCardId] = useState(null);
+
   const loaderRef = useRef(null);
   const copyTimeoutRef = useRef(null);
   const cardRefs = useRef(new Map());
@@ -359,6 +369,14 @@ export default function VotePage() {
     }
   };
 
+  const handleOpenComments = (cardId) => {
+    setCommentsCardId(cardId);
+  };
+
+  const handleCloseComments = () => {
+    setCommentsCardId(null);
+  };
+
   return (
     <div className="vote-page">
       <div className="vote-layout">
@@ -384,6 +402,7 @@ export default function VotePage() {
                 active={Boolean(actionStates[activeCardId]?.[action.id])}
                 onToggle={handleToggleAction}
                 onShare={handleShare}
+                onComment={handleOpenComments}
                 copied={copiedCardId === activeCardId}
                 activeCardId={activeCardId}
               />
@@ -393,6 +412,12 @@ export default function VotePage() {
       </div>
 
       <div ref={loaderRef} className="vote-feed-loader" aria-hidden="true" />
+
+      <CommentApp // Use the CommentApp component
+        isOpen={Boolean(commentsCardId)}
+        onClose={handleCloseComments}
+        cardId={commentsCardId}
+      />
     </div>
   );
 }
