@@ -4,7 +4,9 @@ import "./Header.css";
 function Header() {
   return (
     <header className="header">
-      <div className="logo">PICKPICK</div>
+      <div className="logo" style={{ marginRight: "auto" }}>
+        PICKPICK
+      </div>
       <nav>
         <a href="#">+ CREATE</a>
         <a href="#" className="active">

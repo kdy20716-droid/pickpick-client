@@ -1,50 +1,65 @@
-import React from "react";
+import React, { useState } from "react";
 import "./comments.css";
 
-export default function CommentsModal({ onClose }) {
+// 개별 댓글 컴포넌트
+const CommentItem = ({ comment }) => {
   return (
-    <div className="overlay">
-      <div className="modal">
-        {/* 헤더 */}
-        <div className="modal-comment-header">
-          <h2>댓글</h2>
-          <span className="comment-count">(133)</span>
-          <button className="close" onClick={onClose}>
-            ×
-          </button>
+    <div className="comment">
+      <div className="avatar"></div>
+      <div className="content">
+        <div className="top-row">
+          <span className="name">{comment.name}</span>
+          <span className="menu">⋯</span>
         </div>
-
-        {/* 댓글 리스트 */}
-        <div className="comment-list">
-          {[1, 2, 3, 4].map((i) => (
-            <div className="comment" key={i}>
-              <div className="avatar"></div>
-
-              <div className="content">
-                <div className="top">
-                  <span className="name">사용자 {i}</span>
-                  <span className="menu">⋯</span>
-                </div>
-
-                <p>댓글 내용입니다</p>
-
-                <div className="actions">
-                  <span>👍 {i * 10}</span>
-                  <span>💬 {i}</span>
-                </div>
-
-                <div className="reply">답글 {i}개</div>
-              </div>
-            </div>
-          ))}
+        <p className="comment-text">{comment.text}</p>
+        <div className="actions">
+          <span>👍 {comment.likes}</span>
+          <span>💬 {comment.replies > 0 ? comment.replies : ""}</span>
         </div>
-
-        {/* 입력 */}
-        <div className="comment-input">
-          <div className="avatar small"></div>
-          <input type="text" placeholder="댓글 추가..." />
-        </div>
+        {comment.replies > 0 && (
+          <div className="reply">답글 {comment.replies}개</div>
+        )}
       </div>
     </div>
   );
-}
+};
+
+// 메인 댓글 모달 컴포넌트
+const CommentApp = () => {
+  // 초기 데이터 설정
+  const [comments] = useState([
+    { id: 1, name: "지존 지훈", text: "1빠", likes: 54, replies: 0 },
+    {
+      id: 2,
+      name: "어그로꾼",
+      text: "얘들아 내가 재밌는 얘기 해줄게...더보기",
+      likes: 128,
+      replies: 3,
+    },
+    { id: 3, name: "차미새", text: "o(*≧▽≦)ツ", likes: 234, replies: 19 },
+    { id: 4, name: "익명", text: "＼(((￣▽￣)))／", likes: 2, replies: 43 },
+  ]);
+
+  return (
+    <div className="modal">
+      <div className="modal-header">
+        <span>댓글 {comments.length}</span>
+        <button className="close">×</button>
+      </div>
+
+      <div className="comment-list">
+        {comments.map((comment) => (
+          <CommentItem key={comment.id} comment={comment} />
+        ))}
+      </div>
+
+      {/* 댓글 입력창 */}
+      <div className="comment-input">
+        <div className="avatar small"></div>
+        <input type="text" placeholder="댓글 추가..." />
+      </div>
+    </div>
+  );
+};
+
+export default CommentApp;
