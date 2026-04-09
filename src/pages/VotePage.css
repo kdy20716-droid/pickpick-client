@@ -1,47 +1,76 @@
 .vote-page {
+  --vote-header-offset: 110px;
   width: min(1180px, calc(100% - 50px));
   margin: 0 auto;
-  padding: 18px 0 54px;
+  height: calc(100dvh - var(--vote-header-offset));
+  padding: 0;
+  overflow: hidden;
 }
 
 .vote-layout {
-  --vote-rail-gap: 14px;
-  --vote-rail-size: 330px;
-  --vote-feed-width: min(850px, calc(100vw - 170px));
-  display: grid;
-  width: fit-content;
-  max-width: 100%;
-  margin: 0 auto;
-  grid-template-columns: minmax(0, var(--vote-feed-width)) 72px;
-  gap: var(--vote-rail-gap);
-  align-items: stretch;
+  --vote-rail-gap: 25px;
+  --vote-action-button-size: 72px;
+  --vote-rail-size: calc(
+    var(--vote-action-button-size) * 4 + var(--vote-rail-gap) * 3
+  );
+  --vote-sheet-glow-space: 22px;
+  --vote-sheet-extra-height: 41px;
+  --vote-side-balance: calc(var(--vote-action-button-size) + var(--vote-rail-gap));
+  --vote-sheet-width: min(850px, calc(100vw - 170px));
+  --vote-feed-width: calc(
+    var(--vote-sheet-width) + var(--vote-action-button-size) + var(--vote-rail-gap) +
+      var(--vote-side-balance)
+  );
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
 }
 
 .vote-feed {
   width: var(--vote-feed-width);
   max-width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 0;
+  height: 100%;
+  padding: var(--vote-sheet-glow-space);
+  overflow-y: auto;
+  scroll-snap-type: y mandatory;
+  scroll-padding-block: var(--vote-sheet-glow-space);
+  scroll-behavior: smooth;
+  overscroll-behavior-y: contain;
+  scrollbar-width: none;
+}
+
+.vote-feed::-webkit-scrollbar {
+  display: none;
 }
 
 .vote-feed-item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
   width: 100%;
   margin: 0;
-  min-height: calc(100vh - 98px);
-  padding: 18px 0 34px;
+  height: calc(100% - var(--vote-sheet-glow-space) * 2 + var(--vote-sheet-extra-height));
+  min-height: calc(100% - var(--vote-sheet-glow-space) * 2 + var(--vote-sheet-extra-height));
+  padding: 30px calc(var(--vote-action-button-size) + var(--vote-rail-gap)) 23px
+    var(--vote-side-balance);
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  flex: 0 0 calc(100% - var(--vote-sheet-glow-space) * 2 + var(--vote-sheet-extra-height));
 }
 
 .vote-sheet {
   position: relative;
   display: flex;
   flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  width: 100%;
   padding: 20px 20px 18px;
   border-radius: 22px;
   background: rgba(255, 255, 255, 0.96);
   box-shadow: 0 22px 60px rgba(17, 17, 17, 0.08);
   backdrop-filter: blur(8px);
-  height: calc(100vh - 150px);
   transition:
     transform 260ms ease,
     box-shadow 260ms ease,
@@ -113,6 +142,28 @@
   box-shadow: 0 18px 40px rgba(17, 17, 17, 0.16);
 }
 
+.vote-sheet.has-results .vote-choice:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+.vote-sheet.has-results .vote-choice.is-selected:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 22px 48px rgba(17, 17, 17, 0.18);
+}
+
+.vote-sheet.has-results .tone-blue.is-selected:hover {
+  box-shadow:
+    0 22px 48px rgba(17, 17, 17, 0.14),
+    0 0 0 3px rgba(120, 174, 255, 0.7);
+}
+
+.vote-sheet.has-results .tone-pink.is-selected:hover {
+  box-shadow:
+    0 22px 48px rgba(17, 17, 17, 0.14),
+    0 0 0 3px rgba(252, 146, 199, 0.78);
+}
+
 .vote-choice img {
   width: 100%;
   height: 100%;
@@ -124,6 +175,10 @@
   transform: scale(1.03);
 }
 
+.vote-sheet.has-results .vote-choice:hover img {
+  transform: none;
+}
+
 .vote-choice-overlay {
   position: absolute;
   inset: 0;
@@ -131,6 +186,7 @@
 }
 
 .vote-choice-name {
+  margin: 0;
   position: absolute;
   right: 16px;
   bottom: 14px;
@@ -140,19 +196,20 @@
   font-weight: 900;
   line-height: 1.05;
   color: #ffffff;
-  text-shadow:
-    0 3px 12px rgba(0, 0, 0, 0.42),
-    2px 2px 0 rgba(17, 17, 17, 0.18);
+  -webkit-text-stroke: 2px #111111;
+  text-shadow: 0 3px 12px rgba(255, 255, 255, 0.28);
 }
 
 .tone-blue .vote-choice-name {
-  color: #ffffff;
-  -webkit-text-stroke: 2px #478cff;
+  text-shadow:
+    0 0 18px rgba(71, 140, 255, 0.4),
+    0 3px 12px rgba(255, 255, 255, 0.24);
 }
 
 .tone-pink .vote-choice-name {
-  color: #ffffff;
-  -webkit-text-stroke: 2px #ff5b5b;
+  text-shadow:
+    0 0 18px rgba(255, 91, 91, 0.4),
+    0 3px 12px rgba(255, 255, 255, 0.24);
 }
 
 .vote-choice.is-selected {
@@ -235,27 +292,21 @@
   background: linear-gradient(90deg, #fc92c7 0%, #ffabd5 100%);
 }
 
-.vote-action-column {
-  position: relative;
-  align-self: stretch;
-  min-height: 100%;
-}
-
 .vote-action-rail {
+  position: absolute;
+  right: 0;
+  bottom: 38px;
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  position: sticky;
-  top: calc(100vh - var(--vote-rail-size) - 18px);
-  align-self: start;
-  transition: top 260ms ease;
+  gap: var(--vote-rail-gap);
 }
 
 .vote-action-button {
+  position: relative;
   display: grid;
   place-items: center;
-  width: 72px;
-  height: 72px;
+  width: var(--vote-action-button-size);
+  height: var(--vote-action-button-size);
   border: 0;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.95);
@@ -274,6 +325,18 @@
   transition:
     opacity 180ms ease,
     filter 180ms ease;
+}
+
+.vote-action-count {
+  position: absolute;
+  left: 50%;
+  bottom: -18px;
+  transform: translateX(-50%);
+  color: rgba(17, 17, 17, 0.72);
+  font-size: 0.9rem;
+  font-weight: 700;
+  line-height: 1;
+  text-align: center;
 }
 
 .vote-action-button:hover {
@@ -299,6 +362,7 @@
 
 .vote-feed-loader {
   height: 1px;
+  flex: 0 0 1px;
 }
 
 @keyframes voteBarReveal {
@@ -314,24 +378,18 @@
 }
 
 @media (max-width: 980px) {
-  .vote-layout {
-    width: 100%;
-    grid-template-columns: 1fr;
-    align-items: start;
-  }
-
   .vote-feed {
     width: 100%;
   }
 
   .vote-feed-item {
-    min-height: auto;
-    padding: 18px 0;
+    height: calc(100% - var(--vote-sheet-glow-space) * 2 + var(--vote-sheet-extra-height));
+    min-height: calc(100% - var(--vote-sheet-glow-space) * 2 + var(--vote-sheet-extra-height));
+    padding: 30px 0 23px;
   }
 
   .vote-sheet {
-    height: auto;
-    min-height: auto;
+    min-height: 0;
   }
 
   .vote-sheet-match {
@@ -339,9 +397,11 @@
   }
 
   .vote-action-rail {
+    position: static;
     flex-direction: row;
     justify-content: center;
-    position: static;
+    padding-top: 14px;
+    padding-bottom: 0;
   }
 }
 
@@ -352,7 +412,7 @@
 
   .vote-page {
     width: calc(100% - 28px);
-    padding: 14px 0 40px;
+    padding: 0;
   }
 
   .vote-sheet {
@@ -382,13 +442,16 @@
     -webkit-text-stroke-width: 1px;
   }
 
+  .vote-feed-item {
+    padding: 21px 0 19px;
+  }
+
   .vote-share-footer {
     font-size: 1.5rem;
   }
 
   .vote-action-button {
-    width: 58px;
-    height: 58px;
+    --vote-action-button-size: 58px;
   }
 
   .vote-action-button img {

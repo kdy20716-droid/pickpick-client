@@ -1,5 +1,9 @@
 ﻿import leftCandidateImage from "../assets/candidate-left.jpg";
 import rightCandidateImage from "../assets/candidate-right.jpg";
+import rizeImage from "../assets/리제.jpg";
+import ricoImage from "../assets/리코.jpg";
+import shibukiImage from "../assets/시부키.jpg";
+import tabiImage from "../assets/타비.jpg";
 
 export const voteTemplates = [
   {
@@ -7,13 +11,13 @@ export const voteTemplates = [
     title: "최애는 누구?",
     leftCandidate: {
       id: "akane",
-      name: "쿠로카와 아카네",
+      name: "사쵸",
       image: leftCandidateImage,
       tone: "blue",
     },
     rightCandidate: {
       id: "kana",
-      name: "아리마 카나",
+      name: "유니",
       image: rightCandidateImage,
       tone: "pink",
     },
@@ -23,63 +27,43 @@ export const voteTemplates = [
     },
   },
   {
-    id: "duo-stage",
-    title: "듀엣 무대는 누가 더 잘 어울려?",
+    id: "more-stone",
+    title: "누가 더 돌멩인지?",
     leftCandidate: {
-      id: "stage-akane",
-      name: "아카네",
-      image: leftCandidateImage,
+      id: "rize",
+      name: "리제",
+      image: rizeImage,
       tone: "blue",
     },
     rightCandidate: {
-      id: "stage-kana",
-      name: "카나",
-      image: rightCandidateImage,
+      id: "tabi",
+      name: "타비",
+      image: tabiImage,
       tone: "pink",
     },
     shares: {
-      left: 58,
-      right: 42,
+      left: 61,
+      right: 39,
     },
   },
   {
-    id: "visual-match",
-    title: "비주얼 원픽은 누구?",
+    id: "hero-vs-fox-god",
+    title: "용사 vs 여우신",
     leftCandidate: {
-      id: "visual-akane",
-      name: "푸른빛 아카네",
-      image: leftCandidateImage,
+      id: "rico",
+      name: "리코",
+      image: ricoImage,
       tone: "blue",
     },
     rightCandidate: {
-      id: "visual-kana",
-      name: "핑크빛 카나",
-      image: rightCandidateImage,
+      id: "shibuki",
+      name: "시부키",
+      image: shibukiImage,
       tone: "pink",
     },
     shares: {
-      left: 36,
-      right: 64,
-    },
-  },
-  {
-    id: "ending-fairy",
-    title: "엔딩 요정 느낌은 누구?",
-    leftCandidate: {
-      id: "ending-akane",
-      name: "차분한 아카네",
-      image: leftCandidateImage,
-      tone: "blue",
-    },
-    rightCandidate: {
-      id: "ending-kana",
-      name: "당찬 카나",
-      image: rightCandidateImage,
-      tone: "pink",
-    },
-    shares: {
-      left: 51,
-      right: 49,
+      left: 54,
+      right: 46,
     },
   },
 ];

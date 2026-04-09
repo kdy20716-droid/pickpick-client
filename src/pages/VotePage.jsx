@@ -1,5 +1,4 @@
 ﻿import {
-  startTransition,
   useEffect,
   useEffectEvent,
   useRef,
@@ -13,9 +12,7 @@ import dislikeIcon from "../assets/thumb_down.svg";
 import commentIcon from "../assets/comment.svg";
 import shareIcon from "../assets/share.svg";
 import { voteTemplates } from "../data/votes.js";
-
-const INITIAL_CARD_COUNT = 4;
-const LOAD_MORE_COUNT = 3;
+import { useVotePageScrollSnap } from "../useVotePageScrollSnap.js";
 
 const actionButtons = [
   {
@@ -52,21 +49,14 @@ function makeVoteCard(template, index) {
   };
 }
 
-function createVoteBatch(startIndex, count) {
-  return Array.from({ length: count }, (_, offset) => {
-    const index = startIndex + offset;
-    const template = voteTemplates[index % voteTemplates.length];
-    return makeVoteCard(template, index);
-  });
-}
-
 function VoteActionButton({
   action,
   active,
+  count,
   onToggle,
   onShare,
   copied,
-  activeCardId,
+  cardId,
 }) {
   if (action.kind === "link") {
     return (
@@ -81,16 +71,12 @@ function VoteActionButton({
   }
 
   const handleClick = () => {
-    if (!activeCardId) {
-      return;
-    }
-
     if (action.id === "share") {
-      onShare(activeCardId);
+      onShare(cardId);
       return;
     }
 
-    onToggle(activeCardId, action.id);
+    onToggle(cardId, action.id);
   };
 
   const isActive = action.id === "share" ? copied : active;
@@ -104,6 +90,11 @@ function VoteActionButton({
       onClick={handleClick}
     >
       <img src={action.icon} alt="" aria-hidden="true" />
+      {action.id === "like" ? (
+        <span className="vote-action-count" aria-hidden="true">
+          {count}
+        </span>
+      ) : null}
     </button>
   );
 }
@@ -112,6 +103,11 @@ function VoteCard({
   card,
   selectedCandidateId,
   onSelect,
+  actionState,
+  likeCount,
+  copied,
+  onToggleAction,
+  onShare,
   isActive,
   registerCardRef,
 }) {
@@ -138,11 +134,12 @@ function VoteCard({
                   isSelected ? " is-selected" : ""
                 }`}
                 aria-pressed={isSelected}
+                disabled={hasVoted}
                 onClick={() => onSelect(card.feedId, candidate.id)}
               >
                 <img src={candidate.image} alt={candidate.name} />
                 <span className="vote-choice-overlay" aria-hidden="true" />
-                <span className="vote-choice-name">{candidate.name}</span>
+                <p className="vote-choice-name">{candidate.name}</p>
               </button>
             );
           })}
@@ -172,56 +169,38 @@ function VoteCard({
           </div>
         ) : null}
       </div>
+
+      <div className="vote-action-rail" aria-label="투표 액션">
+        {actionButtons.map((action) => (
+          <VoteActionButton
+            key={action.id}
+            action={action}
+            active={Boolean(actionState?.[action.id])}
+            count={action.id === "like" ? likeCount : 0}
+            onToggle={onToggleAction}
+            onShare={onShare}
+            copied={copied}
+            cardId={card.feedId}
+          />
+        ))}
+      </div>
     </article>
   );
 }
 
 export default function VotePage() {
-  const [cards, setCards] = useState(() => createVoteBatch(0, INITIAL_CARD_COUNT));
+  const [cards] = useState(() =>
+    voteTemplates.map((template, index) => makeVoteCard(template, index)),
+  );
   const [selectedVotes, setSelectedVotes] = useState({});
   const [actionStates, setActionStates] = useState({});
+  const [likeCounts, setLikeCounts] = useState({});
   const [copiedCardId, setCopiedCardId] = useState("");
-  const [activeCardId, setActiveCardId] = useState(() => {
-    const initialCards = createVoteBatch(0, INITIAL_CARD_COUNT);
-    return initialCards[0]?.feedId ?? "";
-  });
-  const loaderRef = useRef(null);
+  const [activeCardId, setActiveCardId] = useState(() => cards[0]?.feedId ?? "");
+  const pageRef = useRef(null);
+  const feedRef = useRef(null);
   const copyTimeoutRef = useRef(null);
   const cardRefs = useRef(new Map());
-
-  const appendMoreCards = useEffectEvent(() => {
-    startTransition(() => {
-      setCards((currentCards) => [
-        ...currentCards,
-        ...createVoteBatch(currentCards.length, LOAD_MORE_COUNT),
-      ]);
-    });
-  });
-
-  useEffect(() => {
-    const loader = loaderRef.current;
-
-    if (!loader) {
-      return undefined;
-    }
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0]?.isIntersecting) {
-          appendMoreCards();
-        }
-      },
-      {
-        rootMargin: "320px 0px",
-      },
-    );
-
-    observer.observe(loader);
-
-    return () => {
-      observer.disconnect();
-    };
-  }, [appendMoreCards]);
 
   useEffect(() => {
     return () => {
@@ -241,7 +220,13 @@ export default function VotePage() {
   };
 
   const syncActiveCard = useEffectEvent(() => {
-    const viewportCenter = window.innerHeight / 2;
+    const feed = feedRef.current;
+    if (!feed) {
+      return;
+    }
+
+    const feedRect = feed.getBoundingClientRect();
+    const viewportCenter = feedRect.top + feedRect.height / 2;
     let nearestCardId = "";
     let nearestDistance = Number.POSITIVE_INFINITY;
 
@@ -261,7 +246,12 @@ export default function VotePage() {
   });
 
   useEffect(() => {
+    const feed = feedRef.current;
     let frameId = 0;
+
+    if (!feed) {
+      return undefined;
+    }
 
     const handleViewportChange = () => {
       if (frameId) {
@@ -275,7 +265,7 @@ export default function VotePage() {
     };
 
     handleViewportChange();
-    window.addEventListener("scroll", handleViewportChange, { passive: true });
+    feed.addEventListener("scroll", handleViewportChange, { passive: true });
     window.addEventListener("resize", handleViewportChange);
 
     return () => {
@@ -283,10 +273,10 @@ export default function VotePage() {
         window.cancelAnimationFrame(frameId);
       }
 
-      window.removeEventListener("scroll", handleViewportChange);
+      feed.removeEventListener("scroll", handleViewportChange);
       window.removeEventListener("resize", handleViewportChange);
     };
-  }, [cards.length, syncActiveCard]);
+  }, [syncActiveCard]);
 
   useEffect(() => {
     if (!activeCardId && cards[0]) {
@@ -294,11 +284,24 @@ export default function VotePage() {
     }
   }, [activeCardId, cards]);
 
+  useVotePageScrollSnap({
+    pageRef,
+    feedRef,
+    activeCardId,
+    cardRefs,
+  });
+
   const handleVote = (cardId, candidateId) => {
-    setSelectedVotes((currentVotes) => ({
-      ...currentVotes,
-      [cardId]: candidateId,
-    }));
+    setSelectedVotes((currentVotes) => {
+      if (currentVotes[cardId]) {
+        return currentVotes;
+      }
+
+      return {
+        ...currentVotes,
+        [cardId]: candidateId,
+      };
+    });
   };
 
   const handleToggleAction = (cardId, actionId) => {
@@ -306,11 +309,22 @@ export default function VotePage() {
       const previousState = currentStates[cardId] ?? {};
 
       if (actionId === "like") {
+        const nextLike = !previousState.like;
+
+        setLikeCounts((currentCounts) => {
+          const previousCount = currentCounts[cardId] ?? 0;
+
+          return {
+            ...currentCounts,
+            [cardId]: Math.max(0, previousCount + (nextLike ? 1 : -1)),
+          };
+        });
+
         return {
           ...currentStates,
           [cardId]: {
             ...previousState,
-            like: !previousState.like,
+            like: nextLike,
             dislike: false,
           },
         };
@@ -360,39 +374,26 @@ export default function VotePage() {
   };
 
   return (
-    <div className="vote-page">
+    <div ref={pageRef} className="vote-page">
       <div className="vote-layout">
-        <div className="vote-feed">
+        <div ref={feedRef} className="vote-feed">
           {cards.map((card) => (
             <VoteCard
               key={card.feedId}
               card={card}
               selectedCandidateId={selectedVotes[card.feedId]}
               onSelect={handleVote}
+              actionState={actionStates[card.feedId]}
+              likeCount={likeCounts[card.feedId] ?? 0}
+              copied={copiedCardId === card.feedId}
+              onToggleAction={handleToggleAction}
+              onShare={handleShare}
               isActive={activeCardId === card.feedId}
               registerCardRef={registerCardRef}
             />
           ))}
         </div>
-
-        <div className="vote-action-column">
-          <div className="vote-action-rail" aria-label="투표 액션">
-            {actionButtons.map((action) => (
-              <VoteActionButton
-                key={action.id}
-                action={action}
-                active={Boolean(actionStates[activeCardId]?.[action.id])}
-                onToggle={handleToggleAction}
-                onShare={handleShare}
-                copied={copiedCardId === activeCardId}
-                activeCardId={activeCardId}
-              />
-            ))}
-          </div>
-        </div>
       </div>
-
-      <div ref={loaderRef} className="vote-feed-loader" aria-hidden="true" />
     </div>
   );
 }
