@@ -1,0 +1,180 @@
+.create-page-container {
+  min-height: calc(100vh - 80px); /* 헤더 높이를 제외한 나머지 */
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  background-color: #fcf6f8;
+  padding-top: 50px;
+}
+
+.main-content {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  max-width: 1200px;
+  width: 100%;
+}
+
+.editor-card {
+  background-color: #fff;
+  border-radius: 25px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.03);
+  padding: 40px;
+}
+
+/* Preview Section */
+.preview-section {
+  flex: 2;
+  max-width: 700px;
+  text-align: center;
+  min-height: 600px;
+}
+
+.title-input-wrapper {
+  margin-bottom: 50px;
+}
+
+.editor-card__title-input {
+  width: 70%;
+  font-size: 28px;
+  font-weight: bold;
+  border: none;
+  border-bottom: 2px solid #f0f0f0;
+  padding: 10px;
+  text-align: center;
+  outline: none;
+  color: #333;
+}
+
+.editor-card__title-input::placeholder {
+  color: #ccc;
+}
+
+.vs-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  gap: 20px;
+}
+
+.candidate-box {
+  width: 260px;
+  height: 380px;
+  background-color: #d9d9d9;
+  border-radius: 15px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.icon-placeholder {
+  font-size: 40px;
+  color: #666;
+  font-weight: normal;
+}
+
+.candidate-box__label {
+  position: absolute;
+  bottom: 30px;
+  font-size: 24px;
+  font-weight: 800;
+  color: #444;
+}
+
+.vs-badge {
+  background-color: #f7a1c4;
+  color: #fff;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 5;
+  box-shadow: 0 4px 15px rgba(247, 161, 196, 0.5);
+  margin: 0 -30px; /* 후보군 박스 사이로 겹치게 조정 */
+}
+
+.vs-badge__text {
+  font-weight: 900;
+  font-style: italic;
+  font-size: 24px;
+}
+
+/* Settings Section */
+.settings-section {
+  flex: 1;
+  max-width: 350px;
+  display: flex;
+  flex-direction: column;
+  gap: 35px;
+  position: relative;
+  height: fit-content;
+}
+
+.settings-group__title {
+  font-size: 18px;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #f5f5f5;
+  color: #333;
+}
+
+.list-item {
+  display: flex;
+  gap: 15px;
+  padding: 10px 0;
+  color: #aaa;
+  font-size: 15px;
+}
+
+.tag-cloud {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.tag-button {
+  padding: 8px 16px;
+  border-radius: 25px;
+  border: 1px solid #eee;
+  background-color: #fff;
+  font-size: 13px;
+  color: #888;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tag-button--active {
+  background-color: #f7a1c4;
+  color: #fff;
+  border-color: #f7a1c4;
+  box-shadow: 0 4px 10px rgba(247, 161, 196, 0.3);
+}
+
+/* Floating Button */
+.fab-button {
+  position: absolute;
+  bottom: -20px;
+  right: 20px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background-color: #f7a1c4;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(247, 161, 196, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 30px;
+}
+
+.fab-button:hover {
+  transform: translateY(-5px);
+}

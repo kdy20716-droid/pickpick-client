@@ -10,7 +10,7 @@ const Header = () => {
           PICKPICK
         </Link>
         <nav className="site-nav" aria-label="주요 메뉴">
-          <a href="#">+ CREATE</a>
+          <Link to="/create">+ CREATE</Link>
           <Link to="/ranking" className="active">
             RANKING
           </Link>
