@@ -1,10 +1,9 @@
 import { useRef } from "react";
 import "./MainPage.css";
-import accountIcon from "./assets/account-icon.svg";
-import vsLogo from "./assets/vs-logo.svg";
-import leftCandidateImage from "./assets/candidate-left.jpg";
-import rightCandidateImage from "./assets/candidate-right.jpg";
-import { useMainPageAnimations } from "./useMainPageAnimations.js";
+import vsLogo from "../assets/vs-logo.svg";
+import leftCandidateImage from "../assets/candidate-left.jpg";
+import rightCandidateImage from "../assets/candidate-right.jpg";
+import { useMainPageAnimations } from "../useMainPageAnimations.js";
 
 const copy = {
   navLabel: "주요 메뉴",
@@ -39,23 +38,6 @@ export default function MainPage() {
 
   return (
     <div ref={pageRef}>
-      <header className="site-header">
-        <div className="header-inner">
-          <a href="#" className="brand">
-            PICKPICK
-          </a>
-          <nav className="site-nav" aria-label={copy.navLabel}>
-            <a href="#">+ CREATE</a>
-            <a href="#">RANKING</a>
-            <a href="#">LOG IN</a>
-            <a href="#" className="account-link" aria-label={copy.accountLabel}>
-              <img src={accountIcon} alt="" />
-            </a>
-          </nav>
-        </div>
-        <div className="header-glow" aria-hidden="true" />
-      </header>
-
       <main className="page-main">
         <section className="hero">
           <h1>
