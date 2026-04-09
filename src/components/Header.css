@@ -57,3 +57,42 @@
     rgba(252, 146, 199, 0) 100%
   );
 }
+
+/* 마이페이지 드롭다운 스타일 */
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: 100%;
+  background-color: #ffffff;
+  min-width: 180px;
+  box-shadow: var(--shadow, 0 8px 24px rgba(17, 17, 17, 0.12));
+  border-radius: 12px;
+  padding: 8px 0;
+  z-index: 20;
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
+.dropdown-content a {
+  color: var(--text, #111) !important;
+  padding: 12px 20px;
+  text-decoration: none;
+  display: block;
+  font-size: 1rem;
+  transition:
+    background-color 0.2s,
+    color 0.2s;
+}
+
+.dropdown-content a:hover {
+  background-color: #f8f8f8;
+  color: var(--point, #fc92c7) !important;
+}
