@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import "./comments.css";
+import { useState } from "react";
+import "../pages/comments.css";
 
 const initialComments = [
   { id: 1, name: "지존 지훈", text: "1빠", likes: 54, replyItems: [] },
@@ -36,7 +36,7 @@ const initialComments = [
   },
 ];
 
-const ReplyItem = ({ reply }) => {
+function ReplyItem({ reply }) {
   return (
     <div className="reply-item">
       <div className="avatar small"></div>
@@ -46,9 +46,9 @@ const ReplyItem = ({ reply }) => {
       </div>
     </div>
   );
-};
+}
 
-const CommentItem = ({ comment, isOpen, onLike, onToggleReplies }) => {
+function CommentItem({ comment, isOpen, onLike, onToggleReplies }) {
   const replyCount = comment.replyItems.length;
 
   return (
@@ -95,9 +95,9 @@ const CommentItem = ({ comment, isOpen, onLike, onToggleReplies }) => {
       </div>
     </div>
   );
-};
+}
 
-const CommentApp = () => {
+export default function Comments({ setOpen }) {
   const [comments, setComments] = useState(initialComments);
   const [openReplies, setOpenReplies] = useState({});
   const [newComment, setNewComment] = useState("");
@@ -146,36 +146,49 @@ const CommentApp = () => {
   };
 
   return (
-    <div className="modal">
-      <div className="modal-header">
-        <span>댓글 {comments.length}</span>
-        <button className="close">×</button>
-      </div>
+    <div className="modal-background" onClick={() => setOpen(false)}>
+      <div className="modal" onClick={(event) => event.stopPropagation()}>
+        <div className="modal-header">
+          <span>댓글 {comments.length}</span>
+          <button
+            className="close"
+            type="button"
+            onClick={() => setOpen(false)}
+          >
+            ×
+          </button>
+        </div>
 
-      <div className="comment-list">
-        {comments.map((comment) => (
-          <CommentItem
-            key={comment.id}
-            comment={comment}
-            isOpen={Boolean(openReplies[comment.id])}
-            onLike={handleLike}
-            onToggleReplies={handleToggleReplies}
+        <div className="comment-list">
+          {comments.map((comment) => (
+            <CommentItem
+              key={comment.id}
+              comment={comment}
+              isOpen={Boolean(openReplies[comment.id])}
+              onLike={handleLike}
+              onToggleReplies={handleToggleReplies}
+            />
+          ))}
+        </div>
+
+        <div className="comment-input">
+          <div className="avatar small"></div>
+          <input
+            type="text"
+            placeholder="댓글 추가..."
+            value={newComment}
+            onChange={(event) => setNewComment(event.target.value)}
+            onKeyDown={handleInputKeyDown}
           />
-        ))}
-      </div>
-
-      <div className="comment-input">
-        <div className="avatar small"></div>
-        <input
-          type="text"
-          placeholder="댓글 추가..."
-          value={newComment}
-          onChange={(event) => setNewComment(event.target.value)}
-          onKeyDown={handleInputKeyDown}
-        />
+          <button
+            type="button"
+            className="action-button"
+            onClick={handleAddComment}
+          >
+            등록
+          </button>
+        </div>
       </div>
     </div>
   );
-};
-
-export default CommentApp;
+}

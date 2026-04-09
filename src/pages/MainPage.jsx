@@ -1,9 +1,7 @@
-﻿import { useRef } from "react";
 import { Link } from "react-router-dom";
+import { useRef } from "react";
 import "./MainPage.css";
 import vsLogo from "../assets/vs-logo.svg";
-import leftCandidateImage from "../assets/candidate-left.jpg";
-import rightCandidateImage from "../assets/candidate-right.jpg";
 import { useMainPageAnimations } from "../hooks/useMainPageAnimations.js";
 import { featuredVote } from "../data/votes.js";
 
@@ -15,21 +13,20 @@ const copy = {
   heroDescription:
     "가볍게 비교하고 빠르게 골라보세요. 직관적인 투표 한 번으로 오늘의 선택을 완성할 수 있어요.",
   voteLabel: "인기 투표",
-  voteTitle: featuredVote.title,
   candidateSuffix: " 후보",
   nextVote: "상세 투표 보러가기",
 };
-
-const { leftCandidate, rightCandidate } = featuredVote;
 
 export default function MainPage() {
   const pageRef = useRef(null);
 
   useMainPageAnimations(pageRef);
 
+  // votes.js에서 가져온 실제 투표 데이터 연동
+  const { title, leftCandidate, rightCandidate } = featuredVote;
+
   return (
     <div ref={pageRef}>
-      <button>댓글 테스트</button>
       <main className="page-main">
         <section className="hero">
           <h1>
@@ -44,7 +41,7 @@ export default function MainPage() {
           </div>
 
           <article className="vote-card">
-            <h2>{copy.voteTitle}</h2>
+            <h2>{title}</h2>
 
             <div className="vote-match">
               <Link
