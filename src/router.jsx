@@ -3,6 +3,7 @@ import Result from "./pages/Result";
 import Layout from "./components/Layout";
 import Signin from "./pages/Signin.jsx";
 import Findpass from "./pages/Findpass.jsx";
+import MainPage from "./pages/MainPage.jsx";
 
 const router = createBrowserRouter([
   {
@@ -11,7 +12,7 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <main>메인 페이지</main>,
+        element: <MainPage />,
       },
       {
         path: "/result",
