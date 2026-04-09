@@ -4,9 +4,10 @@ import Layout from "./components/Layout";
 import MainPage from "./pages/MainPage.jsx";
 import Signin from "./pages/Signin.jsx";
 import Findpass from "./pages/Findpass.jsx";
-import Rainking from "./pages/Ranking.jsx";
+import Ranking from "./pages/Ranking.jsx";
 import MyPage from "./pages/MyPage.jsx";
 import Create from "./pages/Create.jsx";
+import VotePage from "./pages/VotePage";
 
 const router = createBrowserRouter([
   {
@@ -31,7 +32,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/ranking",
-        element: <Rainking />,
+        element: <Ranking />,
       },
       {
         path: "/mypage",
@@ -40,6 +41,10 @@ const router = createBrowserRouter([
       {
         path: "/create",
         element: <Create />,
+      },
+      {
+        path: "/vote",
+        element: <VotePage />,
       },
     ],
   },
