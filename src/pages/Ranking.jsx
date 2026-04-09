@@ -1,12 +1,10 @@
-import React from "react";
-import Header from "./Headeer.jsx";
 import "./ranking.css";
-import goldMedal from "./assets/1위 메달.png";
-import silverMedal from "./assets/2위메달.png";
-import bronzeMedal from "./assets/3위 메달.png";
-import vsImage from "./assets/vs.png";
-import sachoImage from "./assets/사초.png";
-import workerImage from "./assets/외노자.png";
+import goldMedal from "../assets/1위 메달.png";
+import silverMedal from "../assets/2위메달.png";
+import bronzeMedal from "../assets/3위 메달.png";
+import vsImage from "../assets/vs.png";
+import sachoImage from "../assets/사초.png";
+import workerImage from "../assets/외노자.png";
 
 const topRankings = [
   {
@@ -65,7 +63,6 @@ const rankingItems = [
 function Rainking() {
   return (
     <>
-      <Header />
       <section className="ranking-section">
         <div className="top3">
           {topRankings.map((ranking) => (
