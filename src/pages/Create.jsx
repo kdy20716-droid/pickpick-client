@@ -3,6 +3,8 @@ import "./Create.css";
 
 const Create = () => {
   const [selectedTag, setSelectedTag] = useState("영화 / 드라마");
+  const [candidate1, setCandidate1] = useState("");
+  const [candidate2, setCandidate2] = useState("");
 
   const tags = [
     "연예",
@@ -39,7 +41,9 @@ const Create = () => {
               <div className="candidate-box__upload">
                 <span className="icon-placeholder">+</span>
               </div>
-              <div className="candidate-box__label">후보군 이름</div>
+              <div className="candidate-box__label">
+                {candidate1 || "후보군 이름"}
+              </div>
             </div>
 
             <div className="vs-badge">
@@ -50,7 +54,9 @@ const Create = () => {
               <div className="candidate-box__upload">
                 <span className="icon-placeholder">+</span>
               </div>
-              <div className="candidate-box__label">후보군 이름</div>
+              <div className="candidate-box__label">
+                {candidate2 || "후보군 이름"}
+              </div>
             </div>
           </div>
         </section>
@@ -62,15 +68,37 @@ const Create = () => {
             <div className="settings-group__list">
               <div className="list-item">
                 <span className="list-item__num">1</span>
-                <span className="list-item__placeholder">
-                  이름을 입력하세요
-                </span>
+                <input
+                  type="text"
+                  style={{
+                    border: "none",
+                    outline: "none",
+                    fontSize: "15px",
+                    color: "#333",
+                    width: "100%",
+                    background: "transparent",
+                  }}
+                  placeholder="이름을 입력하세요"
+                  value={candidate1}
+                  onChange={(e) => setCandidate1(e.target.value)}
+                />
               </div>
               <div className="list-item">
                 <span className="list-item__num">2</span>
-                <span className="list-item__placeholder">
-                  이름을 입력하세요
-                </span>
+                <input
+                  type="text"
+                  style={{
+                    border: "none",
+                    outline: "none",
+                    fontSize: "15px",
+                    color: "#333",
+                    width: "100%",
+                    background: "transparent",
+                  }}
+                  placeholder="이름을 입력하세요"
+                  value={candidate2}
+                  onChange={(e) => setCandidate2(e.target.value)}
+                />
               </div>
             </div>
           </div>
