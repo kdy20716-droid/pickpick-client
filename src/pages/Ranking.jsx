@@ -60,7 +60,7 @@ const rankingItems = [
   },
 ];
 
-function Rainking() {
+function Ranking() {
   return (
     <>
       <section className="ranking-section">
@@ -76,13 +76,13 @@ function Rainking() {
               <div className={`card${ranking.isBig ? " big" : ""}`}>
                 <img
                   src={ranking.topImage}
-                  className="img top"
+                  className="img top ranking-card-image"
                   alt="character 1"
                 />
                 <img src={vsImage} className="vs" alt="vs" />
                 <img
                   src={ranking.bottomImage}
-                  className="img bottom"
+                  className="img bottom ranking-card-image"
                   alt="character 2"
                 />
               </div>
@@ -97,9 +97,17 @@ function Rainking() {
               <div className="num">{item.id}</div>
 
               <div className="vs-row">
-                <img src={item.leftImage} alt="character 1" />
+                <img
+                  src={item.leftImage}
+                  className="ranking-list-image"
+                  alt="character 1"
+                />
                 <img src={vsImage} className="vs-small" alt="vs" />
-                <img src={item.rightImage} alt="character 2" />
+                <img
+                  src={item.rightImage}
+                  className="ranking-list-image"
+                  alt="character 2"
+                />
               </div>
 
               <div className="title">{item.title}</div>
@@ -111,4 +119,4 @@ function Rainking() {
   );
 }
 
-export default Rainking;
+export default Ranking;

@@ -4,7 +4,7 @@ import Layout from "./components/Layout";
 import MainPage from "./pages/MainPage.jsx";
 import Signin from "./pages/Signin.jsx";
 import Findpass from "./pages/Findpass.jsx";
-import Rainking from "./pages/Ranking.jsx";
+import Ranking from "./pages/Ranking.jsx";
 
 const router = createBrowserRouter([
   {
@@ -29,7 +29,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/ranking",
-        element: <Rainking />,
+        element: <Ranking />,
       },
     ],
   },
