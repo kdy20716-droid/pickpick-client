@@ -239,6 +239,11 @@ p {
   height: 18px;
   color: #0f0f0f;
   flex-shrink: 0;
+  transition: color 0.18s ease;
+}
+
+.like-icon path {
+  transition: fill 0.18s ease, stroke 0.18s ease;
 }
 
 .dislike-icon {
@@ -246,13 +251,23 @@ p {
   height: 18px;
   color: #0f0f0f;
   flex-shrink: 0;
+  transition: color 0.18s ease;
+}
+
+.dislike-icon path {
+  transition: fill 0.18s ease, stroke 0.18s ease;
 }
 
 .comment-icon {
   width: 18px;
   height: 18px;
-  color: #0f0f0f;
+  color: #6f7680;
   flex-shrink: 0;
+  transition: color 0.18s ease;
+}
+
+.comment-icon path {
+  transition: fill 0.18s ease, stroke 0.18s ease;
 }
 
 .actions span {
@@ -273,6 +288,27 @@ p {
   text-decoration: underline;
 }
 
+.like-button.is-active .like-icon {
+  color: #e53935;
+}
+
+.dislike-button.is-active .dislike-icon {
+  color: #2f6df6;
+}
+
+.comment-button.is-active .comment-icon {
+  color: #0f0f0f;
+}
+
+.comment-icon.is-filled path {
+  fill: currentColor;
+}
+
+.like-icon.is-filled path,
+.dislike-icon.is-filled path {
+  fill: currentColor;
+}
+
 /* 답글 보기 버튼 */
 .reply {
   display: inline-flex;
@@ -286,6 +322,7 @@ p {
   font-weight: 600;
   cursor: pointer;
   white-space: nowrap;
+  transition: color 0.18s ease;
 }
 
 .reply::before {
@@ -294,6 +331,15 @@ p {
   flex-shrink: 0;
   width: 20px;
   border-top: 1px solid #ccc;
+  transition: border-color 0.18s ease;
+}
+
+.reply.is-active {
+  color: #0f0f0f;
+}
+
+.reply.is-active::before {
+  border-color: #0f0f0f;
 }
 
 .reply-list {

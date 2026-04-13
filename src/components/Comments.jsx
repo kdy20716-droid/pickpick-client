@@ -112,10 +112,10 @@ function formatRelativeTime(createdAt) {
   return `${diffDays}일 전`;
 }
 
-function LikeIcon() {
+function LikeIcon({ isActive = false }) {
   return (
     <svg
-      className="like-icon"
+      className={`like-icon${isActive ? " is-filled" : ""}`}
       viewBox="0 0 24 24"
       aria-hidden="true"
       focusable="false"
@@ -132,10 +132,10 @@ function LikeIcon() {
   );
 }
 
-function CommentIcon() {
+function CommentIcon({ isActive = false }) {
   return (
     <svg
-      className="comment-icon"
+      className={`comment-icon${isActive ? " is-filled" : ""}`}
       viewBox="0 0 24 24"
       aria-hidden="true"
       focusable="false"
@@ -152,10 +152,10 @@ function CommentIcon() {
   );
 }
 
-function DislikeIcon() {
+function DislikeIcon({ isActive = false }) {
   return (
     <svg
-      className="dislike-icon"
+      className={`dislike-icon${isActive ? " is-filled" : ""}`}
       viewBox="0 0 24 24"
       aria-hidden="true"
       focusable="false"
@@ -259,32 +259,32 @@ function CommentItem({
           <div className="actions">
             <button
               type="button"
-              className="action-button like-button"
+              className={`action-button like-button${comment.reaction === "like" ? " is-active" : ""}`}
               onClick={() => onLike(comment.id)}
             >
-              <LikeIcon />
+              <LikeIcon isActive={comment.reaction === "like"} />
               <span>{comment.likes}</span>
             </button>
             <button
               type="button"
-              className="action-button dislike-button"
+              className={`action-button dislike-button${comment.reaction === "dislike" ? " is-active" : ""}`}
               onClick={() => onDislike(comment.id)}
             >
-              <DislikeIcon />
+              <DislikeIcon isActive={comment.reaction === "dislike"} />
               <span>{comment.dislikes || 0}</span>
             </button>
             <button
               type="button"
-              className="action-button comment-button"
+              className={`action-button comment-button${isOpen ? " is-active" : ""}`}
               onClick={() => onToggleReplies(comment.id)}
             >
-              <CommentIcon />
+              <CommentIcon isActive={isOpen} />
               <span>{replyCount > 0 ? replyCount : ""}</span>
             </button>
           </div>
           <button
             type="button"
-            className="reply"
+            className={`reply${isOpen ? " is-active" : ""}`}
             onClick={() => onToggleReplies(comment.id)}
           >
             {isOpen
@@ -349,7 +349,18 @@ export default function Comments({ setOpen }) {
     setComments((prevComments) =>
       prevComments.map((comment) =>
         comment.id === commentId
-          ? { ...comment, likes: comment.likes + 1 }
+          ? {
+              ...comment,
+              likes:
+                comment.reaction === "like"
+                  ? Math.max(0, comment.likes - 1)
+                  : comment.likes + 1,
+              dislikes:
+                comment.reaction === "dislike"
+                  ? Math.max(0, (comment.dislikes || 0) - 1)
+                  : comment.dislikes || 0,
+              reaction: comment.reaction === "like" ? null : "like",
+            }
           : comment,
       ),
     );
@@ -359,7 +370,18 @@ export default function Comments({ setOpen }) {
     setComments((prevComments) =>
       prevComments.map((comment) =>
         comment.id === commentId
-          ? { ...comment, dislikes: (comment.dislikes || 0) + 1 }
+          ? {
+              ...comment,
+              likes:
+                comment.reaction === "like"
+                  ? Math.max(0, comment.likes - 1)
+                  : comment.likes,
+              dislikes:
+                comment.reaction === "dislike"
+                  ? Math.max(0, (comment.dislikes || 0) - 1)
+                  : (comment.dislikes || 0) + 1,
+              reaction: comment.reaction === "dislike" ? null : "dislike",
+            }
           : comment,
       ),
     );
@@ -398,6 +420,7 @@ export default function Comments({ setOpen }) {
         createdAt: now,
         likes: 0,
         dislikes: 0,
+        reaction: null,
         replyItems: [],
       },
     ]);
