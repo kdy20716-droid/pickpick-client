@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import "../pages/comments.css";
 
 const initialComments = [
@@ -6,6 +6,7 @@ const initialComments = [
     id: 1,
     name: "지존 지훈",
     text: "1빠",
+    createdAt: Date.now() - 1000 * 60 * 60 * 2,
     likes: 54,
     dislikes: 0,
     replyItems: [],
@@ -14,37 +15,102 @@ const initialComments = [
     id: 2,
     name: "어그로꾼",
     text: "얘들아 내가 재밌는 얘기 해줄게...더보기",
+    createdAt: Date.now() - 1000 * 60 * 60 * 5,
     likes: 128,
     dislikes: 3,
     replyItems: [
-      { id: 201, name: "반박러", text: "안 궁금한데 계속 해봐", likes: 12 },
-      { id: 202, name: "구경꾼", text: "그래서 다음이 뭔데?", likes: 7 },
-      { id: 203, name: "웃참실패", text: "이미 재밌다", likes: 3 },
+      {
+        id: 201,
+        name: "반박러",
+        text: "안 궁금한데 계속 해봐",
+        createdAt: Date.now() - 1000 * 60 * 60 * 4,
+        likes: 12,
+      },
+      {
+        id: 202,
+        name: "구경꾼",
+        text: "그래서 다음이 뭔데?",
+        createdAt: Date.now() - 1000 * 60 * 60 * 3,
+        likes: 7,
+      },
+      {
+        id: 203,
+        name: "웃참실패",
+        text: "이미 재밌다",
+        createdAt: Date.now() - 1000 * 60 * 60,
+        likes: 3,
+      },
     ],
   },
   {
     id: 3,
     name: "차미새",
     text: "o(*≧▽≦)ツ",
+    createdAt: Date.now() - 1000 * 60 * 30,
     likes: 234,
     dislikes: 1,
     replyItems: [
-      { id: 301, name: "팬1", text: "이 이모티콘 너무 귀엽다", likes: 21 },
-      { id: 302, name: "팬2", text: "오늘도 등장했다", likes: 8 },
+      {
+        id: 301,
+        name: "팬1",
+        text: "이 이모티콘 너무 귀엽다",
+        createdAt: Date.now() - 1000 * 60 * 20,
+        likes: 21,
+      },
+      {
+        id: 302,
+        name: "팬2",
+        text: "오늘도 등장했다",
+        createdAt: Date.now() - 1000 * 60 * 10,
+        likes: 8,
+      },
     ],
   },
   {
     id: 4,
     name: "익명",
     text: "＼(((￣▽￣)))／",
+    createdAt: Date.now() - 1000 * 60 * 5,
     likes: 2,
     dislikes: 0,
     replyItems: [
-      { id: 401, name: "지나가던 사람", text: "텐션 좋네", likes: 1 },
-      { id: 402, name: "익명2", text: "나도 따라 해봄", likes: 0 },
+      {
+        id: 401,
+        name: "지나가던 사람",
+        text: "텐션 좋네",
+        createdAt: Date.now() - 1000 * 60 * 4,
+        likes: 1,
+      },
+      {
+        id: 402,
+        name: "익명2",
+        text: "나도 따라 해봄",
+        createdAt: Date.now() - 1000 * 60 * 2,
+        likes: 0,
+      },
     ],
   },
 ];
+
+function formatRelativeTime(createdAt) {
+  const diffMinutes = Math.max(0, Math.floor((Date.now() - createdAt) / 60000));
+
+  if (diffMinutes < 1) {
+    return "방금 전";
+  }
+
+  if (diffMinutes < 60) {
+    return `${diffMinutes}분 전`;
+  }
+
+  const diffHours = Math.floor(diffMinutes / 60);
+  if (diffHours < 24) {
+    return `${diffHours}시간 전`;
+  }
+
+  const diffDays = Math.floor(diffHours / 24);
+  return `${diffDays}일 전`;
+}
 
 function LikeIcon() {
   return (
@@ -106,12 +172,35 @@ function DislikeIcon() {
   );
 }
 
+function TrashIcon() {
+  return (
+    <svg
+      className="trash-icon"
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <path
+        d="M4 7h16M9 7V5.8A1.8 1.8 0 0 1 10.8 4h2.4A1.8 1.8 0 0 1 15 5.8V7m-8.8 0 .7 10.1A2 2 0 0 0 8.9 19h6.2a2 2 0 0 0 2-1.9L17.8 7M10 10.5v5.5M14 10.5v5.5"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 function ReplyItem({ reply }) {
   return (
     <div className="reply-item">
       <div className="avatar small"></div>
       <div className="reply-content">
-        <span className="name">{reply.name}</span>
+        <div className="name-row">
+          <span className="name">{reply.name}</span>
+          <span className="time-label">{formatRelativeTime(reply.createdAt)}</span>
+        </div>
         <p className="comment-text">{reply.text}</p>
       </div>
     </div>
@@ -138,7 +227,12 @@ function CommentItem({
       <div className="avatar"></div>
       <div className="content">
         <div className="top-row">
-          <span className="name">{comment.name}</span>
+          <div className="name-row">
+            <span className="name">{comment.name}</span>
+            <span className="time-label">
+              {formatRelativeTime(comment.createdAt)}
+            </span>
+          </div>
           <div className="comment-menu-wrap">
             <button
               type="button"
@@ -154,6 +248,7 @@ function CommentItem({
                 className="comment-delete"
                 onClick={() => onDeleteComment(comment.id)}
               >
+                <TrashIcon />
                 댓글 삭제
               </button>
             )}
@@ -217,6 +312,10 @@ function CommentItem({
                   onReplyDraftChange(comment.id, event.target.value)
                 }
                 onKeyDown={(event) => {
+                  if (event.nativeEvent.isComposing || event.repeat) {
+                    return;
+                  }
+
                   if (event.key === "Enter") {
                     onAddReply(comment.id);
                   }
@@ -243,6 +342,8 @@ export default function Comments({ setOpen }) {
   const [replyDrafts, setReplyDrafts] = useState({});
   const [openMenuId, setOpenMenuId] = useState(null);
   const [newComment, setNewComment] = useState("");
+  const lastCommentSubmitRef = useRef({ text: "", time: 0 });
+  const lastReplySubmitRef = useRef({});
 
   const handleLike = (commentId) => {
     setComments((prevComments) =>
@@ -273,17 +374,28 @@ export default function Comments({ setOpen }) {
 
   const handleAddComment = () => {
     const trimmedComment = newComment.trim();
+    const now = Date.now();
 
     if (!trimmedComment) {
       return;
     }
 
+    if (
+      lastCommentSubmitRef.current.text === trimmedComment &&
+      now - lastCommentSubmitRef.current.time < 800
+    ) {
+      return;
+    }
+
+    lastCommentSubmitRef.current = { text: trimmedComment, time: now };
+
     setComments((prevComments) => [
       ...prevComments,
       {
-        id: Date.now(),
+        id: now,
         name: "익명",
         text: trimmedComment,
+        createdAt: now,
         likes: 0,
         dislikes: 0,
         replyItems: [],
@@ -327,10 +439,25 @@ export default function Comments({ setOpen }) {
 
   const handleAddReply = (commentId) => {
     const trimmedReply = (replyDrafts[commentId] || "").trim();
+    const now = Date.now();
 
     if (!trimmedReply) {
       return;
     }
+
+    const lastReplySubmit = lastReplySubmitRef.current[commentId];
+    if (
+      lastReplySubmit &&
+      lastReplySubmit.text === trimmedReply &&
+      now - lastReplySubmit.time < 800
+    ) {
+      return;
+    }
+
+    lastReplySubmitRef.current = {
+      ...lastReplySubmitRef.current,
+      [commentId]: { text: trimmedReply, time: now },
+    };
 
     setComments((prevComments) =>
       prevComments.map((comment) =>
@@ -340,9 +467,10 @@ export default function Comments({ setOpen }) {
               replyItems: [
                 ...comment.replyItems,
                 {
-                  id: Date.now() + commentId,
+                  id: now + commentId,
                   name: "익명",
                   text: trimmedReply,
+                  createdAt: now,
                   likes: 0,
                 },
               ],
@@ -363,6 +491,10 @@ export default function Comments({ setOpen }) {
   };
 
   const handleInputKeyDown = (event) => {
+    if (event.nativeEvent.isComposing || event.repeat) {
+      return;
+    }
+
     if (event.key === "Enter") {
       handleAddComment();
     }
