@@ -1,8 +1,10 @@
-﻿import { useEffect, useRef, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+﻿import { useRef } from "react";
+import { Link } from "react-router-dom";
 import "./MainPage.css";
 import vsLogo from "../assets/vs-logo.svg";
+import { mainRouteTransitions } from "../routeTransitions.js";
 import { useMainPageAnimations } from "../useMainPageAnimations.js";
+import { useScrollToVote } from "../useScrollToVote.js";
 import { featuredVote } from "../data/votes.js";
 
 const copy = {
@@ -20,83 +22,7 @@ const copy = {
 
 const { leftCandidate, rightCandidate } = featuredVote;
 
-const SCROLL_TRANSITION_DURATION = 520;
-
-function useScrollToVote() {
-  const navigate = useNavigate();
-  const [isLeavingForVote, setIsLeavingForVote] = useState(false);
-  const hasNavigatedRef = useRef(false);
-  const wheelDeltaRef = useRef(0);
-  const touchStartYRef = useRef(null);
-  const navigateTimeoutRef = useRef(null);
-
-  useEffect(() => {
-    const navigateToVote = () => {
-      if (hasNavigatedRef.current) {
-        return;
-      }
-
-      hasNavigatedRef.current = true;
-      setIsLeavingForVote(true);
-      const transitionDuration = window.matchMedia(
-        "(prefers-reduced-motion: reduce)",
-      ).matches
-        ? 0
-        : SCROLL_TRANSITION_DURATION;
-
-      navigateTimeoutRef.current = window.setTimeout(() => {
-        navigate("/vote", { state: { transition: "main-scroll" } });
-      }, transitionDuration);
-    };
-
-    const onWheel = (event) => {
-      if (event.deltaY <= 0) {
-        wheelDeltaRef.current = 0;
-        return;
-      }
-
-      wheelDeltaRef.current += event.deltaY;
-      if (wheelDeltaRef.current >= 80) {
-        event.preventDefault();
-        navigateToVote();
-      }
-    };
-
-    const onTouchStart = (event) => {
-      touchStartYRef.current = event.touches[0]?.clientY ?? null;
-    };
-
-    const onTouchEnd = (event) => {
-      const touchStartY = touchStartYRef.current;
-      const touchEndY = event.changedTouches[0]?.clientY;
-      touchStartYRef.current = null;
-
-      if (touchStartY == null || touchEndY == null) {
-        return;
-      }
-
-      if (touchStartY - touchEndY >= 50) {
-        navigateToVote();
-      }
-    };
-
-    window.addEventListener("wheel", onWheel, { passive: false });
-    window.addEventListener("touchstart", onTouchStart, { passive: true });
-    window.addEventListener("touchend", onTouchEnd, { passive: true });
-
-    return () => {
-      if (navigateTimeoutRef.current) {
-        window.clearTimeout(navigateTimeoutRef.current);
-      }
-
-      window.removeEventListener("wheel", onWheel);
-      window.removeEventListener("touchstart", onTouchStart);
-      window.removeEventListener("touchend", onTouchEnd);
-    };
-  }, [navigate]);
-
-  return isLeavingForVote;
-}
+const voteLinkState = { transition: mainRouteTransitions.link };
 
 export default function MainPage() {
   const pageRef = useRef(null);
@@ -128,7 +54,7 @@ export default function MainPage() {
             <div className="vote-match">
               <Link
                 to="/vote"
-                state={{ transition: "main-link" }}
+                state={voteLinkState}
                 className="candidate-card"
                 aria-label={`${leftCandidate.name}${copy.candidateSuffix}`}
               >
@@ -142,7 +68,7 @@ export default function MainPage() {
 
               <Link
                 to="/vote"
-                state={{ transition: "main-link" }}
+                state={voteLinkState}
                 className="candidate-card"
                 aria-label={`${rightCandidate.name}${copy.candidateSuffix}`}
               >
@@ -155,7 +81,7 @@ export default function MainPage() {
 
         <Link
           to="/vote"
-          state={{ transition: "main-link" }}
+          state={voteLinkState}
           className="next-vote"
         >
           {copy.nextVote}

@@ -258,9 +258,6 @@
   align-items: center;
   justify-content: space-between;
   gap: 18px;
-}
-
-.vote-share-footer {
   margin-top: 10px;
   font-size: 2rem;
   font-weight: 800;
