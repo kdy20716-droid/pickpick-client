@@ -1,8 +1,6 @@
 import { useEffect } from "react";
 
 const MOTION_QUERY = "(prefers-reduced-motion: reduce)";
-const DEFAULT_SHADOW = "0 18px 48px rgba(17, 17, 17, 0.08)";
-const HOVER_SHADOW = "0 18px 34px rgba(17, 17, 17, 0.16)";
 const NAV_IDLE_COLOR = "rgba(17, 17, 17, 0.58)";
 const NAV_ACTIVE_COLOR = "rgba(17, 17, 17, 0.98)";
 const NEXT_IDLE_COLOR = "rgb(85, 85, 85)";
@@ -90,7 +88,7 @@ export function useMainPageAnimations(pageRef) {
           ],
           {
             duration: 2700,
-            delay: 2700,
+            delay,
             easing: "cubic-bezier(0.2, 0.8, 0.2, 1)",
           },
         ),
@@ -150,14 +148,8 @@ export function useMainPageAnimations(pageRef) {
           animate(
             card,
             [
-              {
-                transform: "scale(1)",
-                boxShadow: DEFAULT_SHADOW,
-              },
-              {
-                transform: "scale(1.03)",
-                boxShadow: HOVER_SHADOW,
-              },
+              { transform: "scale(1)" },
+              { transform: "scale(1.03)" },
             ],
             { duration: 280, easing: "ease" },
           ),
@@ -180,14 +172,8 @@ export function useMainPageAnimations(pageRef) {
           animate(
             card,
             [
-              {
-                transform: getComputedStyle(card).transform,
-                boxShadow: HOVER_SHADOW,
-              },
-              {
-                transform: "scale(1)",
-                boxShadow: DEFAULT_SHADOW,
-              },
+              { transform: getComputedStyle(card).transform },
+              { transform: "scale(1)" },
             ],
             { duration: 280, easing: "ease" },
           ),

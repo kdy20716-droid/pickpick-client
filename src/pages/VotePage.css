@@ -40,6 +40,14 @@
   scrollbar-width: none;
 }
 
+.vote-page.is-entering-from-main .vote-feed {
+  animation: voteFeedEnterFromMain 620ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.vote-page.is-entering-from-main .vote-feed-item:first-child .vote-sheet {
+  animation: voteSheetSettleFromMain 680ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
 .vote-feed::-webkit-scrollbar {
   display: none;
 }
@@ -139,29 +147,14 @@
 
 .vote-choice:hover {
   transform: translateY(-3px);
-  box-shadow: 0 18px 40px rgba(17, 17, 17, 0.16);
 }
 
 .vote-sheet.has-results .vote-choice:hover {
   transform: none;
-  box-shadow: none;
 }
 
 .vote-sheet.has-results .vote-choice.is-selected:hover {
   transform: translateY(-3px);
-  box-shadow: 0 22px 48px rgba(17, 17, 17, 0.18);
-}
-
-.vote-sheet.has-results .tone-blue.is-selected:hover {
-  box-shadow:
-    0 22px 48px rgba(17, 17, 17, 0.14),
-    0 0 0 3px rgba(120, 174, 255, 0.7);
-}
-
-.vote-sheet.has-results .tone-pink.is-selected:hover {
-  box-shadow:
-    0 22px 48px rgba(17, 17, 17, 0.14),
-    0 0 0 3px rgba(252, 146, 199, 0.78);
 }
 
 .vote-choice img {
@@ -186,6 +179,9 @@
 }
 
 .vote-choice-name {
+  --vote-name-outline-size: 2px;
+  --vote-name-outline-negative-size: -2px;
+  --vote-name-accent-shadow: 0 3px 12px rgba(255, 255, 255, 0.28);
   margin: 0;
   position: absolute;
   right: 16px;
@@ -196,18 +192,27 @@
   font-weight: 900;
   line-height: 1.05;
   color: #ffffff;
-  -webkit-text-stroke: 2px #111111;
-  text-shadow: 0 3px 12px rgba(255, 255, 255, 0.28);
+  text-shadow:
+    var(--vote-name-outline-negative-size) var(--vote-name-outline-negative-size)
+      0 #111111,
+    0 var(--vote-name-outline-negative-size) 0 #111111,
+    var(--vote-name-outline-size) var(--vote-name-outline-negative-size) 0 #111111,
+    var(--vote-name-outline-size) 0 0 #111111,
+    var(--vote-name-outline-size) var(--vote-name-outline-size) 0 #111111,
+    0 var(--vote-name-outline-size) 0 #111111,
+    var(--vote-name-outline-negative-size) var(--vote-name-outline-size) 0 #111111,
+    var(--vote-name-outline-negative-size) 0 0 #111111,
+    var(--vote-name-accent-shadow);
 }
 
 .tone-blue .vote-choice-name {
-  text-shadow:
+  --vote-name-accent-shadow:
     0 0 18px rgba(71, 140, 255, 0.4),
     0 3px 12px rgba(255, 255, 255, 0.24);
 }
 
 .tone-pink .vote-choice-name {
-  text-shadow:
+  --vote-name-accent-shadow:
     0 0 18px rgba(255, 91, 91, 0.4),
     0 3px 12px rgba(255, 255, 255, 0.24);
 }
@@ -350,13 +355,31 @@
     brightness(104%) contrast(99%);
 }
 
+.vote-action-button.action-dislike:hover {
+  box-shadow: 0 16px 30px rgba(120, 174, 255, 0.26);
+}
+
+.vote-action-button.action-dislike:hover img {
+  filter: invert(60%) sepia(80%) saturate(1812%) hue-rotate(194deg)
+    brightness(101%) contrast(101%);
+}
+
 .vote-action-button.is-active {
   background: linear-gradient(180deg, #ffb6db 0%, #fc92c7 100%);
   box-shadow: 0 16px 32px rgba(252, 146, 199, 0.34);
 }
 
+.vote-action-button.action-dislike.is-active {
+  background: linear-gradient(180deg, #9bc7ff 0%, #76b9ff 100%);
+  box-shadow: 0 16px 32px rgba(120, 174, 255, 0.38);
+}
+
 .vote-action-button.is-active img {
   opacity: 1;
+  filter: brightness(0) invert(1);
+}
+
+.vote-action-button.action-dislike.is-active img {
   filter: brightness(0) invert(1);
 }
 
@@ -374,6 +397,35 @@
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes voteFeedEnterFromMain {
+  from {
+    opacity: 0;
+    transform: translateY(64px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes voteSheetSettleFromMain {
+  0% {
+    transform: translateY(26px) scale(0.98);
+  }
+
+  100% {
+    transform: translateY(0) scale(1.01);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vote-page.is-entering-from-main .vote-feed,
+  .vote-page.is-entering-from-main .vote-feed-item:first-child .vote-sheet {
+    animation: none;
   }
 }
 
@@ -435,11 +487,12 @@
   }
 
   .vote-choice-name {
+    --vote-name-outline-size: 1px;
+    --vote-name-outline-negative-size: -1px;
     right: 12px;
     bottom: 10px;
     left: 12px;
     font-size: clamp(1.2rem, 5.5vw, 2rem);
-    -webkit-text-stroke-width: 1px;
   }
 
   .vote-feed-item {

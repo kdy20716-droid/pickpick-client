@@ -46,5 +46,5 @@ export function useVotePageScrollSnap({ pageRef, feedRef, activeCardId, cardRefs
     return () => {
       window.removeEventListener("resize", handleResize);
     };
-  }, [alignActiveCard, syncViewportOffset]);
+  }, []);
 }

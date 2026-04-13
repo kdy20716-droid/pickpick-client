@@ -4,7 +4,7 @@
   useRef,
   useState,
 } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import "./VotePage.css";
 import vsLogo from "../assets/vs-logo.svg";
 import favoriteIcon from "../assets/favorite.svg";
@@ -49,6 +49,34 @@ function makeVoteCard(template, index) {
   };
 }
 
+function shuffleCards(cards) {
+  const shuffledCards = [...cards];
+
+  for (let index = shuffledCards.length - 1; index > 0; index -= 1) {
+    const randomIndex = Math.floor(Math.random() * (index + 1));
+    [shuffledCards[index], shuffledCards[randomIndex]] = [
+      shuffledCards[randomIndex],
+      shuffledCards[index],
+    ];
+  }
+
+  return shuffledCards;
+}
+
+function normalizeHash(hash) {
+  return decodeURIComponent(hash.replace(/^#/, ""));
+}
+
+function createVoteCards(activeFeedId = "") {
+  const cards = voteTemplates.map((template, index) => makeVoteCard(template, index));
+  const activeCard = cards.find((card) => card.feedId === activeFeedId);
+  const shuffledCards = shuffleCards(
+    cards.filter((card) => card.feedId !== activeFeedId),
+  );
+
+  return activeCard ? [activeCard, ...shuffledCards] : shuffleCards(cards);
+}
+
 function VoteActionButton({
   action,
   active,
@@ -62,7 +90,7 @@ function VoteActionButton({
     return (
       <Link
         to={action.to}
-        className="vote-action-button"
+        className={`vote-action-button action-${action.id}`}
         aria-label={action.label}
       >
         <img src={action.icon} alt="" aria-hidden="true" />
@@ -84,7 +112,9 @@ function VoteActionButton({
   return (
     <button
       type="button"
-      className={`vote-action-button${isActive ? " is-active" : ""}`}
+      className={`vote-action-button action-${action.id}${
+        isActive ? " is-active" : ""
+      }`}
       aria-label={action.label}
       aria-pressed={action.kind === "toggle" ? active : undefined}
       onClick={handleClick}
@@ -189,9 +219,9 @@ function VoteCard({
 }
 
 export default function VotePage() {
-  const [cards] = useState(() =>
-    voteTemplates.map((template, index) => makeVoteCard(template, index)),
-  );
+  const location = useLocation();
+  const entersFromMain = location.state?.transition?.startsWith("main");
+  const [cards] = useState(() => createVoteCards(normalizeHash(location.hash)));
   const [selectedVotes, setSelectedVotes] = useState({});
   const [actionStates, setActionStates] = useState({});
   const [likeCounts, setLikeCounts] = useState({});
@@ -276,13 +306,7 @@ export default function VotePage() {
       feed.removeEventListener("scroll", handleViewportChange);
       window.removeEventListener("resize", handleViewportChange);
     };
-  }, [syncActiveCard]);
-
-  useEffect(() => {
-    if (!activeCardId && cards[0]) {
-      setActiveCardId(cards[0].feedId);
-    }
-  }, [activeCardId, cards]);
+  }, []);
 
   useVotePageScrollSnap({
     pageRef,
@@ -290,6 +314,23 @@ export default function VotePage() {
     activeCardId,
     cardRefs,
   });
+
+  useEffect(() => {
+    if (!activeCardId) {
+      return;
+    }
+
+    const nextHash = `#${encodeURIComponent(activeCardId)}`;
+    if (window.location.hash === nextHash) {
+      return;
+    }
+
+    window.history.replaceState(
+      window.history.state,
+      "",
+      `${location.pathname}${location.search}${nextHash}`,
+    );
+  }, [activeCardId, location.pathname, location.search]);
 
   const handleVote = (cardId, candidateId) => {
     setSelectedVotes((currentVotes) => {
@@ -331,6 +372,13 @@ export default function VotePage() {
       }
 
       if (actionId === "dislike") {
+        if (previousState.like) {
+          setLikeCounts((currentCounts) => ({
+            ...currentCounts,
+            [cardId]: 0,
+          }));
+        }
+
         return {
           ...currentStates,
           [cardId]: {
@@ -374,7 +422,10 @@ export default function VotePage() {
   };
 
   return (
-    <div ref={pageRef} className="vote-page">
+    <div
+      ref={pageRef}
+      className={`vote-page${entersFromMain ? " is-entering-from-main" : ""}`}
+    >
       <div className="vote-layout">
         <div ref={feedRef} className="vote-feed">
           {cards.map((card) => (
