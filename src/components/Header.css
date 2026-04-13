@@ -1,0 +1,23 @@
+.site-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 32px;
+  border-bottom: 1px solid #d1d5db;
+  background-color: #ffffff;
+}
+
+.site-header__logo {
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.site-header__nav {
+  display: flex;
+  gap: 20px;
+  font-size: 16px;
+}
+
+.site-header__link {
+  color: #4b3a2f;
+}
