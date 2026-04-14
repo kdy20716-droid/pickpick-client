@@ -2,6 +2,7 @@ import { createBrowserRouter } from "react-router-dom";
 import Result from "./pages/Result";
 import Layout from "./components/Layout";
 import MainPage from "./pages/MainPage.jsx";
+import Login from "./pages/Login.jsx";
 import Signin from "./pages/Signin.jsx";
 import Findpass from "./pages/Findpass.jsx";
 import Ranking from "./pages/Ranking.jsx";
@@ -25,6 +26,10 @@ const router = createBrowserRouter([
       {
         path: "/signin",
         element: <Signin />,
+      },
+      {
+        path: "/login",
+        element: <Login />,
       },
       {
         path: "/findpass",

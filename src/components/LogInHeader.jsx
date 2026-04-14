@@ -12,7 +12,7 @@ const Header = () => {
         <nav className="site-nav" aria-label="주요 메뉴">
           <Link to="/create">+ CREATE</Link>
           <Link to="/ranking">RANKING</Link>
-          <Link to="/signin">LOG IN</Link>
+          <Link to="/login">LOG IN</Link>
           <Link to="/mypage" className="account-link" aria-label="계정">
             <img src={accountIcon} alt="" />
           </Link>

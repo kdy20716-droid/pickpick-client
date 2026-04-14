@@ -14,7 +14,7 @@ const Header = () => {
           <Link to="/ranking" className="active">
             RANKING
           </Link>
-          <Link to="/signin">LOG IN</Link>
+          <Link to="/login">LOG IN</Link>
           <div className="dropdown">
             <Link to="/mypage" className="account-link" aria-label="계정">
               <img src={accountIcon} alt="마이페이지" />
