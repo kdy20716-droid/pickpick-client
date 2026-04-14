@@ -1,0 +1,16 @@
+.vote-container {
+  max-width: 700px;
+  margin: 60px auto;
+  padding: 20px;
+  background-color: white;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+}
+
+.vote-title {
+  text-align: center;
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 50px;
+  color: #222;
+}

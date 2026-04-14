@@ -1,0 +1,126 @@
+.comments-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+}
+
+.comments-modal-overlay .modal {
+  /* Target the .modal inside the overlay */
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  width: 90%;
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  max-height: 80vh;
+}
+
+/* Comments.jsx 컴포넌트의 기존 스타일과 병합하여 사용하세요. */
+/* 아래는 모달 헤더, 댓글 목록, 입력창 등에 대한 기본 스타일입니다. */
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 12px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid #eaeaea;
+}
+
+.modal-header h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  color: #333;
+}
+
+.modal-header .close {
+  border: none;
+  background: none;
+  font-size: 2rem;
+  cursor: pointer;
+  color: #888;
+  line-height: 1;
+  padding: 0;
+}
+
+.modal-header .close:hover {
+  color: #333;
+}
+
+.comment-list {
+  flex-grow: 1;
+  overflow-y: auto;
+  padding-right: 8px; /* for scrollbar */
+}
+
+.comment-input {
+  margin-top: 20px;
+  display: flex;
+  gap: 8px;
+}
+
+.comment-input input {
+  flex-grow: 1;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 1rem;
+}
+
+.comment-input input:focus {
+  outline: none;
+  border-color: #888;
+}
+
+.comment-submit {
+  padding: 10px 20px;
+  border: none;
+  background-color: #333;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.2s;
+}
+
+.comment-submit:hover {
+  background-color: #555;
+}
+
+/* Wide screen: show on the right */
+@media (min-width: 1200px) {
+  .comments-modal-overlay {
+    justify-content: flex-end;
+    padding-right: 40px; /* 화면 오른쪽에서 살짝 띄우기 위한 여백 */
+    background-color: transparent;
+    pointer-events: none; /* Allow clicks on content behind */
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  .comments-modal-overlay .modal {
+    pointer-events: auto; /* Re-enable pointer events for the modal content */
+    width: 420px;
+    transform: translateX(0);
+    animation: slideInFromRight 0.3s ease-out;
+  }
+
+  @keyframes slideInFromRight {
+    from {
+      transform: translateX(100%);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
+}
