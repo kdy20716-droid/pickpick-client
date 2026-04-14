@@ -1,31 +1,33 @@
-import { Link } from "react-router-dom";
 import "./Header.css";
+import accountIcon from "../assets/account-icon.svg";
+import { Link } from "react-router-dom";
 
 const Header = () => {
   return (
-    <>
-      <header className="site-header">
-        <div className="site-header__brand">
-          <Link to="/" className="site-header__logo">
-            칵테일 레시피
+    <header className="site-header">
+      <div className="header-inner">
+        <Link to="/" className="brand">
+          PICKPICK
+        </Link>
+        <nav className="site-nav" aria-label="주요 메뉴">
+          <Link to="/create">+ CREATE</Link>
+          <Link to="/ranking" className="active">
+            RANKING
           </Link>
-        </div>
-
-        <nav className="site-header__nav">
-          <Link className="site-header__link" to="/add">
-            레시피 추가
-          </Link>
-
-          <Link className="site-header__link" to="/login">
-            로그인
-          </Link>
-
-          <Link className="site-header__link" to="/signup">
-            회원가입
-          </Link>
+          <Link to="/login">LOG IN</Link>
+          <div className="dropdown">
+            <Link to="/mypage" className="account-link" aria-label="계정">
+              <img src={accountIcon} alt="마이페이지" />
+            </Link>
+            <div className="dropdown-content">
+              <Link to="/result">투표 결과 모아보기</Link>
+            </div>
+          </div>
         </nav>
-      </header>
-    </>
+      </div>
+      <div className="header-glow" aria-hidden="true" />
+    </header>
   );
 };
+
 export default Header;
