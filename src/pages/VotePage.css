@@ -1,10 +1,14 @@
 .vote-page {
   --vote-header-offset: 110px;
-  width: min(1180px, calc(100% - 50px));
+  width: min(1180px, calc(100% - 24px));
   margin: 0 auto;
   height: calc(100dvh - var(--vote-header-offset));
   padding: 0;
   overflow: hidden;
+}
+
+.vote-page.has-comment-modal {
+  overflow: visible;
 }
 
 .vote-layout {
@@ -15,16 +19,35 @@
   );
   --vote-sheet-glow-space: 22px;
   --vote-sheet-extra-height: 41px;
-  --vote-side-balance: calc(var(--vote-action-button-size) + var(--vote-rail-gap));
-  --vote-sheet-width: min(850px, calc(100vw - 170px));
+  --vote-action-space: calc(var(--vote-action-button-size) + var(--vote-rail-gap));
+  --vote-side-balance: clamp(
+    0px,
+    calc((max(100vw, 850px) - 850px) * 0.3),
+    var(--vote-action-space)
+  );
+  --vote-sheet-width: min(
+    850px,
+    calc(
+      max(100vw, 850px) - 24px - var(--vote-sheet-glow-space) -
+        var(--vote-sheet-glow-space) - var(--vote-action-space) -
+        var(--vote-side-balance)
+    )
+  );
   --vote-feed-width: calc(
-    var(--vote-sheet-width) + var(--vote-action-button-size) + var(--vote-rail-gap) +
-      var(--vote-side-balance)
+    var(--vote-sheet-width) + var(--vote-action-space) +
+      var(--vote-side-balance) + var(--vote-sheet-glow-space) +
+      var(--vote-sheet-glow-space)
   );
   width: 100%;
   height: 100%;
   display: flex;
   justify-content: center;
+  transition: transform 240ms ease;
+}
+
+.vote-page.has-comment-modal .vote-layout {
+  --vote-side-balance: 0px;
+  transform: translateX(max(calc(68px - 25vw), calc(495px - 50vw)));
 }
 
 .vote-feed {
@@ -60,8 +83,7 @@
   margin: 0;
   height: calc(100% - var(--vote-sheet-glow-space) * 2 + var(--vote-sheet-extra-height));
   min-height: calc(100% - var(--vote-sheet-glow-space) * 2 + var(--vote-sheet-extra-height));
-  padding: 30px calc(var(--vote-action-button-size) + var(--vote-rail-gap)) 23px
-    var(--vote-side-balance);
+  padding: 30px var(--vote-action-space) 23px var(--vote-side-balance);
   scroll-snap-align: start;
   scroll-snap-stop: always;
   flex: 0 0 calc(100% - var(--vote-sheet-glow-space) * 2 + var(--vote-sheet-extra-height));
@@ -433,86 +455,13 @@
   }
 }
 
-@media (max-width: 980px) {
-  .vote-feed {
-    width: 100%;
-  }
-
-  .vote-feed-item {
-    height: calc(100% - var(--vote-sheet-glow-space) * 2 + var(--vote-sheet-extra-height));
-    min-height: calc(100% - var(--vote-sheet-glow-space) * 2 + var(--vote-sheet-extra-height));
-    padding: 30px 0 23px;
-  }
-
-  .vote-sheet {
-    min-height: 0;
-  }
-
-  .vote-sheet-match {
-    min-height: clamp(420px, 64vw, 620px);
-  }
-
-  .vote-action-rail {
-    position: static;
-    flex-direction: row;
-    justify-content: center;
-    padding-top: 14px;
-    padding-bottom: 0;
-  }
-}
-
-@media (max-width: 700px) {
-  body {
-    min-width: 0;
-  }
-
-  .vote-page {
-    width: calc(100% - 28px);
-    padding: 0;
-  }
-
-  .vote-sheet {
-    padding: 16px;
-    border-radius: 18px;
-  }
-
-  .vote-sheet-match {
-    gap: 10px;
-    padding-top: 14px;
-    min-height: clamp(340px, 64vw, 460px);
-  }
-
-  .vote-sheet.has-results .vote-sheet-match {
-    min-height: clamp(280px, 50vw, 360px);
-  }
-
-  .vote-choice {
-    border-radius: 16px;
-  }
-
-  .vote-choice-name {
-    --vote-name-outline-size: 1px;
-    --vote-name-outline-negative-size: -1px;
-    right: 12px;
-    bottom: 10px;
-    left: 12px;
-    font-size: clamp(1.2rem, 5.5vw, 2rem);
-  }
-
-  .vote-feed-item {
-    padding: 21px 0 19px;
-  }
-
-  .vote-share-footer {
-    font-size: 1.5rem;
-  }
-
-  .vote-action-button {
-    --vote-action-button-size: 58px;
-  }
-
-  .vote-action-button img {
-    width: 34px;
-    height: 34px;
+@media (max-width: 1100px) {
+  .vote-page.has-comment-modal .vote-layout {
+    --vote-side-balance: clamp(
+      0px,
+      calc((max(100vw, 850px) - 850px) * 0.3),
+      var(--vote-action-space)
+    );
+    transform: none;
   }
 }

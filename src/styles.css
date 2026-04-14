@@ -15,8 +15,13 @@
 }
 
 body {
+  min-width: 850px;
   font-family: "Pretendard", "Segoe UI", sans-serif;
   background-color: var(--bg-color);
   color: var(--text-dark);
   line-height: 1.5;
+}
+
+#root {
+  min-width: 850px;
 }
