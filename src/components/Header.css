@@ -1,23 +1,105 @@
 .site-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  height: clamp(68px, 8vw, 80px);
+  background: var(--bg);
+}
+
+.header-inner {
+  width: calc(100% - 22px);
+  max-width: 1420px;
+  height: 100%;
+  margin: 0 auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 20px 32px;
-  border-bottom: 1px solid #d1d5db;
-  background-color: #ffffff;
+  gap: var(--space);
 }
 
-.site-header__logo {
-  font-size: 24px;
-  font-weight: 700;
+.brand {
+  font-family: "Jersey 25", cursive;
+  font-size: clamp(2.2rem, 4.6vw, 3.5rem);
+  line-height: 1;
+  color: var(--point);
+  letter-spacing: 0.03em;
 }
 
-.site-header__nav {
+.site-nav {
   display: flex;
-  gap: 20px;
-  font-size: 16px;
+  align-items: center;
+  gap: clamp(14px, 3vw, 36px);
+  font-size: clamp(1rem, 2.2vw, 1.5rem);
+  font-weight: 300;
+  white-space: nowrap;
 }
 
-.site-header__link {
-  color: #4b3a2f;
+.site-nav a:not(.account-link) {
+  color: rgba(17, 17, 17, 0.58);
+}
+
+.account-link {
+  display: grid;
+  place-items: center;
+}
+
+.account-link img {
+  width: clamp(40px, 6vw, 54px);
+  height: clamp(40px, 6vw, 54px);
+}
+
+.header-glow {
+  position: absolute;
+  /* 부모(.site-header)의 아래쪽에 붙도록 설정 */
+  top: 100%;
+  left: 0;
+  right: 0;
+  height: 30px;
+  background: linear-gradient(
+    180deg,
+    rgba(252, 146, 199, 0.34) 0%,
+    rgba(252, 146, 199, 0.12) 45%,
+    rgba(252, 146, 199, 0) 100%
+  );
+  /* 그림자 영역이 마우스 이벤트를 방해하지 않도록 설정 */
+  pointer-events: none;
+}
+
+/* 마이페이지 드롭다운 스타일 */
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: 100%;
+  background-color: #ffffff;
+  min-width: 180px;
+  box-shadow: var(--shadow, 0 8px 24px rgba(17, 17, 17, 0.12));
+  border-radius: 12px;
+  padding: 8px 0;
+  z-index: 20;
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
+.dropdown-content a {
+  color: var(--text, #111) !important;
+  padding: 12px 20px;
+  text-decoration: none;
+  display: block;
+  font-size: 1rem;
+  transition:
+    background-color 0.2s,
+    color 0.2s;
+}
+
+.dropdown-content a:hover {
+  background-color: #f8f8f8;
+  color: var(--point, #fc92c7) !important;
 }
