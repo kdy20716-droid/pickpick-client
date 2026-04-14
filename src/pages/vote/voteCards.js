@@ -1,4 +1,4 @@
-import { voteTemplates } from "./data/votes.js";
+import { voteTemplates } from "../../data/votes.js";
 
 function makeVoteCard(template, index) {
   return {

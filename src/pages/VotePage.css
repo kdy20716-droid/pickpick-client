@@ -234,6 +234,13 @@
     0 0 0 3px rgba(252, 146, 199, 0.78);
 }
 
+.vote-feed-item.vote-oshi-no-ko .vote-choice.is-selected,
+.vote-feed-item.vote-oshi-no-ko
+  .vote-sheet.has-results
+  .vote-choice.is-selected:hover {
+  transform: none;
+}
+
 .vote-sheet-vs {
   position: absolute;
   top: 52%;

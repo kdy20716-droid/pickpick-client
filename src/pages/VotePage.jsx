@@ -6,15 +6,15 @@ import favoriteIcon from "../assets/favorite.svg";
 import dislikeIcon from "../assets/thumb_down.svg";
 import commentIcon from "../assets/comment.svg";
 import shareIcon from "../assets/share.svg";
-import { isMainRouteTransition } from "../routeTransitions.js";
-import { useActiveVoteCard } from "../useActiveVoteCard.js";
-import { useActiveVoteHash } from "../useActiveVoteHash.js";
-import { useVotePageScrollSnap } from "../useVotePageScrollSnap.js";
+import { isMainRouteTransition } from "./animations/routeTransitions.js";
+import { useActiveVoteCard } from "./vote/useActiveVoteCard.js";
+import { useActiveVoteHash } from "./vote/useActiveVoteHash.js";
+import { useVotePageScrollSnap } from "./vote/useVotePageScrollSnap.js";
 import {
   createVoteCards,
   getVoteFeedIdFromHash,
   getVoteHash,
-} from "../voteCards.js";
+} from "./vote/voteCards.js";
 
 const actionButtons = [
   {
@@ -154,7 +154,7 @@ function VoteCard({
   return (
     <article
       ref={registerCardRef(card.feedId)}
-      className={`vote-feed-item${isActive ? " is-active" : ""}`}
+      className={`vote-feed-item vote-${card.id}${isActive ? " is-active" : ""}`}
       id={card.feedId}
     >
       <div className={`vote-sheet${hasVoted ? " has-results" : ""}`}>

@@ -2,9 +2,9 @@
 import { Link } from "react-router-dom";
 import "./MainPage.css";
 import vsLogo from "../assets/vs-logo.svg";
-import { mainRouteTransitions } from "../routeTransitions.js";
-import { useMainPageAnimations } from "../useMainPageAnimations.js";
-import { useScrollToVote } from "../useScrollToVote.js";
+import { mainRouteTransitions } from "./animations/routeTransitions.js";
+import { useMainPageAnimations } from "./animations/useMainPageAnimations.js";
+import { useScrollToVote } from "./animations/useScrollToVote.js";
 import { featuredVote } from "../data/votes.js";
 
 const copy = {
