@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "./findpass.css";
+import "./Findpass.css";
 
 export default function FindPassword() {
   const [email, setEmail] = useState("");
