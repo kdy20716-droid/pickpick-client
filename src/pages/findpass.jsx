@@ -21,11 +21,8 @@ export default function FindPassword() {
 
   const checkEmail = (value) => {
     const parts = value.split("@");
-
     if (parts.length !== 2) return false;
-
-    const domain = parts[1].toLowerCase();
-    return validDomains.includes(domain);
+    return validDomains.includes(parts[1].toLowerCase());
   };
 
   const handleChange = (e) => {
@@ -41,43 +38,17 @@ export default function FindPassword() {
     }
   };
 
-  const handleSubmit = () => {
-    if (!isValid) return;
-
-    // 🔥 백엔드 연결 부분 (여기 중요)
-    fetch("/api/send-temp-password", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ email }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        alert("임시 비밀번호가 발송되었습니다!");
-      })
-      .catch(() => {
-        alert("서버 오류 발생");
-      });
-  };
-
   return (
-    <div>
-      {/* 헤더 */}
+    <div className="page">
+      {" "}
+      {/* 🔥 핵심 wrapper */}
       <header className="header">
         <div className="logo">PICKPICK</div>
-        <nav>
-          <a href="#">+ CREATE</a>
-          <a href="#">RANKING</a>
-          <a href="#">LOG IN</a>
-          <div className="profile"></div>
-        </nav>
       </header>
-
-      {/* 메인 */}
       <div className="container">
         <div className="card">
           <h2>비밀번호 찾기</h2>
+
           <p>
             가입하신 이메일 주소를 입력해 주세요.
             <br />
@@ -96,7 +67,6 @@ export default function FindPassword() {
             <button
               className={`submit ${isValid ? "active" : ""}`}
               disabled={!isValid}
-              onClick={handleSubmit}
             >
               임시 비밀번호 발송
             </button>

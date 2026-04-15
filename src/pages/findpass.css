@@ -1,53 +1,16 @@
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #f5f5f5;
-}
-
-/* 헤더 */
-.header {
-  display: flex;
-  justify-content: space-between;
-  padding: 20px 40px;
-  background: white;
-  border-bottom: 1px solid #eee;
-}
-
-.logo {
-  color: #ff8db5;
-  font-weight: bold;
-  font-size: 28px;
-}
-
-nav a {
-  margin: 0 15px;
-  text-decoration: none;
-  color: #333;
-}
-
-.profile {
-  display: inline-block;
-  width: 30px;
-  height: 30px;
-  border: 2px solid #333;
-  border-radius: 50%;
-}
-
-/* 메인 */
 .container {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 80vh;
 }
 
 .card {
-  width: 400px;
+  width: 420px;
   padding: 40px;
   background: white;
   border-radius: 15px;
   text-align: center;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
 }
 
 .card h2 {
@@ -55,9 +18,9 @@ nav a {
 }
 
 .card p {
-  color: #666;
   font-size: 14px;
-  margin-bottom: 30px;
+  color: #666;
+  margin-bottom: 25px;
 }
 
 input {
@@ -65,8 +28,6 @@ input {
   padding: 15px;
   border-radius: 10px;
   border: 1px solid #ddd;
-  outline: none;
-  transition: 0.3s;
 }
 
 input:focus {
@@ -75,13 +36,13 @@ input:focus {
 }
 
 .buttons {
-  margin-top: 25px;
   display: flex;
-  justify-content: space-between;
+  gap: 10px;
+  margin-top: 20px;
 }
 
 button {
-  width: 48%;
+  flex: 1;
   padding: 12px;
   border-radius: 25px;
   border: none;
@@ -91,7 +52,6 @@ button {
 
 .back {
   background: #ddd;
-  color: #666;
 }
 
 .submit {

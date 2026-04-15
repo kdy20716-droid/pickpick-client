@@ -3,7 +3,7 @@ import Result from "./pages/Result";
 import Layout from "./components/Layout";
 import MainPage from "./pages/MainPage.jsx";
 import Signin from "./pages/Signin.jsx";
-import Findpass from "./pages/Findpass.jsx";
+import Findpass from "./pages/findpass.jsx";
 import Rainking from "./pages/Ranking.jsx";
 import MyPage from "./pages/MyPage.jsx";
 import Login from "./pages/Login.jsx";
