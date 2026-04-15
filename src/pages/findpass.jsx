@@ -64,10 +64,9 @@ export default function FindPassword() {
   };
 
   return (
-    <div>
-      {/* 메인 */}
-      <div className="container">
-        <div className="card">
+    <div className="findpass-page">
+      <div className="findpass-container">
+        <div className="findpass-card">
           <h2>비밀번호 찾기</h2>
           <p>
             가입하신 이메일 주소를 입력해 주세요.
@@ -82,7 +81,7 @@ export default function FindPassword() {
             onChange={handleChange}
           />
 
-          <div className="buttons">
+          <div className="findpass-buttons">
             <button className="back" onClick={() => navigate(-1)}>
               뒤로 가기
             </button>
@@ -95,7 +94,9 @@ export default function FindPassword() {
             </button>
           </div>
 
-          <small className={isValid ? "success" : "error"}>{msg}</small>
+          <small className={isValid ? "findpass-success" : "findpass-error"}>
+            {msg}
+          </small>
         </div>
       </div>
     </div>

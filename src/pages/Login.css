@@ -101,7 +101,7 @@ body {
 }
 
 /* 버튼 */
-button {
+.login-box button {
   width: 100%;
   padding: 15px;
   background: #f48fb1;
@@ -111,10 +111,12 @@ button {
   font-size: 16px;
   cursor: pointer;
   transition: 0.3s;
-  align-items: center;
+  display: block;
+  box-sizing: border-box;
+  margin: 0;
 }
 
-button:hover {
+.login-box button:hover {
   background: #ec6c9c;
 }
 
