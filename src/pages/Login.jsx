@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
 import "./Login.css";
 
 export default function Login() {
@@ -54,7 +53,15 @@ export default function Login() {
 
           {/* 비밀번호 찾기 */}
           <div className="forgot">
-            <Link to="/findpass">비밀번호를 잊으셨습니까?</Link>
+            <a
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                alert("비밀번호 찾기 페이지로 이동");
+              }}
+            >
+              비밀번호를 잊으셨습니까?
+            </a>
           </div>
         </form>
 
