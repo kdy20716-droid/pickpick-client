@@ -89,6 +89,7 @@ function VoteActionButton({
   action,
   active,
   count,
+  disabled,
   onToggle,
   onShare,
   onComment,
@@ -108,6 +109,10 @@ function VoteActionButton({
   }
 
   const handleClick = () => {
+    if (disabled) {
+      return;
+    }
+
     if (action.id === "share") {
       onShare(cardId);
       return;
@@ -131,6 +136,7 @@ function VoteActionButton({
       }`}
       aria-label={action.label}
       aria-pressed={action.kind === "toggle" ? active : undefined}
+      disabled={disabled}
       onClick={handleClick}
     >
       <img src={action.icon} alt="" aria-hidden="true" />
@@ -226,6 +232,7 @@ function VoteCard({
                 ? isCommentsOpen
                 : Boolean(actionState?.[action.id])
             }
+            disabled={action.id === "comment" && !hasVoted}
             count={action.id === "like" ? likeCount : 0}
             onToggle={onToggleAction}
             onShare={onShare}
@@ -261,6 +268,35 @@ export default function VotePage() {
       }
     };
   }, []);
+
+  useEffect(() => {
+    if (!commentCardId) {
+      return undefined;
+    }
+
+    const feed = feedRef.current;
+    if (!feed) {
+      return undefined;
+    }
+
+    let canCloseOnScroll = false;
+    const frameId = requestAnimationFrame(() => {
+      canCloseOnScroll = true;
+    });
+
+    const handleScroll = () => {
+      if (canCloseOnScroll) {
+        setCommentCardId("");
+      }
+    };
+
+    feed.addEventListener("scroll", handleScroll, { passive: true });
+
+    return () => {
+      cancelAnimationFrame(frameId);
+      feed.removeEventListener("scroll", handleScroll);
+    };
+  }, [commentCardId, feedRef]);
 
   useVotePageScrollSnap({
     pageRef,
@@ -361,7 +397,11 @@ export default function VotePage() {
         </div>
       </div>
       {commentCard ? (
-        <Comments title={commentCard.title} onClose={handleCloseComments} />
+        <Comments
+          title={commentCard.title}
+          targetCardId={commentCard.feedId}
+          onClose={handleCloseComments}
+        />
       ) : null}
     </div>
   );

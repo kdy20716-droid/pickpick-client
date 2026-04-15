@@ -1,6 +1,8 @@
-﻿import { useRef, useState } from "react";
+﻿import { useLayoutEffect, useRef, useState } from "react";
 import { commentSeedItems } from "./comments.js";
 import "../pages/comments.css";
+
+const COMMENT_OVERLAY_BREAKPOINT = 1320;
 
 function getSeedCreatedAt(item) {
   const minutesAgo = item.minutesAgo ?? item.hoursAgo * 60;
@@ -156,13 +158,136 @@ function CommentItem({
   );
 }
 
-export default function Comments({ title, onClose }) {
+export default function Comments({ title, targetCardId, onClose }) {
   const [comments, setComments] = useState(createInitialComments);
   const [newComment, setNewComment] = useState("");
   const [openReplies, setOpenReplies] = useState({});
   const [replyDrafts, setReplyDrafts] = useState({});
+  const modalRef = useRef(null);
   const lastCommentSubmitRef = useRef({ text: "", time: 0 });
   const lastReplySubmitRef = useRef({});
+
+  useLayoutEffect(() => {
+    const modal = modalRef.current;
+    if (!modal) {
+      return undefined;
+    }
+
+    const page = modal.closest(".vote-page");
+    const compactLayoutQuery = window.matchMedia(
+      `(max-width: ${COMMENT_OVERLAY_BREAKPOINT}px)`,
+    );
+    let frameId = 0;
+    let settleTimeoutId = 0;
+
+    const getTargetVoteSheet = () => {
+      const targetCard = targetCardId
+        ? document.getElementById(targetCardId)
+        : null;
+
+      return (
+        targetCard?.querySelector(".vote-sheet") ??
+        document.querySelector(".vote-feed-item.is-active .vote-sheet") ??
+        document.querySelector(".vote-sheet")
+      );
+    };
+
+    const syncModalSize = () => {
+      if (compactLayoutQuery.matches) {
+        page?.style.removeProperty("--vote-comment-sheet-width");
+        page?.style.removeProperty("--vote-comment-group-shift");
+      } else {
+        page?.style.setProperty("--vote-comment-group-shift", "0px");
+      }
+
+      const voteSheet = getTargetVoteSheet();
+      if (!voteSheet) {
+        return;
+      }
+
+      const targetCard = targetCardId
+        ? document.getElementById(targetCardId)
+        : null;
+      const actionRail = targetCard?.querySelector(".vote-action-rail");
+      let sheetRect = voteSheet.getBoundingClientRect();
+      let railRect = actionRail?.getBoundingClientRect();
+      const modalWidth = modal.getBoundingClientRect().width;
+
+      if (railRect && !compactLayoutQuery.matches) {
+        const sheetToRailGap = Math.max(0, railRect.left - sheetRect.right);
+        const maxSheetWidth = Math.max(
+          420,
+          Math.min(
+            850,
+            window.innerWidth - modalWidth - railRect.width -
+              sheetToRailGap * 2 - 48,
+          ),
+        );
+        const nextSheetWidth = `${Math.round(maxSheetWidth)}px`;
+        page?.style.setProperty("--vote-comment-sheet-width", nextSheetWidth);
+        page?.style.setProperty("--vote-comment-group-shift", "0px");
+
+        sheetRect = voteSheet.getBoundingClientRect();
+        railRect = actionRail.getBoundingClientRect();
+
+        const settledGap = Math.max(0, railRect.left - sheetRect.right);
+        const groupWidth =
+          sheetRect.width + settledGap + railRect.width + settledGap + modalWidth;
+        const centeredGroupLeft = (window.innerWidth - groupWidth) / 2;
+        const nextGroupLeft = Math.max(24, centeredGroupLeft);
+        const nextShift = nextGroupLeft - sheetRect.left;
+        const nextModalLeft =
+          nextGroupLeft + sheetRect.width + settledGap + railRect.width +
+          settledGap;
+
+        page?.style.setProperty("--vote-comment-group-shift", `${nextShift}px`);
+
+        modal.style.setProperty(
+          "--comment-modal-left",
+          `${nextModalLeft}px`,
+        );
+        modal.style.setProperty("--comment-modal-right", "auto");
+      }
+
+      modal.style.setProperty("--comment-modal-top", `${sheetRect.top}px`);
+      modal.style.setProperty("--comment-modal-height", `${sheetRect.height}px`);
+    };
+
+    const scheduleSync = () => {
+      if (frameId) {
+        cancelAnimationFrame(frameId);
+      }
+
+      frameId = requestAnimationFrame(syncModalSize);
+    };
+
+    syncModalSize();
+    settleTimeoutId = window.setTimeout(scheduleSync, 280);
+
+    const targetVoteSheet = getTargetVoteSheet();
+    const feed = document.querySelector(".vote-feed");
+    const resizeObserver =
+      window.ResizeObserver && targetVoteSheet
+        ? new ResizeObserver(scheduleSync)
+        : null;
+
+    resizeObserver?.observe(targetVoteSheet);
+    window.addEventListener("resize", scheduleSync);
+    feed?.addEventListener("scroll", scheduleSync, { passive: true });
+
+    return () => {
+      if (frameId) {
+        cancelAnimationFrame(frameId);
+      }
+
+      window.clearTimeout(settleTimeoutId);
+      resizeObserver?.disconnect();
+      page?.style.removeProperty("--vote-comment-sheet-width");
+      page?.style.removeProperty("--vote-comment-group-shift");
+      window.removeEventListener("resize", scheduleSync);
+      feed?.removeEventListener("scroll", scheduleSync);
+    };
+  }, [targetCardId]);
 
   const handleReaction = (commentId, reaction) => {
     setComments((currentComments) =>
@@ -262,7 +387,11 @@ export default function Comments({ title, onClose }) {
         aria-label="댓글창 닫기"
         onClick={onClose}
       />
-      <aside className="comment-modal" aria-label={`${title} 댓글`}>
+      <aside
+        ref={modalRef}
+        className="comment-modal"
+        aria-label={`${title} 댓글`}
+      >
         <header className="comment-modal-header">
           <div>
             <span className="comment-modal-label">댓글</span>

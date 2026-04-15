@@ -25,7 +25,7 @@
     calc((max(100vw, 850px) - 850px) * 0.3),
     var(--vote-action-space)
   );
-  --vote-sheet-width: min(
+  --vote-sheet-width-default: min(
     850px,
     calc(
       max(100vw, 850px) - 24px - var(--vote-sheet-glow-space) -
@@ -33,6 +33,7 @@
         var(--vote-side-balance)
     )
   );
+  --vote-sheet-width: var(--vote-sheet-width-default);
   --vote-feed-width: calc(
     var(--vote-sheet-width) + var(--vote-action-space) +
       var(--vote-side-balance) + var(--vote-sheet-glow-space) +
@@ -46,8 +47,13 @@
 }
 
 .vote-page.has-comment-modal .vote-layout {
-  --vote-side-balance: 0px;
-  transform: translateX(max(calc(68px - 25vw), calc(495px - 50vw)));
+  --vote-side-balance: 52px;
+  --vote-sheet-width: var(
+    --vote-comment-sheet-width,
+    var(--vote-sheet-width-default)
+  );
+  transform: translateX(var(--vote-comment-group-shift, 0px));
+  transition: none;
 }
 
 .vote-feed {
@@ -375,6 +381,21 @@
   box-shadow: 0 16px 30px rgba(252, 146, 199, 0.22);
 }
 
+.vote-action-button:disabled {
+  opacity: 0.38;
+  cursor: not-allowed;
+}
+
+.vote-action-button:disabled:hover {
+  transform: none;
+  box-shadow: 0 14px 28px rgba(17, 17, 17, 0.08);
+}
+
+.vote-action-button:disabled:hover img {
+  opacity: 0.56;
+  filter: none;
+}
+
 .vote-action-button:hover img {
   opacity: 1;
   filter: invert(72%) sepia(20%) saturate(1351%) hue-rotate(290deg)
@@ -455,7 +476,7 @@
   }
 }
 
-@media (max-width: 1100px) {
+@media (max-width: 1320px) {
   .vote-page.has-comment-modal .vote-layout {
     --vote-side-balance: clamp(
       0px,

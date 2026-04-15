@@ -5,6 +5,7 @@
   --text: #111111;
   --badge: #ffb51f;
   --badge-offset: 86px;
+  --vote-card-width: 760px;
   --space: 25px;
   --shadow: 0 18px 48px rgba(17, 17, 17, 0.08);
   --float-distance: 12px;
@@ -74,9 +75,8 @@ img {
 
 .vote-section {
   position: relative;
-  width: min(846px, 100%);
+  width: min(var(--vote-card-width), 100%);
   margin: var(--space) auto 0;
-  padding-left: var(--badge-offset);
 }
 
 .main-page.is-leaving-for-vote {
@@ -95,7 +95,7 @@ img {
 .rank-badge {
   position: absolute;
   top: 20px;
-  left: 0;
+  left: calc(-1 * var(--badge-offset));
   padding: 7px 10px 7px 7px;
   border-radius: 20px 0 0 20px;
   background: var(--badge);

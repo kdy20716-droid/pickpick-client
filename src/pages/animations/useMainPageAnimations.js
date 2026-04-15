@@ -5,6 +5,7 @@ const NAV_IDLE_COLOR = "rgba(17, 17, 17, 0.58)";
 const NAV_ACTIVE_COLOR = "rgba(17, 17, 17, 0.98)";
 const NEXT_IDLE_COLOR = "rgb(85, 85, 85)";
 const NEXT_ACTIVE_COLOR = "rgb(252, 146, 199)";
+const ENTRANCE_BOUNCE_DELAY = 3000;
 
 function animate(element, keyframes, options) {
   if (!element?.animate) {
@@ -95,8 +96,8 @@ export function useMainPageAnimations(pageRef) {
       );
     };
 
-    playBounce(voteSection, 350);
-    playBounce(nextVote, 450);
+    playBounce(voteSection, ENTRANCE_BOUNCE_DELAY);
+    playBounce(nextVote, ENTRANCE_BOUNCE_DELAY);
 
     navLinks.forEach((link) => {
       let currentAnimation = null;
