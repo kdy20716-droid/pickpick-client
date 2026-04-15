@@ -111,6 +111,7 @@ button {
   font-size: 16px;
   cursor: pointer;
   transition: 0.3s;
+  align-items: center;
 }
 
 button:hover {
