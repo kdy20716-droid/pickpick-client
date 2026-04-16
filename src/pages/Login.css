@@ -117,21 +117,69 @@ button:hover {
   background: #ec6c9c;
 }
 
-/* 비밀번호 찾기 */
+/* 비밀번호 찾기 및 회원가입 */
 .forgot {
-  margin-top: 12px;
+  margin-top: 20px;
   text-align: center;
 }
 
 .forgot a {
-  font-size: 12px;
+  font-size: 13px;
   color: #999;
   text-decoration: none;
+  display: block;
+  margin-bottom: 8px;
 }
 
 .forgot a:hover {
   color: #f48fb1;
   text-decoration: underline;
+}
+
+.signup-link {
+  font-size: 13px;
+  color: #666;
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid #eee;
+}
+
+.signup-link a {
+  color: #f48fb1;
+  font-weight: bold;
+  text-decoration: none;
+  display: inline;
+  margin-left: 5px;
+}
+
+.signup-link a:hover {
+  text-decoration: underline;
+}
+
+/* 상단 에러 모달 */
+.error-modal {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #ff4d4d;
+  color: white;
+  padding: 12px 30px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    top: -50px;
+    opacity: 0;
+  }
+  to {
+    top: 20px;
+    opacity: 1;
+  }
 }
 
 /* 메시지 */
