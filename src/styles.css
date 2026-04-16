@@ -16,7 +16,8 @@
 
 body {
   font-family: "Pretendard", "Segoe UI", sans-serif;
-  background-color: var(--bg-color);
+  background-color: #FDFDFD;
   color: var(--text-dark);
   line-height: 1.5;
+  overflow-x: hidden;
 }
