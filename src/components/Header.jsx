@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import "./Header.css";
 import accountIcon from "../assets/account-icon.svg";
 
@@ -5,16 +6,16 @@ const Header = () => {
   return (
     <header className="site-header">
       <div className="header-inner">
-        <a href="#" className="brand">
+        <Link to="/" className="brand">
           PICKPICK
-        </a>
+        </Link>
         <nav className="site-nav" aria-label="주요 메뉴">
-          <a href="#">+ CREATE</a>
-          <a href="#">RANKING</a>
-          <a href="#">LOG IN</a>
-          <a href="#" className="account-link" aria-label="계정">
+          <Link to="/create">+ CREATE</Link>
+          <Link to="/ranking">RANKING</Link>
+          <Link to="/login">LOG IN</Link>
+          <Link to="/mypage" className="account-link" aria-label="계정">
             <img src={accountIcon} alt="" />
-          </a>
+          </Link>
         </nav>
       </div>
       <div className="header-glow" aria-hidden="true" />

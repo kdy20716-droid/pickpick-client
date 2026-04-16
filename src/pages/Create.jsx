@@ -1,10 +1,16 @@
-import React, { useState } from "react";
-import "./create.css"; // 🔥 실제 존재하는 CSS 파일명으로 수정
+import React, { useState, useRef } from "react";
+import "./Create.css";
 
 const Create = () => {
   const [selectedTag, setSelectedTag] = useState("영화 / 드라마");
   const [candidate1, setCandidate1] = useState("");
   const [candidate2, setCandidate2] = useState("");
+
+  const [previewImage1, setPreviewImage1] = useState(null);
+  const [previewImage2, setPreviewImage2] = useState(null);
+
+  const fileInputRef1 = useRef(null);
+  const fileInputRef2 = useRef(null);
 
   const tags = [
     "연예",
@@ -23,11 +29,38 @@ const Create = () => {
     "기타",
   ];
 
+  // 파일 선택 핸들러
+  const handleImageChange = (e, setPreview) => {
+    const file = e.target.files[0];
+    if (file) {
+      processFile(file, setPreview);
+    }
+  };
+
+  // 붙여넣기 핸들러
+  const handlePaste = (e, setPreview) => {
+    const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+    for (const item of items) {
+      if (item.kind === "file" && item.type.startsWith("image/")) {
+        const file = item.getAsFile();
+        processFile(file, setPreview);
+        break;
+      }
+    }
+  };
+
+  // 파일을 읽어서 미리보기 세팅하는 공통 함수
+  const processFile = (file, setPreview) => {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setPreview(reader.result);
+    };
+    reader.readAsDataURL(file);
+  };
+
   return (
-    <div className="container">
-      {/* Main Contents */}
+    <div className="create-page-container">
       <main className="main-content">
-        {/* Left: Preview Area */}
         <section className="editor-card preview-section">
           <input
             type="text"
@@ -36,10 +69,36 @@ const Create = () => {
           />
 
           <div className="vs-container">
-            <div className="candidate-box">
-              <div className="candidate-box__upload">
-                <span className="material-icons">add_photo_alternate</span>
-              </div>
+            {/* 후보군 1 */}
+            <div
+              className="candidate-box"
+              onPaste={(e) => handlePaste(e, setPreviewImage1)}
+              tabIndex="0"
+            >
+              <input
+                type="file"
+                ref={fileInputRef1}
+                style={{ display: "none" }}
+                accept="image/*"
+                onChange={(e) => handleImageChange(e, setPreviewImage1)}
+              />
+              {previewImage1 ? (
+                <img
+                  src={previewImage1}
+                  alt="Preview 1"
+                  className="candidate-box__img"
+                />
+              ) : (
+                <div className="candidate-box__upload">
+                  <button
+                    className="upload-button"
+                    onClick={() => fileInputRef1.current.click()}
+                  >
+                    이미지 삽입
+                  </button>
+                  <h5>웹이미지 붙여넣기 기능을 지원합니다</h5>
+                </div>
+              )}
               <div className="candidate-box__label">
                 {candidate1 || "후보군 이름"}
               </div>
@@ -49,10 +108,36 @@ const Create = () => {
               <span className="vs-badge__text">VS</span>
             </div>
 
-            <div className="candidate-box">
-              <div className="candidate-box__upload">
-                <span className="material-icons">add_photo_alternate</span>
-              </div>
+            {/* 후보군 2 */}
+            <div
+              className="candidate-box"
+              onPaste={(e) => handlePaste(e, setPreviewImage2)}
+              tabIndex="0"
+            >
+              <input
+                type="file"
+                ref={fileInputRef2}
+                style={{ display: "none" }}
+                accept="image/*"
+                onChange={(e) => handleImageChange(e, setPreviewImage2)}
+              />
+              {previewImage2 ? (
+                <img
+                  src={previewImage2}
+                  alt="Preview 2"
+                  className="candidate-box__img"
+                />
+              ) : (
+                <div className="candidate-box__upload">
+                  <button
+                    className="upload-button"
+                    onClick={() => fileInputRef2.current.click()}
+                  >
+                    이미지 삽입
+                  </button>
+                  <h5>웹이미지 붙여넣기 기능을 지원합니다</h5>
+                </div>
+              )}
               <div className="candidate-box__label">
                 {candidate2 || "후보군 이름"}
               </div>
@@ -60,7 +145,6 @@ const Create = () => {
           </div>
         </section>
 
-        {/* Right: Settings Area */}
         <section className="editor-card settings-section">
           <div className="settings-group">
             <h3 className="settings-group__title">후보군 이름</h3>
@@ -69,14 +153,7 @@ const Create = () => {
                 <span className="list-item__num">1</span>
                 <input
                   type="text"
-                  style={{
-                    border: "none",
-                    outline: "none",
-                    fontSize: "15px",
-                    color: "#333",
-                    width: "100%",
-                    background: "transparent",
-                  }}
+                  className="candidate-name-input"
                   placeholder="이름을 입력하세요"
                   value={candidate1}
                   onChange={(e) => setCandidate1(e.target.value)}
@@ -86,14 +163,7 @@ const Create = () => {
                 <span className="list-item__num">2</span>
                 <input
                   type="text"
-                  style={{
-                    border: "none",
-                    outline: "none",
-                    fontSize: "15px",
-                    color: "#333",
-                    width: "100%",
-                    background: "transparent",
-                  }}
+                  className="candidate-name-input"
                   placeholder="이름을 입력하세요"
                   value={candidate2}
                   onChange={(e) => setCandidate2(e.target.value)}
@@ -117,9 +187,8 @@ const Create = () => {
             </div>
           </div>
 
-          {/* Floating Action Button */}
           <button className="fab-button">
-            <span className="material-icons">publish</span>
+            <span>Publish</span>
           </button>
         </section>
       </main>
