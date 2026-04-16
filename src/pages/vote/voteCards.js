@@ -52,3 +52,4 @@ export function createVoteCards(pinnedFeedId = "") {
 export function createVoteBatch(start, count) {
   return createVoteCards().slice(start, start + count);
 }
+
