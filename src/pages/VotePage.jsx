@@ -6,14 +6,16 @@ import favoriteIcon from "../assets/favorite.svg";
 import dislikeIcon from "../assets/thumb_down.svg";
 import commentIcon from "../assets/comment.svg";
 import shareIcon from "../assets/share.svg";
-import { createVoteBatch, getVoteHash } from "./vote/voteCards.js";
+import Comments from "../components/Comments.jsx";
+import { isMainRouteTransition } from "./animations/routeTransitions.js";
 import { useActiveVoteCard } from "./vote/useActiveVoteCard.js";
-import { useVotePageScrollSnap } from "./vote/useVotePageScrollSnap.js";
 import { useActiveVoteHash } from "./vote/useActiveVoteHash.js";
-import CommentApp from "../components/Comments.jsx"; // Import the existing Comments.jsx
-
-const INITIAL_CARD_COUNT = 4;
-const LOAD_MORE_COUNT = 3;
+import { useVotePageScrollSnap } from "./vote/useVotePageScrollSnap.js";
+import {
+  createVoteCards,
+  getVoteFeedIdFromHash,
+  getVoteHash,
+} from "./vote/voteCards.js";
 
 const actionButtons = [
   {
@@ -32,8 +34,8 @@ const actionButtons = [
     id: "comment",
     label: "댓글",
     icon: commentIcon,
-    kind: "button",
-  }, // Removed kind: "link", to: "/result"
+    kind: "modal",
+  },
   {
     id: "share",
     label: "공유",
@@ -60,7 +62,10 @@ function updateCardActionState(currentActions, cardId, actionId) {
         ...previousState,
         like: nextLike,
         dislike: false,
-        likeCount: Math.max(0, previousState.likeCount + (nextLike ? 1 : -1)),
+        likeCount: Math.max(
+          0,
+          previousState.likeCount + (nextLike ? 1 : -1),
+        ),
       },
     };
   }
@@ -242,17 +247,16 @@ function VoteCard({
 }
 
 export default function VotePage() {
-  const [cards, _setCards] = useState(() =>
-    createVoteBatch(0, INITIAL_CARD_COUNT),
+  const location = useLocation();
+  const entersFromMain = isMainRouteTransition(location.state?.transition);
+  const [cards] = useState(() =>
+    createVoteCards(getVoteFeedIdFromHash(location.hash)),
   );
   const [selectedVotes, setSelectedVotes] = useState({});
   const [cardActions, setCardActions] = useState({});
   const [copiedCardId, setCopiedCardId] = useState("");
-  const [commentsCardId, setCommentsCardId] = useState(null);
-
+  const [commentCardId, setCommentCardId] = useState("");
   const pageRef = useRef(null);
-  const location = useLocation();
-  const loaderRef = useRef(null);
   const copyTimeoutRef = useRef(null);
   const { activeCardId, cardRefs, feedRef, registerCardRef } =
     useActiveVoteCard(cards);
@@ -266,7 +270,7 @@ export default function VotePage() {
   }, []);
 
   useEffect(() => {
-    if (!commentsCardId) {
+    if (!commentCardId) {
       return undefined;
     }
 
@@ -282,7 +286,7 @@ export default function VotePage() {
 
     const handleScroll = () => {
       if (canCloseOnScroll) {
-        setCommentsCardId(null);
+        setCommentCardId("");
       }
     };
 
@@ -292,7 +296,7 @@ export default function VotePage() {
       cancelAnimationFrame(frameId);
       feed.removeEventListener("scroll", handleScroll);
     };
-  }, [commentsCardId, feedRef]);
+  }, [commentCardId, feedRef]);
 
   useVotePageScrollSnap({
     pageRef,
@@ -323,9 +327,7 @@ export default function VotePage() {
   };
 
   const handleShare = async (cardId) => {
-    const hash =
-      typeof getVoteHash === "function" ? getVoteHash(cardId) : `?id=${cardId}`;
-    const shareUrl = `${window.location.origin}/vote${hash}`;
+    const shareUrl = `${window.location.origin}/vote${getVoteHash(cardId)}`;
 
     try {
       if (navigator.share) {
@@ -353,74 +355,54 @@ export default function VotePage() {
   };
 
   const handleOpenComments = (cardId) => {
-    setCommentsCardId(cardId);
+    setCommentCardId(cardId);
   };
 
   const handleCloseComments = () => {
-    setCommentsCardId(null);
+    setCommentCardId("");
   };
 
+  const commentCard = cards.find((card) => card.feedId === commentCardId);
+
   return (
-    <>
-      <div
-        ref={pageRef}
-        className={`vote-page${commentsCardId ? " comments-open" : ""}`}
-      >
-        <div className="vote-layout">
-          <div className="vote-feed">
-            {cards.map((card) => (
+    <div
+      ref={pageRef}
+      className={`vote-page${entersFromMain ? " is-entering-from-main" : ""}${
+        commentCardId ? " has-comment-modal" : ""
+      }`}
+    >
+      <div className="vote-layout">
+        <div ref={feedRef} className="vote-feed">
+          {cards.map((card) => {
+            const actionState = cardActions[card.feedId];
+
+            return (
               <VoteCard
                 key={card.feedId}
                 card={card}
                 selectedCandidateId={selectedVotes[card.feedId]}
                 onSelect={handleVote}
-                isActive={activeCardId === card.feedId}
-                registerCardRef={registerCardRef}
-                actionState={cardActions[card.feedId]}
-                likeCount={cardActions[card.feedId]?.likeCount ?? 0}
+                actionState={actionState}
+                likeCount={actionState?.likeCount ?? 0}
                 copied={copiedCardId === card.feedId}
                 onToggleAction={handleToggleAction}
                 onShare={handleShare}
                 onOpenComments={handleOpenComments}
-                isCommentsOpen={commentsCardId === card.feedId}
+                isCommentsOpen={commentCardId === card.feedId}
+                isActive={activeCardId === card.feedId}
+                registerCardRef={registerCardRef}
               />
-            ))}
-          </div>
-
-          <div className="vote-action-column">
-            <div className="vote-action-rail" aria-label="투표 액션">
-              {actionButtons.map((action) => (
-                <VoteActionButton
-                  key={action.id}
-                  action={action}
-                  active={
-                    action.id === "comment"
-                      ? commentsCardId === activeCardId
-                      : Boolean(cardActions[activeCardId]?.[action.id])
-                  }
-                  onToggle={handleToggleAction}
-                  onShare={handleShare}
-                  onComment={handleOpenComments}
-                  copied={copiedCardId === activeCardId}
-                  cardId={activeCardId}
-                  count={cardActions[activeCardId]?.likeCount ?? 0}
-                  disabled={
-                    action.id === "comment" && !selectedVotes[activeCardId]
-                  }
-                />
-              ))}
-            </div>
-          </div>
+            );
+          })}
         </div>
-
-        <div ref={loaderRef} className="vote-feed-loader" aria-hidden="true" />
       </div>
-
-      <CommentApp // Use the CommentApp component
-        isOpen={Boolean(commentsCardId)}
-        onClose={handleCloseComments}
-        cardId={commentsCardId}
-      />
-    </>
+      {commentCard ? (
+        <Comments
+          title={commentCard.title}
+          targetCardId={commentCard.feedId}
+          onClose={handleCloseComments}
+        />
+      ) : null}
+    </div>
   );
 }

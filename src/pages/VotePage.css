@@ -1,23 +1,59 @@
 .vote-page {
   --vote-header-offset: 110px;
-  --vote-sheet-glow-space: 22px;
   width: min(1180px, calc(100% - 24px));
   margin: 0 auto;
-  padding: 18px 0 54px;
-  transition: transform 0.3s ease-out;
+  height: calc(100dvh - var(--vote-header-offset));
+  padding: 0;
+  overflow: hidden;
+}
+
+.vote-page.has-comment-modal {
+  overflow: visible;
 }
 
 .vote-layout {
-  --vote-rail-gap: 14px;
-  --vote-rail-size: 330px; /* This seems unused, consider removing if not needed elsewhere */
-  --vote-feed-width: 850px;
+  --vote-rail-gap: 25px;
   --vote-action-button-size: 72px;
-  --vote-action-space: 40px;
-  display: grid;
-  grid-template-columns: 850px 72px;
+  --vote-rail-size: calc(
+    var(--vote-action-button-size) * 4 + var(--vote-rail-gap) * 3
+  );
+  --vote-sheet-glow-space: 22px;
+  --vote-sheet-extra-height: 41px;
+  --vote-action-space: calc(var(--vote-action-button-size) + var(--vote-rail-gap));
+  --vote-side-balance: clamp(
+    0px,
+    calc((max(100vw, 850px) - 850px) * 0.3),
+    var(--vote-action-space)
+  );
+  --vote-sheet-width-default: min(
+    850px,
+    calc(
+      max(100vw, 850px) - 24px - var(--vote-sheet-glow-space) -
+        var(--vote-sheet-glow-space) - var(--vote-action-space) -
+        var(--vote-side-balance)
+    )
+  );
+  --vote-sheet-width: var(--vote-sheet-width-default);
+  --vote-feed-width: calc(
+    var(--vote-sheet-width) + var(--vote-action-space) +
+      var(--vote-side-balance) + var(--vote-sheet-glow-space) +
+      var(--vote-sheet-glow-space)
+  );
+  width: 100%;
+  height: 100%;
+  display: flex;
   justify-content: center;
-  gap: var(--vote-rail-gap);
-  align-items: stretch;
+  transition: transform 240ms ease;
+}
+
+.vote-page.has-comment-modal .vote-layout {
+  --vote-side-balance: 52px;
+  --vote-sheet-width: var(
+    --vote-comment-sheet-width,
+    var(--vote-sheet-width-default)
+  );
+  transform: translateX(var(--vote-comment-group-shift, 0px));
+  transition: none;
 }
 
 .vote-feed {
@@ -46,10 +82,17 @@
 }
 
 .vote-feed-item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
   width: 100%;
   margin: 0;
-  min-height: calc(100vh - 98px);
-  padding: 18px 0 34px;
+  height: calc(100% - var(--vote-sheet-glow-space) * 2 + var(--vote-sheet-extra-height));
+  min-height: calc(100% - var(--vote-sheet-glow-space) * 2 + var(--vote-sheet-extra-height));
+  padding: 30px var(--vote-action-space) 23px var(--vote-side-balance);
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  flex: 0 0 calc(100% - var(--vote-sheet-glow-space) * 2 + var(--vote-sheet-extra-height));
 }
 
 .vote-sheet {
@@ -61,8 +104,8 @@
   width: 100%;
   padding: 20px 20px 18px;
   border-radius: 22px;
-  background: var(--surface-alpha-96, rgba(255, 255, 255, 0.96));
-  box-shadow: var(--shadow-md, 0 22px 60px rgba(17, 17, 17, 0.08));
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 22px 60px rgba(17, 17, 17, 0.08);
   backdrop-filter: blur(8px);
   transition:
     transform 260ms ease,
@@ -76,7 +119,7 @@
 
 .vote-feed-item.is-active .vote-sheet {
   transform: scale(1.01);
-  box-shadow: var(--shadow-lg, 0 28px 72px rgba(17, 17, 17, 0.12));
+  box-shadow: 0 28px 72px rgba(17, 17, 17, 0.12);
 }
 
 .vote-sheet::before {
@@ -85,17 +128,6 @@
   inset: -22px;
   z-index: -1;
   border-radius: 34px;
-  background:
-    radial-gradient(
-      circle at top left,
-      var(--accent-blue-alpha-20, rgba(148, 197, 255, 0.2)),
-      transparent 48%
-    ),
-    radial-gradient(
-      circle at right center,
-      var(--point-main-alpha-22, rgba(252, 146, 199, 0.22)),
-      transparent 42%
-    );
   filter: blur(12px);
 }
 
@@ -116,9 +148,7 @@
   flex: 1;
   min-height: 0;
   align-items: stretch;
-  transition:
-    min-height 220ms ease,
-    padding-bottom 220ms ease;
+  transition: min-height 220ms ease, padding-bottom 220ms ease;
 }
 
 .vote-sheet.has-results .vote-sheet-match {
@@ -135,7 +165,7 @@
   padding: 0;
   border: 0;
   border-radius: 20px;
-  background: var(--bg-alt, #f4f0ea);
+  background: #f4f0ea;
   cursor: pointer;
   transition:
     transform 180ms ease,
@@ -191,46 +221,45 @@
   line-height: 1.05;
   color: #ffffff;
   text-shadow:
-    var(--vote-name-outline-negative-size)
-      var(--vote-name-outline-negative-size) 0 var(--text-primary, #111),
-    0 var(--vote-name-outline-negative-size) 0 var(--text-primary, #111),
-    var(--vote-name-outline-size) var(--vote-name-outline-negative-size) 0
-      var(--text-primary, #111),
-    var(--vote-name-outline-size) 0 0 var(--text-primary, #111),
-    var(--vote-name-outline-size) var(--vote-name-outline-size) 0
-      var(--text-primary, #111),
-    0 var(--vote-name-outline-size) 0 var(--text-primary, #111),
-    var(--vote-name-outline-negative-size) var(--vote-name-outline-size) 0
-      var(--text-primary, #111),
-    var(--vote-name-outline-negative-size) 0 0 var(--text-primary, #111),
+    var(--vote-name-outline-negative-size) var(--vote-name-outline-negative-size)
+      0 #111111,
+    0 var(--vote-name-outline-negative-size) 0 #111111,
+    var(--vote-name-outline-size) var(--vote-name-outline-negative-size) 0 #111111,
+    var(--vote-name-outline-size) 0 0 #111111,
+    var(--vote-name-outline-size) var(--vote-name-outline-size) 0 #111111,
+    0 var(--vote-name-outline-size) 0 #111111,
+    var(--vote-name-outline-negative-size) var(--vote-name-outline-size) 0 #111111,
+    var(--vote-name-outline-negative-size) 0 0 #111111,
     var(--vote-name-accent-shadow);
 }
 
 .tone-blue .vote-choice-name {
   --vote-name-accent-shadow:
-    0 0 18px rgba(71, 140, 255, 0.4), 0 3px 12px rgba(255, 255, 255, 0.24);
+    0 0 18px rgba(71, 140, 255, 0.4),
+    0 3px 12px rgba(255, 255, 255, 0.24);
 }
 
 .tone-pink .vote-choice-name {
   --vote-name-accent-shadow:
-    0 0 18px rgba(255, 91, 91, 0.4), 0 3px 12px rgba(255, 255, 255, 0.24);
+    0 0 18px rgba(255, 91, 91, 0.4),
+    0 3px 12px rgba(255, 255, 255, 0.24);
 }
 
 .vote-choice.is-selected {
   transform: translateY(-3px);
-  box-shadow: var(--shadow-lg, 0 22px 48px rgba(17, 17, 17, 0.18));
+  box-shadow: 0 22px 48px rgba(17, 17, 17, 0.18);
 }
 
 .tone-blue.is-selected {
   box-shadow:
-    var(--shadow-lg, 0 22px 48px rgba(17, 17, 17, 0.14)),
-    0 0 0 3px var(--accent-blue-alpha-70, rgba(120, 174, 255, 0.7));
+    0 22px 48px rgba(17, 17, 17, 0.14),
+    0 0 0 3px rgba(120, 174, 255, 0.7);
 }
 
 .tone-pink.is-selected {
   box-shadow:
-    var(--shadow-lg, 0 22px 48px rgba(17, 17, 17, 0.14)),
-    0 0 0 3px var(--point-main-alpha-78, rgba(252, 146, 199, 0.78));
+    0 22px 48px rgba(17, 17, 17, 0.14),
+    0 0 0 3px rgba(252, 146, 199, 0.78);
 }
 
 .vote-feed-item.vote-oshi-no-ko .vote-choice.is-selected,
@@ -272,11 +301,11 @@
 }
 
 .vote-share-footer span:first-child {
-  color: var(--accent-blue-dark, #2e63c8);
+  color: #2e63c8;
 }
 
 .vote-share-footer span:last-child {
-  color: var(--point-dark, #d94588);
+  color: #d94588;
 }
 
 .vote-share-bar {
@@ -285,7 +314,7 @@
   width: 100%;
   height: 18px;
   border-radius: 999px;
-  background: var(--accent-blue-bg, #edf2fb);
+  background: #edf2fb;
 }
 
 .vote-share-segment {
@@ -293,19 +322,11 @@
 }
 
 .vote-share-left {
-  background: linear-gradient(
-    90deg,
-    var(--accent-blue) 0%,
-    var(--accent-blue-light, #9bc7ff) 100%
-  );
+  background: linear-gradient(90deg, #76b9ff 0%, #9bc7ff 100%);
 }
 
 .vote-share-right {
-  background: linear-gradient(
-    90deg,
-    var(--point-main) 0%,
-    var(--point-light, #ffabd5) 100%
-  );
+  background: linear-gradient(90deg, #fc92c7 0%, #ffabd5 100%);
 }
 
 .vote-action-rail {
@@ -325,8 +346,8 @@
   height: var(--vote-action-button-size);
   border: 0;
   border-radius: 999px;
-  background: var(--surface-alpha-95, rgba(255, 255, 255, 0.95));
-  box-shadow: var(--shadow-md, 0 14px 28px rgba(17, 17, 17, 0.08));
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 14px 28px rgba(17, 17, 17, 0.08);
   cursor: pointer;
   transition:
     transform 180ms ease,
@@ -348,7 +369,7 @@
   left: 50%;
   bottom: -18px;
   transform: translateX(-50%);
-  color: var(--text-secondary-alpha-72, rgba(17, 17, 17, 0.72));
+  color: rgba(17, 17, 17, 0.72);
   font-size: 0.9rem;
   font-weight: 700;
   line-height: 1;
@@ -357,7 +378,7 @@
 
 .vote-action-button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 16px 30px var(--point-main-alpha-22, rgba(252, 146, 199, 0.22));
+  box-shadow: 0 16px 30px rgba(252, 146, 199, 0.22);
 }
 
 .vote-action-button:disabled {
@@ -367,7 +388,7 @@
 
 .vote-action-button:disabled:hover {
   transform: none;
-  box-shadow: var(--shadow-md, 0 14px 28px rgba(17, 17, 17, 0.08));
+  box-shadow: 0 14px 28px rgba(17, 17, 17, 0.08);
 }
 
 .vote-action-button:disabled:hover img {
@@ -382,7 +403,7 @@
 }
 
 .vote-action-button.action-dislike:hover {
-  box-shadow: 0 16px 30px var(--accent-blue-alpha-26, rgba(120, 174, 255, 0.26));
+  box-shadow: 0 16px 30px rgba(120, 174, 255, 0.26);
 }
 
 .vote-action-button.action-dislike:hover img {
@@ -391,21 +412,13 @@
 }
 
 .vote-action-button.is-active {
-  background: linear-gradient(
-    180deg,
-    var(--point-light, #ffb6db) 0%,
-    var(--point-main, #fc92c7) 100%
-  );
-  box-shadow: 0 16px 32px var(--point-main-alpha-34, rgba(252, 146, 199, 0.34));
+  background: linear-gradient(180deg, #ffb6db 0%, #fc92c7 100%);
+  box-shadow: 0 16px 32px rgba(252, 146, 199, 0.34);
 }
 
 .vote-action-button.action-dislike.is-active {
-  background: linear-gradient(
-    180deg,
-    var(--accent-blue-light, #9bc7ff) 0%,
-    var(--accent-blue, #76b9ff) 100%
-  );
-  box-shadow: 0 16px 32px var(--accent-blue-alpha-38, rgba(120, 174, 255, 0.38));
+  background: linear-gradient(180deg, #9bc7ff 0%, #76b9ff 100%);
+  box-shadow: 0 16px 32px rgba(120, 174, 255, 0.38);
 }
 
 .vote-action-button.is-active img {
@@ -434,34 +447,15 @@
   }
 }
 
-/*
-  [FIX] @keyframes 내부에 셀렉터를 중첩할 수 없습니다.
-  애니메이션이 적용되는 동안의 스타일은 .is-entering-from-main 클래스가
-  적용되었을 때의 스타일로 분리합니다.
-*/
-.vote-page.is-entering-from-main .vote-feed-item {
-  width: min(760px, 100%);
-  margin: 0 auto;
-  min-height: auto;
-  padding: 18px 0;
-}
-.vote-page.is-entering-from-main .vote-sheet {
-  height: auto;
-  min-height: auto;
-}
-.vote-page.is-entering-from-main .vote-sheet-match {
-  min-height: clamp(420px, 64vw, 620px);
-}
-.vote-page.is-entering-from-main .vote-action-rail {
-  flex-direction: row;
-  justify-content: center;
-  position: static;
-}
-
 @keyframes voteFeedEnterFromMain {
   from {
     opacity: 0;
     transform: translateY(64px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
@@ -490,12 +484,5 @@
       var(--vote-action-space)
     );
     transform: none;
-  }
-}
-
-/* 넓은 화면에서 댓글창이 열렸을 때 투표 화면을 왼쪽으로 부드럽게 밀어냄 */
-@media (min-width: 1200px) {
-  .vote-page.comments-open {
-    transform: translateX(-230px);
   }
 }
