@@ -55,7 +55,7 @@ export default function FindPassword() {
       body: JSON.stringify({ email }),
     })
       .then((res) => res.json())
-      .then((data) => {
+      .then(() => {
         alert("임시 비밀번호가 발송되었습니다!");
       })
       .catch(() => {

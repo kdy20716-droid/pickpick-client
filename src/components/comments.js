@@ -1,10 +1,11 @@
+import { createRoot } from "react-dom/client";
 import Header from "./Header.jsx";
 
 document.addEventListener("DOMContentLoaded", () => {
   // Header 컴포넌트 렌더링
   const headerRoot = document.getElementById("header-root");
   if (headerRoot) {
-    ReactDOM.render(<Header />, headerRoot);
+    createRoot(headerRoot).render(<Header />);
   }
 
   const commentListEl = document.querySelector(".comment-list");
