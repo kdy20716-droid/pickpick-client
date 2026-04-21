@@ -1,4 +1,4 @@
-const BASE_URL = "http://localhost:4000/users";
+import instance from "./instancs";
 
 // 회원가입 API
 export const signup = async (userData) => {

@@ -1,13 +1,18 @@
 import React, { useState, useRef } from "react";
+import { addVote } from "../api/posts";
 import "./Create.css";
 
 const Create = () => {
+  const [title, setTitle] = useState("");
+  const [authorId, setAuthorId] = useState("1"); // 임시 작성자 ID
   const [selectedTag, setSelectedTag] = useState("영화 / 드라마");
   const [candidate1, setCandidate1] = useState("");
   const [candidate2, setCandidate2] = useState("");
 
   const [previewImage1, setPreviewImage1] = useState(null);
   const [previewImage2, setPreviewImage2] = useState(null);
+  const [file1, setFile1] = useState(null);
+  const [file2, setFile2] = useState(null);
 
   const fileInputRef1 = useRef(null);
   const fileInputRef2 = useRef(null);
@@ -29,33 +34,60 @@ const Create = () => {
     "기타",
   ];
 
-  // 파일 선택 핸들러
-  const handleImageChange = (e, setPreview) => {
+  const handleImageChange = (e, setPreview, setFile) => {
     const file = e.target.files[0];
     if (file) {
+      setFile(file);
       processFile(file, setPreview);
     }
   };
 
-  // 붙여넣기 핸들러
-  const handlePaste = (e, setPreview) => {
+  const handlePaste = (e, setPreview, setFile) => {
     const items = (e.clipboardData || e.originalEvent.clipboardData).items;
     for (const item of items) {
       if (item.kind === "file" && item.type.startsWith("image/")) {
         const file = item.getAsFile();
+        setFile(file);
         processFile(file, setPreview);
         break;
       }
     }
   };
 
-  // 파일을 읽어서 미리보기 세팅하는 공통 함수
   const processFile = (file, setPreview) => {
     const reader = new FileReader();
     reader.onloadend = () => {
       setPreview(reader.result);
     };
     reader.readAsDataURL(file);
+  };
+
+  // alert (추후 바꾸기)
+
+  const handleSubmit = async () => {
+    if (!title || !candidate1 || !candidate2) {
+      alert("필수 항목을 모두 입력해주세요.");
+      return;
+    }
+
+    try {
+      const response = await addVote(
+        authorId,
+        selectedTag,
+        title,
+        candidate1,
+        file1,
+        candidate2,
+        file2,
+      );
+
+      if (response.success) {
+        alert("투표 게시글이 성공적으로 등록되었습니다!");
+      }
+    } catch (error) {
+      console.error("등록 에러:", error);
+      alert("등록에 실패했습니다.");
+    }
   };
 
   return (
@@ -66,13 +98,14 @@ const Create = () => {
             type="text"
             className="editor-card__title-input"
             placeholder="제목을 입력하세요"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
           />
 
           <div className="vs-container">
-            {/* 후보군 1 */}
             <div
               className="candidate-box"
-              onPaste={(e) => handlePaste(e, setPreviewImage1)}
+              onPaste={(e) => handlePaste(e, setPreviewImage1, setFile1)}
               tabIndex="0"
             >
               <input
@@ -80,7 +113,9 @@ const Create = () => {
                 ref={fileInputRef1}
                 style={{ display: "none" }}
                 accept="image/*"
-                onChange={(e) => handleImageChange(e, setPreviewImage1)}
+                onChange={(e) =>
+                  handleImageChange(e, setPreviewImage1, setFile1)
+                }
               />
               {previewImage1 ? (
                 <img
@@ -108,10 +143,9 @@ const Create = () => {
               <span className="vs-badge__text">VS</span>
             </div>
 
-            {/* 후보군 2 */}
             <div
               className="candidate-box"
-              onPaste={(e) => handlePaste(e, setPreviewImage2)}
+              onPaste={(e) => handlePaste(e, setPreviewImage2, setFile2)}
               tabIndex="0"
             >
               <input
@@ -119,7 +153,9 @@ const Create = () => {
                 ref={fileInputRef2}
                 style={{ display: "none" }}
                 accept="image/*"
-                onChange={(e) => handleImageChange(e, setPreviewImage2)}
+                onChange={(e) =>
+                  handleImageChange(e, setPreviewImage2, setFile2)
+                }
               />
               {previewImage2 ? (
                 <img
@@ -187,7 +223,7 @@ const Create = () => {
             </div>
           </div>
 
-          <button className="fab-button">
+          <button className="fab-button" onClick={handleSubmit}>
             <span>Publish</span>
           </button>
         </section>
