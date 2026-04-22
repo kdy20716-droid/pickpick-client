@@ -142,20 +142,6 @@ export default function Signin() {
           />
         </div>
 
-        {/* ✅ 실명 인증 체크 (생년월일 아래로 이동) */}
-        <div className="checkbox top-check">
-          <label className="custom-check">
-            <input
-              type="checkbox"
-              name="realname"
-              checked={checks.realname}
-              onChange={handleCheck}
-            />
-            <span className="checkmark"></span>
-            <span className="text">실명 인증된 아이디로 가입</span>
-          </label>
-        </div>
-
         {/* 성별 */}
         <div className="option-group">
           <div>
