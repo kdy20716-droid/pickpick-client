@@ -83,20 +83,6 @@ export default function Signin() {
   return (
     <div className="container">
       <div className="signup-box">
-        {/* ✅ 상단 체크 (커스텀 + state) */}
-        <div className="checkbox top-check">
-          <label className="custom-check">
-            <input
-              type="checkbox"
-              name="realname"
-              checked={checks.realname}
-              onChange={handleCheck}
-            />
-            <span className="checkmark"></span>
-            <span className="text">실명 인증된 아이디로 가입</span>
-          </label>
-        </div>
-
         <h2>회원 가입</h2>
 
         {/* 입력 */}
@@ -156,6 +142,20 @@ export default function Signin() {
           />
         </div>
 
+        {/* ✅ 실명 인증 체크 (생년월일 아래로 이동) */}
+        <div className="checkbox top-check">
+          <label className="custom-check">
+            <input
+              type="checkbox"
+              name="realname"
+              checked={checks.realname}
+              onChange={handleCheck}
+            />
+            <span className="checkmark"></span>
+            <span className="text">실명 인증된 아이디로 가입</span>
+          </label>
+        </div>
+
         {/* 성별 */}
         <div className="option-group">
           <div>
@@ -198,26 +198,28 @@ export default function Signin() {
 
         {/* 약관 */}
         <div className="checkbox">
-          <label>
+          <label className="custom-check terms-check">
             <input
               type="checkbox"
               name="required"
               checked={checks.required}
               onChange={handleCheck}
             />
-            필수 개인정보 처리 방침 동의
+            <span className="checkmark"></span>
+            <span className="text">필수 개인정보 처리 방침 동의</span>
           </label>
         </div>
 
         <div className="checkbox">
-          <label>
+          <label className="custom-check terms-check">
             <input
               type="checkbox"
               name="marketing"
               checked={checks.marketing}
               onChange={handleCheck}
             />
-            선택 마케팅 동의
+            <span className="checkmark"></span>
+            <span className="text">선택 마케팅 동의</span>
           </label>
         </div>
 
