@@ -280,9 +280,18 @@ export default function VotePage() {
     }
 
     let canCloseOnScroll = false;
+    let resizeUnlockTimeoutId = 0;
     const frameId = requestAnimationFrame(() => {
       canCloseOnScroll = true;
     });
+
+    const handleResize = () => {
+      canCloseOnScroll = false;
+      window.clearTimeout(resizeUnlockTimeoutId);
+      resizeUnlockTimeoutId = window.setTimeout(() => {
+        canCloseOnScroll = true;
+      }, 240);
+    };
 
     const handleScroll = () => {
       if (canCloseOnScroll) {
@@ -291,10 +300,13 @@ export default function VotePage() {
     };
 
     feed.addEventListener("scroll", handleScroll, { passive: true });
+    window.addEventListener("resize", handleResize);
 
     return () => {
       cancelAnimationFrame(frameId);
+      window.clearTimeout(resizeUnlockTimeoutId);
       feed.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", handleResize);
     };
   }, [commentCardId, feedRef]);
 

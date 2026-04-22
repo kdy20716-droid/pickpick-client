@@ -72,6 +72,7 @@
   border: 0;
   font: inherit;
   cursor: pointer;
+  width: auto; /* Login.css 등 다른 파일의 전역 button width: 100% 설정을 방어합니다 */
 }
 
 .comment-modal-close {
@@ -108,7 +109,7 @@
   background: linear-gradient(135deg, #76b9ff 0%, #fc92c7 100%);
 }
 
-.comment-avatar.is-small {
+.comment-avatar-small {
   width: 32px;
   height: 32px;
 }
@@ -177,7 +178,7 @@
   font-weight: 800;
 }
 
-.comment-action.is-active {
+.comment-action-active {
   color: #d94588;
 }
 

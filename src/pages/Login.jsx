@@ -6,7 +6,7 @@ import "./Login.css";
 export default function Login() {
   const navigate = useNavigate();
   const [form, setForm] = useState({ username: "", password: "" });
-  const [msg, setMsg] = useState("");
+  const [showModal, setShowModal] = useState(false);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -15,9 +15,9 @@ export default function Login() {
       // 로그인 성공 시 토큰과 유저 정보를 저장
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
-      
+
       setMsg("로그인 성공!");
-      
+
       // 약간의 지연 후 메인 페이지로 이동
       setTimeout(() => {
         navigate("/");
@@ -28,8 +28,25 @@ export default function Login() {
     }
   };
 
+  // 모달 자동 닫기 (선택 사항)
+  useEffect(() => {
+    if (showModal) {
+      const timer = setTimeout(() => {
+        setShowModal(false);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [showModal]);
+
   return (
     <div className="container">
+      {/* 상단 모달 */}
+      {showModal && (
+        <div className="error-modal">
+          <p>비밀번호가 틀렸습니다</p>
+        </div>
+      )}
+
       <div className="login-box">
         <h1>PICKPICK</h1>
 
@@ -65,14 +82,23 @@ export default function Login() {
           {/* 로그인 버튼 */}
           <button type="submit">Login</button>
 
-          {/* 비밀번호 찾기 */}
+          {/* 비밀번호 찾기 및 회원가입 */}
           <div className="forgot">
-            <Link to="/findpass">비밀번호를 잊으셨습니까?</Link>
+            <a
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                alert("비밀번호 찾기 페이지로 이동");
+              }}
+            >
+              비밀번호를 잊으셨습니까?
+            </a>
+            <div className="signup-link">
+              <span>계정이 없으신가요? </span>
+              <Link to="/signin">회원가입</Link>
+            </div>
           </div>
         </form>
-
-        {/* 메시지 */}
-        {msg && <p id="message">{msg}</p>}
       </div>
     </div>
   );

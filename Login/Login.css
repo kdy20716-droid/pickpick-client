@@ -83,10 +83,8 @@ body {
   display: flex;
   align-items: center;
   justify-content: flex-start; /* 왼쪽 정렬 */
-  width: 15px; /* 콘텐츠 너비에 맞춤 */
-  /* login-box의 padding(40px) + input의 padding/border(17px) = 57px 지점에 텍스트 시작
-     체크박스(약 16px) + label margin(6px) = 22px. 57px - 22px = 35px. 40px - 35px = 5px 왼쪽으로 이동 */
-  margin: 0 0 20px -5px; /* 왼쪽으로 5px 이동하여 '자동 로그인' 텍스트를 입력 필드 텍스트와 시각적으로 정렬 */
+  width: 100%;
+  margin: 0 0 20px 0; /* 좌우 여백 제거 */
 }
 
 .auto-login input[type="checkbox"] {
@@ -97,7 +95,6 @@ body {
   display: inline-block;
   margin-left: 6px; /* 체크박스와 간격 */
   cursor: pointer;
-  flex-shrink: 0; /* 라벨 텍스트가 줄어들어 세로로 표시되는 것을 방지 */
 }
 
 /* 버튼 */
@@ -117,69 +114,20 @@ button:hover {
   background: #ec6c9c;
 }
 
-/* 비밀번호 찾기 및 회원가입 */
+/* 비밀번호 찾기 */
 .forgot {
-  margin-top: 20px;
-  text-align: center;
+  margin-top: 12px;
 }
 
 .forgot a {
-  font-size: 13px;
+  font-size: 12px;
   color: #999;
   text-decoration: none;
-  display: block;
-  margin-bottom: 8px;
 }
 
 .forgot a:hover {
   color: #f48fb1;
   text-decoration: underline;
-}
-
-.signup-link {
-  font-size: 13px;
-  color: #666;
-  margin-top: 15px;
-  padding-top: 15px;
-  border-top: 1px solid #eee;
-}
-
-.signup-link a {
-  color: #f48fb1;
-  font-weight: bold;
-  text-decoration: none;
-  display: inline;
-  margin-left: 5px;
-}
-
-.signup-link a:hover {
-  text-decoration: underline;
-}
-
-/* 상단 에러 모달 */
-.error-modal {
-  position: fixed;
-  top: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: #ff4d4d;
-  color: white;
-  padding: 12px 30px;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  z-index: 1000;
-  animation: slideDown 0.3s ease-out;
-}
-
-@keyframes slideDown {
-  from {
-    top: -50px;
-    opacity: 0;
-  }
-  to {
-    top: 20px;
-    opacity: 1;
-  }
 }
 
 /* 메시지 */
