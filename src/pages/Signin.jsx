@@ -1,5 +1,5 @@
 import "./Signin.css";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
 export default function Signin() {
@@ -21,6 +21,18 @@ export default function Signin() {
     required: false,
     marketing: false,
   });
+
+  // ✅ 4️⃣ 에러 모달 상태
+  const [errorMsg, setErrorMsg] = useState("");
+  const [showModal, setShowModal] = useState(false);
+
+  // 모달 자동 닫기 (3초 후)
+  useEffect(() => {
+    if (showModal) {
+      const timer = setTimeout(() => setShowModal(false), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [showModal]);
 
   // 입력값 변경
   const handleChange = (e) => {
@@ -47,22 +59,26 @@ export default function Signin() {
     e.preventDefault();
 
     if (!checks.required) {
-      alert("필수 약관에 동의해주세요.");
+      setErrorMsg("필수 약관에 동의해주세요.");
+      setShowModal(true);
       return;
     }
 
     if (form.id.length < 5) {
-      alert("아이디는 5자 이상 입력하세요.");
+      setErrorMsg("아이디는 5자 이상 입력하세요.");
+      setShowModal(true);
       return;
     }
 
     if (form.pw.length < 8) {
-      alert("비밀번호는 8자 이상 입력하세요.");
+      setErrorMsg("비밀번호는 8자 이상 입력하세요.");
+      setShowModal(true);
       return;
     }
 
     if (form.birth.length !== 8) {
-      alert("생년월일은 8자리 숫자입니다.");
+      setErrorMsg("생년월일은 8자리 숫자입니다.");
+      setShowModal(true);
       return;
     }
 
@@ -76,6 +92,13 @@ export default function Signin() {
 
   return (
     <div className="container">
+      {/* 상단 에러 모달 */}
+      {showModal && (
+        <div className="error-modal">
+          <p>{errorMsg}</p>
+        </div>
+      )}
+
       <div className="signup-box">
         <h2>회원 가입</h2>
 
