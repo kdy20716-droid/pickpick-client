@@ -1,17 +1,30 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { login } from "../api/users";
 import "./Login.css";
 
 export default function Login() {
+  const navigate = useNavigate();
   const [form, setForm] = useState({ username: "", password: "" });
   const [msg, setMsg] = useState("");
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    if (form.username === "admin" && form.password === "1234") {
+    try {
+      const data = await login(form);
+      // 로그인 성공 시 토큰과 유저 정보를 저장
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
+      
       setMsg("로그인 성공!");
-    } else {
-      setMsg("아이디 또는 비밀번호 오류");
+      
+      // 약간의 지연 후 메인 페이지로 이동
+      setTimeout(() => {
+        navigate("/");
+      }, 500);
+    } catch (error) {
+      console.error(error);
+      setMsg(error.response?.data?.message || "아이디 또는 비밀번호 오류");
     }
   };
 
