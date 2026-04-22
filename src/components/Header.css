@@ -50,7 +50,6 @@
 
 .header-glow {
   position: absolute;
-  /* 부모(.site-header)의 아래쪽에 붙도록 설정 */
   top: 100%;
   left: 0;
   right: 0;
@@ -61,45 +60,4 @@
     rgba(252, 146, 199, 0.12) 45%,
     rgba(252, 146, 199, 0) 100%
   );
-  /* 그림자 영역이 마우스 이벤트를 방해하지 않도록 설정 */
-  pointer-events: none;
-}
-
-/* 마이페이지 드롭다운 스타일 */
-.dropdown {
-  position: relative;
-  display: inline-block;
-}
-
-.dropdown-content {
-  display: none;
-  position: absolute;
-  right: 0;
-  top: 100%;
-  background-color: #ffffff;
-  min-width: 180px;
-  box-shadow: var(--shadow, 0 8px 24px rgba(17, 17, 17, 0.12));
-  border-radius: 12px;
-  padding: 8px 0;
-  z-index: 20;
-}
-
-.dropdown:hover .dropdown-content {
-  display: block;
-}
-
-.dropdown-content a {
-  color: var(--text, #111) !important;
-  padding: 12px 20px;
-  text-decoration: none;
-  display: block;
-  font-size: 1rem;
-  transition:
-    background-color 0.2s,
-    color 0.2s;
-}
-
-.dropdown-content a:hover {
-  background-color: #f8f8f8;
-  color: var(--point, #fc92c7) !important;
 }

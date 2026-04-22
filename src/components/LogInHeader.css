@@ -49,6 +49,10 @@
 }
 
 .header-glow {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
   height: 30px;
   background: linear-gradient(
     180deg,

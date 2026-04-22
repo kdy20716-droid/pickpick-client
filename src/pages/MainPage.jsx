@@ -3,7 +3,11 @@ import { useRef } from "react";
 import "./MainPage.css";
 import vsLogo from "../assets/vs-logo.svg";
 import { useMainPageAnimations } from "../hooks/useMainPageAnimations.js";
+import { useScrollToVote } from "./animations/useScrollToVote.js";
+import { mainRouteTransitions } from "./animations/routeTransitions.js";
 import { featuredVote } from "../data/votes.js";
+
+const voteLinkState = { transition: mainRouteTransitions.link };
 
 const copy = {
   navLabel: "주요 메뉴",
@@ -21,12 +25,16 @@ export default function MainPage() {
   const pageRef = useRef(null);
 
   useMainPageAnimations(pageRef);
+  const isLeavingForVote = useScrollToVote();
 
   // votes.js에서 가져온 실제 투표 데이터 연동
   const { title, leftCandidate, rightCandidate } = featuredVote;
 
   return (
-    <div ref={pageRef}>
+    <div
+      ref={pageRef}
+      className={`main-page${isLeavingForVote ? " is-leaving-for-vote" : ""}`}
+    >
       <main className="page-main">
         <section className="hero">
           <h1>
@@ -46,6 +54,7 @@ export default function MainPage() {
             <div className="vote-match">
               <Link
                 to="/vote"
+                state={voteLinkState}
                 className="candidate-card"
                 aria-label={`${leftCandidate.name}${copy.candidateSuffix}`}
               >
@@ -59,6 +68,7 @@ export default function MainPage() {
 
               <Link
                 to="/vote"
+                state={voteLinkState}
                 className="candidate-card"
                 aria-label={`${rightCandidate.name}${copy.candidateSuffix}`}
               >
@@ -69,7 +79,7 @@ export default function MainPage() {
           </article>
         </section>
 
-        <Link to="/vote" className="next-vote">
+        <Link to="/vote" state={voteLinkState} className="next-vote">
           {copy.nextVote}
         </Link>
       </main>
