@@ -18,7 +18,6 @@ export default function Signin() {
 
   // ✅ 3️⃣ 체크박스 상태
   const [checks, setChecks] = useState({
-    realname: false,
     required: false,
     marketing: false,
   });
@@ -46,11 +45,6 @@ export default function Signin() {
   // 제출
   const handleSubmit = (e) => {
     e.preventDefault();
-
-    if (!checks.realname) {
-      alert("실명 인증은 필수입니다.");
-      return;
-    }
 
     if (!checks.required) {
       alert("필수 약관에 동의해주세요.");
@@ -216,14 +210,7 @@ export default function Signin() {
         {/* 비밀번호 찾기 연결 */}
         <div
           style={{ textAlign: "center", marginTop: "15px", fontSize: "14px" }}
-        >
-          <Link
-            to="/findpass"
-            style={{ color: "#666", textDecoration: "none" }}
-          >
-            비밀번호 찾기
-          </Link>
-        </div>
+        ></div>
       </div>
     </div>
   );
