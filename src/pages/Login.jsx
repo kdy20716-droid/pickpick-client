@@ -1,22 +1,39 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import "./Login.css";
 
 export default function Login() {
   const [form, setForm] = useState({ username: "", password: "" });
-  const [msg, setMsg] = useState("");
+  const [showModal, setShowModal] = useState(false);
 
   const handleLogin = (e) => {
     e.preventDefault();
     if (form.username === "admin" && form.password === "1234") {
-      setMsg("로그인 성공!");
+      alert("로그인 성공!");
     } else {
-      setMsg("아이디 또는 비밀번호 오류");
+      setShowModal(true);
     }
   };
 
+  // 모달 자동 닫기 (선택 사항)
+  useEffect(() => {
+    if (showModal) {
+      const timer = setTimeout(() => {
+        setShowModal(false);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [showModal]);
+
   return (
     <div className="container">
+      {/* 상단 모달 */}
+      {showModal && (
+        <div className="error-modal">
+          <p>비밀번호가 틀렸습니다</p>
+        </div>
+      )}
+
       <div className="login-box">
         <h1>PICKPICK</h1>
 
@@ -52,14 +69,23 @@ export default function Login() {
           {/* 로그인 버튼 */}
           <button type="submit">Login</button>
 
-          {/* 비밀번호 찾기 */}
+          {/* 비밀번호 찾기 및 회원가입 */}
           <div className="forgot">
-            <Link to="/findpass">비밀번호를 잊으셨습니까?</Link>
+            <a
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                alert("비밀번호 찾기 페이지로 이동");
+              }}
+            >
+              비밀번호를 잊으셨습니까?
+            </a>
+            <div className="signup-link">
+              <span>계정이 없으신가요? </span>
+              <Link to="/signin">회원가입</Link>
+            </div>
           </div>
         </form>
-
-        {/* 메시지 */}
-        {msg && <p id="message">{msg}</p>}
       </div>
     </div>
   );
