@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { login } from "../api/users";
 import "./Login.css";
@@ -7,6 +7,7 @@ export default function Login() {
   const navigate = useNavigate();
   const [form, setForm] = useState({ username: "", password: "" });
   const [showModal, setShowModal] = useState(false);
+  const [msg, setMsg] = useState("");
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -24,7 +25,10 @@ export default function Login() {
       }, 500);
     } catch (error) {
       console.error(error);
-      setMsg(error.response?.data?.message || "아이디 또는 비밀번호 오류");
+      const errorMsg =
+        error.response?.data?.message || "아이디 또는 비밀번호 오류";
+      setMsg(errorMsg);
+      setShowModal(true); // 에러 발생 시 모달 표시
     }
   };
 
@@ -40,10 +44,10 @@ export default function Login() {
 
   return (
     <div className="container">
-      {/* 상단 모달 */}
+      {/* 상단 모달 (에러 메시지 표시) */}
       {showModal && (
         <div className="error-modal">
-          <p>비밀번호가 틀렸습니다</p>
+          <p>{msg}</p>
         </div>
       )}
 
@@ -84,21 +88,16 @@ export default function Login() {
 
           {/* 비밀번호 찾기 및 회원가입 */}
           <div className="forgot">
-            <a
-              href="#"
-              onClick={(e) => {
-                e.preventDefault();
-                alert("비밀번호 찾기 페이지로 이동");
-              }}
-            >
-              비밀번호를 잊으셨습니까?
-            </a>
+            <Link to="/findpass">비밀번호를 잊으셨습니까?</Link>
             <div className="signup-link">
               <span>계정이 없으신가요? </span>
               <Link to="/signin">회원가입</Link>
             </div>
           </div>
         </form>
+
+        {/* 메시지 표시 (성공 시 등) */}
+        {!showModal && msg && <p id="message">{msg}</p>}
       </div>
     </div>
   );
