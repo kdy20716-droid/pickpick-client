@@ -1,23 +1,23 @@
 import { createBrowserRouter } from "react-router-dom";
-import Result from "./pages/Result";
 import Layout from "./components/Layout";
-import MainPage from "./pages/MainPage.jsx";
-import Signin from "./pages/Signin.jsx";
-import Findpass from "./pages/Findpass.jsx";
-import Ranking from "./pages/Ranking.jsx";
+import MainPage from "./pages/MainPage";
+import Login from "./pages/Login";
+import Signin from "./pages/Signin";
+import Findpass from "./pages/Findpass";
+import Ranking from "./pages/Ranking";
+import Result from "./pages/Result";
+import Create from "./pages/Create";
+import VotePage from "./pages/VotePage";
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <Layout />,
     children: [
+      { index: true, element: <MainPage /> },
       {
-        index: true,
-        element: <MainPage />,
-      },
-      {
-        path: "/result",
-        element: <Result />,
+        path: "/login",
+        element: <Login />,
       },
       {
         path: "/signin",
@@ -30,6 +30,18 @@ const router = createBrowserRouter([
       {
         path: "/ranking",
         element: <Ranking />,
+      },
+      {
+        path: "/result",
+        element: <Result />,
+      },
+      {
+        path: "/create",
+        element: <Create />,
+      },
+      {
+        path: "/vote",
+        element: <VotePage />,
       },
     ],
   },

@@ -1,422 +1,217 @@
-import { useRef, useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
+import CommentItem from "./CommentItem.jsx";
+import { commentSeedItems } from "./comments.js";
 import "../pages/comments.css";
 
-const initialComments = [
-  {
-    id: 1,
-    name: "지존 지훈",
-    text: "1빠",
-    createdAt: Date.now() - 1000 * 60 * 60 * 2,
-    likes: 54,
-    dislikes: 0,
-    replyItems: [],
-  },
-  {
-    id: 2,
-    name: "어그로꾼",
-    text: "얘들아 내가 재밌는 얘기 해줄게...더보기",
-    createdAt: Date.now() - 1000 * 60 * 60 * 5,
-    likes: 128,
-    dislikes: 3,
-    replyItems: [
-      {
-        id: 201,
-        name: "반박러",
-        text: "안 궁금한데 계속 해봐",
-        createdAt: Date.now() - 1000 * 60 * 60 * 4,
-        likes: 12,
-      },
-      {
-        id: 202,
-        name: "구경꾼",
-        text: "그래서 다음이 뭔데?",
-        createdAt: Date.now() - 1000 * 60 * 60 * 3,
-        likes: 7,
-      },
-      {
-        id: 203,
-        name: "웃참실패",
-        text: "이미 재밌다",
-        createdAt: Date.now() - 1000 * 60 * 60,
-        likes: 3,
-      },
-    ],
-  },
-  {
-    id: 3,
-    name: "차미새",
-    text: "o(*≧▽≦)ツ",
-    createdAt: Date.now() - 1000 * 60 * 30,
-    likes: 234,
-    dislikes: 1,
-    replyItems: [
-      {
-        id: 301,
-        name: "팬1",
-        text: "이 이모티콘 너무 귀엽다",
-        createdAt: Date.now() - 1000 * 60 * 20,
-        likes: 21,
-      },
-      {
-        id: 302,
-        name: "팬2",
-        text: "오늘도 등장했다",
-        createdAt: Date.now() - 1000 * 60 * 10,
-        likes: 8,
-      },
-    ],
-  },
-  {
-    id: 4,
-    name: "익명",
-    text: "＼(((￣▽￣)))／",
-    createdAt: Date.now() - 1000 * 60 * 5,
-    likes: 2,
-    dislikes: 0,
-    replyItems: [
-      {
-        id: 401,
-        name: "지나가던 사람",
-        text: "텐션 좋네",
-        createdAt: Date.now() - 1000 * 60 * 4,
-        likes: 1,
-      },
-      {
-        id: 402,
-        name: "익명2",
-        text: "나도 따라 해봄",
-        createdAt: Date.now() - 1000 * 60 * 2,
-        likes: 0,
-      },
-    ],
-  },
-];
+const COMMENT_OVERLAY_BREAKPOINT = 1320;
 
-function formatRelativeTime(createdAt) {
-  const diffMinutes = Math.max(0, Math.floor((Date.now() - createdAt) / 60000));
-
-  if (diffMinutes < 1) {
-    return "방금 전";
-  }
-
-  if (diffMinutes < 60) {
-    return `${diffMinutes}분 전`;
-  }
-
-  const diffHours = Math.floor(diffMinutes / 60);
-  if (diffHours < 24) {
-    return `${diffHours}시간 전`;
-  }
-
-  const diffDays = Math.floor(diffHours / 24);
-  return `${diffDays}일 전`;
+function getSeedCreatedAt(item) {
+  const minutesAgo = item.minutesAgo ?? item.hoursAgo * 60;
+  return Date.now() - minutesAgo * 60 * 1000;
 }
 
-function LikeIcon({ isActive = false }) {
-  return (
-    <svg
-      className={`like-icon${isActive ? " is-filled" : ""}`}
-      viewBox="0 0 24 24"
-      aria-hidden="true"
-      focusable="false"
-    >
-      <path
-        d="M9 21H6.2a1.2 1.2 0 0 1-1.2-1.2V11a1.2 1.2 0 0 1 1.2-1.2H9m0 11V9.2l3.2-5.1A1.3 1.3 0 0 1 14.6 5l-.5 4.8h4.7a1.8 1.8 0 0 1 1.8 2.1l-1.1 6.8A2.8 2.8 0 0 1 16.8 21H9Z"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
+function createInitialComments() {
+  return commentSeedItems.map((comment) => ({
+    ...comment,
+    createdAt: getSeedCreatedAt(comment),
+    reaction: null,
+    replyItems: comment.replyItems.map((reply) => ({
+      ...reply,
+      createdAt: getSeedCreatedAt(reply),
+    })),
+  }));
 }
 
-function CommentIcon({ isActive = false }) {
-  return (
-    <svg
-      className={`comment-icon${isActive ? " is-filled" : ""}`}
-      viewBox="0 0 24 24"
-      aria-hidden="true"
-      focusable="false"
-    >
-      <path
-        d="M6.8 18.5 4 20V6.8A1.8 1.8 0 0 1 5.8 5h12.4A1.8 1.8 0 0 1 20 6.8v8.4a1.8 1.8 0 0 1-1.8 1.8H6.8Z"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
+function updateReaction(comment, nextReaction) {
+  const hadLike = comment.reaction === "like";
+  const hadDislike = comment.reaction === "dislike";
+  const willLike = nextReaction === "like" && !hadLike;
+  const willDislike = nextReaction === "dislike" && !hadDislike;
+
+  return {
+    ...comment,
+    likes: Math.max(0, comment.likes + (willLike ? 1 : 0) - (hadLike ? 1 : 0)),
+    dislikes: Math.max(
+      0,
+      comment.dislikes + (willDislike ? 1 : 0) - (hadDislike ? 1 : 0),
+    ),
+    reaction: willLike ? "like" : willDislike ? "dislike" : null,
+  };
 }
 
-function DislikeIcon({ isActive = false }) {
-  return (
-    <svg
-      className={`dislike-icon${isActive ? " is-filled" : ""}`}
-      viewBox="0 0 24 24"
-      aria-hidden="true"
-      focusable="false"
-    >
-      <path
-        d="M15 3h2.8A1.2 1.2 0 0 1 19 4.2V13a1.2 1.2 0 0 1-1.2 1.2H15M15 3v11.8l-3.2 5.1a1.3 1.3 0 0 1-2.4-.9l.5-4.8H5.2A1.8 1.8 0 0 1 3.4 12l1.1-6.8A2.8 2.8 0 0 1 7.2 3H15Z"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
-function TrashIcon() {
-  return (
-    <svg
-      className="trash-icon"
-      viewBox="0 0 24 24"
-      aria-hidden="true"
-      focusable="false"
-    >
-      <path
-        d="M4 7h16M9 7V5.8A1.8 1.8 0 0 1 10.8 4h2.4A1.8 1.8 0 0 1 15 5.8V7m-8.8 0 .7 10.1A2 2 0 0 0 8.9 19h6.2a2 2 0 0 0 2-1.9L17.8 7M10 10.5v5.5M14 10.5v5.5"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
-function ReplyItem({ reply }) {
-  return (
-    <div className="reply-item">
-      <div className="avatar small"></div>
-      <div className="reply-content">
-        <div className="name-row">
-          <span className="name">{reply.name}</span>
-          <span className="time-label">{formatRelativeTime(reply.createdAt)}</span>
-        </div>
-        <p className="comment-text">{reply.text}</p>
-      </div>
-    </div>
-  );
-}
-
-function CommentItem({
-  comment,
-  isOpen,
-  replyDraft,
-  isMenuOpen,
-  onLike,
-  onDislike,
-  onToggleReplies,
-  onReplyDraftChange,
-  onAddReply,
-  onToggleMenu,
-  onDeleteComment,
-}) {
-  const replyCount = comment.replyItems.length;
-
-  return (
-    <div className="comment">
-      <div className="avatar"></div>
-      <div className="content">
-        <div className="top-row">
-          <div className="name-row">
-            <span className="name">{comment.name}</span>
-            <span className="time-label">
-              {formatRelativeTime(comment.createdAt)}
-            </span>
-          </div>
-          <div className="comment-menu-wrap">
-            <button
-              type="button"
-              className="menu-button"
-              onClick={() => onToggleMenu(comment.id)}
-              aria-label="댓글 메뉴 열기"
-            >
-              •••
-            </button>
-            {isMenuOpen && (
-              <button
-                type="button"
-                className="comment-delete"
-                onClick={() => onDeleteComment(comment.id)}
-              >
-                <TrashIcon />
-                댓글 삭제
-              </button>
-            )}
-          </div>
-        </div>
-        <p className="comment-text">{comment.text}</p>
-        <div className="comment-meta">
-          <div className="actions">
-            <button
-              type="button"
-              className={`action-button like-button${comment.reaction === "like" ? " is-active" : ""}`}
-              onClick={() => onLike(comment.id)}
-            >
-              <LikeIcon isActive={comment.reaction === "like"} />
-              <span>{comment.likes}</span>
-            </button>
-            <button
-              type="button"
-              className={`action-button dislike-button${comment.reaction === "dislike" ? " is-active" : ""}`}
-              onClick={() => onDislike(comment.id)}
-            >
-              <DislikeIcon isActive={comment.reaction === "dislike"} />
-              <span>{comment.dislikes || 0}</span>
-            </button>
-            <button
-              type="button"
-              className={`action-button comment-button${isOpen ? " is-active" : ""}`}
-              onClick={() => onToggleReplies(comment.id)}
-            >
-              <CommentIcon isActive={isOpen} />
-              <span>{replyCount > 0 ? replyCount : ""}</span>
-            </button>
-          </div>
-          <button
-            type="button"
-            className={`reply${isOpen ? " is-active" : ""}`}
-            onClick={() => onToggleReplies(comment.id)}
-          >
-            {isOpen
-              ? "답글 숨기기"
-              : replyCount > 0
-                ? `답글 ${replyCount}개`
-                : "답글 달기"}
-          </button>
-        </div>
-        {isOpen && (
-          <>
-            {replyCount > 0 && (
-              <div className="reply-list">
-                {comment.replyItems.map((reply) => (
-                  <ReplyItem key={reply.id} reply={reply} />
-                ))}
-              </div>
-            )}
-            <div className="reply-input">
-              <input
-                type="text"
-                placeholder="답글 추가..."
-                value={replyDraft}
-                onChange={(event) =>
-                  onReplyDraftChange(comment.id, event.target.value)
-                }
-                onKeyDown={(event) => {
-                  if (event.nativeEvent.isComposing || event.repeat) {
-                    return;
-                  }
-
-                  if (event.key === "Enter") {
-                    onAddReply(comment.id);
-                  }
-                }}
-              />
-              <button
-                type="button"
-                className="reply-submit"
-                onClick={() => onAddReply(comment.id)}
-              >
-                등록
-              </button>
-            </div>
-          </>
-        )}
-      </div>
-    </div>
-  );
-}
-
-export default function Comments({ setOpen }) {
-  const [comments, setComments] = useState(initialComments);
+export default function Comments({ title, targetCardId, onClose }) {
+  const [comments, setComments] = useState(createInitialComments);
+  const [newComment, setNewComment] = useState("");
   const [openReplies, setOpenReplies] = useState({});
   const [replyDrafts, setReplyDrafts] = useState({});
   const [openMenuId, setOpenMenuId] = useState(null);
-  const [newComment, setNewComment] = useState("");
+  const modalRef = useRef(null);
   const lastCommentSubmitRef = useRef({ text: "", time: 0 });
   const lastReplySubmitRef = useRef({});
 
-  const handleLike = (commentId) => {
-    setComments((prevComments) =>
-      prevComments.map((comment) =>
-        comment.id === commentId
-          ? {
-              ...comment,
-              likes:
-                comment.reaction === "like"
-                  ? Math.max(0, comment.likes - 1)
-                  : comment.likes + 1,
-              dislikes:
-                comment.reaction === "dislike"
-                  ? Math.max(0, (comment.dislikes || 0) - 1)
-                  : comment.dislikes || 0,
-              reaction: comment.reaction === "like" ? null : "like",
-            }
-          : comment,
+  useLayoutEffect(() => {
+    const modal = modalRef.current;
+    if (!modal) {
+      return undefined;
+    }
+
+    const page = modal.closest(".vote-page");
+    const compactLayoutQuery = window.matchMedia(
+      `(max-width: ${COMMENT_OVERLAY_BREAKPOINT}px)`,
+    );
+    let frameId = 0;
+    let settleTimeoutId = 0;
+
+    const getTargetVoteSheet = () => {
+      const targetCard = targetCardId
+        ? document.getElementById(targetCardId)
+        : null;
+
+      return (
+        targetCard?.querySelector(".vote-sheet") ??
+        document.querySelector(".vote-feed-item.is-active .vote-sheet") ??
+        document.querySelector(".vote-sheet")
+      );
+    };
+
+    const syncModalSize = () => {
+      if (compactLayoutQuery.matches) {
+        page?.style.removeProperty("--vote-comment-sheet-width");
+        page?.style.removeProperty("--vote-comment-group-shift");
+      } else {
+        page?.style.setProperty("--vote-comment-group-shift", "0px");
+      }
+
+      const voteSheet = getTargetVoteSheet();
+      if (!voteSheet) {
+        return;
+      }
+
+      const targetCard = targetCardId
+        ? document.getElementById(targetCardId)
+        : null;
+      const actionRail = targetCard?.querySelector(".vote-action-rail");
+      let sheetRect = voteSheet.getBoundingClientRect();
+      let railRect = actionRail?.getBoundingClientRect();
+      const modalWidth = modal.getBoundingClientRect().width;
+
+      if (railRect && !compactLayoutQuery.matches) {
+        const sheetToRailGap = Math.max(0, railRect.left - sheetRect.right);
+        const maxSheetWidth = Math.max(
+          420,
+          Math.min(
+            850,
+            window.innerWidth -
+              modalWidth -
+              railRect.width -
+              sheetToRailGap * 2 -
+              48,
+          ),
+        );
+        page?.style.setProperty(
+          "--vote-comment-sheet-width",
+          `${Math.round(maxSheetWidth)}px`,
+        );
+        page?.style.setProperty("--vote-comment-group-shift", "0px");
+
+        sheetRect = voteSheet.getBoundingClientRect();
+        railRect = actionRail.getBoundingClientRect();
+
+        const settledGap = Math.max(0, railRect.left - sheetRect.right);
+        const groupWidth =
+          sheetRect.width +
+          settledGap +
+          railRect.width +
+          settledGap +
+          modalWidth;
+        const centeredGroupLeft = (window.innerWidth - groupWidth) / 2;
+        const nextGroupLeft = Math.max(24, centeredGroupLeft);
+        const nextShift = nextGroupLeft - sheetRect.left;
+        const nextModalLeft =
+          nextGroupLeft +
+          sheetRect.width +
+          settledGap +
+          railRect.width +
+          settledGap;
+
+        page?.style.setProperty("--vote-comment-group-shift", `${nextShift}px`);
+        modal.style.setProperty("--comment-modal-left", `${nextModalLeft}px`);
+        modal.style.setProperty("--comment-modal-right", "auto");
+      }
+
+      modal.style.setProperty("--comment-modal-top", `${sheetRect.top}px`);
+      modal.style.setProperty(
+        "--comment-modal-height",
+        `${sheetRect.height}px`,
+      );
+    };
+
+    const scheduleSync = () => {
+      if (frameId) {
+        cancelAnimationFrame(frameId);
+      }
+
+      frameId = requestAnimationFrame(syncModalSize);
+    };
+
+    syncModalSize();
+    settleTimeoutId = window.setTimeout(scheduleSync, 280);
+
+    const targetVoteSheet = getTargetVoteSheet();
+    const feed = document.querySelector(".vote-feed");
+    const resizeObserver =
+      window.ResizeObserver && targetVoteSheet
+        ? new ResizeObserver(scheduleSync)
+        : null;
+
+    resizeObserver?.observe(targetVoteSheet);
+    window.addEventListener("resize", scheduleSync);
+    feed?.addEventListener("scroll", scheduleSync, { passive: true });
+
+    return () => {
+      if (frameId) {
+        cancelAnimationFrame(frameId);
+      }
+
+      window.clearTimeout(settleTimeoutId);
+      resizeObserver?.disconnect();
+      page?.style.removeProperty("--vote-comment-sheet-width");
+      page?.style.removeProperty("--vote-comment-group-shift");
+      window.removeEventListener("resize", scheduleSync);
+      feed?.removeEventListener("scroll", scheduleSync);
+    };
+  }, [targetCardId]);
+
+  const handleReaction = (commentId, reaction) => {
+    setComments((currentComments) =>
+      currentComments.map((comment) =>
+        comment.id === commentId ? updateReaction(comment, reaction) : comment,
       ),
     );
-  };
-
-  const handleDislike = (commentId) => {
-    setComments((prevComments) =>
-      prevComments.map((comment) =>
-        comment.id === commentId
-          ? {
-              ...comment,
-              likes:
-                comment.reaction === "like"
-                  ? Math.max(0, comment.likes - 1)
-                  : comment.likes,
-              dislikes:
-                comment.reaction === "dislike"
-                  ? Math.max(0, (comment.dislikes || 0) - 1)
-                  : (comment.dislikes || 0) + 1,
-              reaction: comment.reaction === "dislike" ? null : "dislike",
-            }
-          : comment,
-      ),
-    );
-  };
-
-  const handleToggleReplies = (commentId) => {
-    setOpenReplies((prevOpenReplies) => ({
-      ...prevOpenReplies,
-      [commentId]: !prevOpenReplies[commentId],
-    }));
   };
 
   const handleAddComment = () => {
-    const trimmedComment = newComment.trim();
+    const text = newComment.trim();
     const now = Date.now();
 
-    if (!trimmedComment) {
+    if (!text) {
       return;
     }
 
     if (
-      lastCommentSubmitRef.current.text === trimmedComment &&
+      lastCommentSubmitRef.current.text === text &&
       now - lastCommentSubmitRef.current.time < 800
     ) {
       return;
     }
 
-    lastCommentSubmitRef.current = { text: trimmedComment, time: now };
-
-    setComments((prevComments) => [
-      ...prevComments,
+    lastCommentSubmitRef.current = { text, time: now };
+    setComments((currentComments) => [
+      ...currentComments,
       {
         id: now,
         name: "익명",
-        text: trimmedComment,
+        text,
         createdAt: now,
         likes: 0,
         dislikes: 0,
@@ -427,63 +222,40 @@ export default function Comments({ setOpen }) {
     setNewComment("");
   };
 
-  const handleToggleMenu = (commentId) => {
-    setOpenMenuId((prevOpenMenuId) =>
-      prevOpenMenuId === commentId ? null : commentId,
-    );
-  };
-
-  const handleDeleteComment = (commentId) => {
-    setComments((prevComments) =>
-      prevComments.filter((comment) => comment.id !== commentId),
-    );
-
-    setOpenReplies((prevOpenReplies) => {
-      const nextOpenReplies = { ...prevOpenReplies };
-      delete nextOpenReplies[commentId];
-      return nextOpenReplies;
-    });
-
-    setReplyDrafts((prevReplyDrafts) => {
-      const nextReplyDrafts = { ...prevReplyDrafts };
-      delete nextReplyDrafts[commentId];
-      return nextReplyDrafts;
-    });
-
-    setOpenMenuId(null);
+  const handleToggleReplies = (commentId) => {
+    setOpenReplies((currentOpenReplies) => ({
+      ...currentOpenReplies,
+      [commentId]: !currentOpenReplies[commentId],
+    }));
   };
 
   const handleReplyDraftChange = (commentId, value) => {
-    setReplyDrafts((prevReplyDrafts) => ({
-      ...prevReplyDrafts,
+    setReplyDrafts((currentReplyDrafts) => ({
+      ...currentReplyDrafts,
       [commentId]: value,
     }));
   };
 
   const handleAddReply = (commentId) => {
-    const trimmedReply = (replyDrafts[commentId] || "").trim();
+    const text = (replyDrafts[commentId] ?? "").trim();
     const now = Date.now();
+    const lastSubmit = lastReplySubmitRef.current[commentId];
 
-    if (!trimmedReply) {
+    if (!text) {
       return;
     }
 
-    const lastReplySubmit = lastReplySubmitRef.current[commentId];
-    if (
-      lastReplySubmit &&
-      lastReplySubmit.text === trimmedReply &&
-      now - lastReplySubmit.time < 800
-    ) {
+    if (lastSubmit?.text === text && now - lastSubmit.time < 800) {
       return;
     }
 
     lastReplySubmitRef.current = {
       ...lastReplySubmitRef.current,
-      [commentId]: { text: trimmedReply, time: now },
+      [commentId]: { text, time: now },
     };
 
-    setComments((prevComments) =>
-      prevComments.map((comment) =>
+    setComments((currentComments) =>
+      currentComments.map((comment) =>
         comment.id === commentId
           ? {
               ...comment,
@@ -492,7 +264,7 @@ export default function Comments({ setOpen }) {
                 {
                   id: now + commentId,
                   name: "익명",
-                  text: trimmedReply,
+                  text,
                   createdAt: now,
                   likes: 0,
                 },
@@ -502,40 +274,69 @@ export default function Comments({ setOpen }) {
       ),
     );
 
-    setReplyDrafts((prevReplyDrafts) => ({
-      ...prevReplyDrafts,
+    setReplyDrafts((currentReplyDrafts) => ({
+      ...currentReplyDrafts,
       [commentId]: "",
     }));
 
-    setOpenReplies((prevOpenReplies) => ({
-      ...prevOpenReplies,
+    setOpenReplies((currentOpenReplies) => ({
+      ...currentOpenReplies,
       [commentId]: true,
     }));
   };
 
-  const handleInputKeyDown = (event) => {
-    if (event.nativeEvent.isComposing || event.repeat) {
-      return;
-    }
+  const handleToggleMenu = (commentId) => {
+    setOpenMenuId((currentOpenMenuId) =>
+      currentOpenMenuId === commentId ? null : commentId,
+    );
+  };
 
-    if (event.key === "Enter") {
-      handleAddComment();
-    }
+  const handleDeleteComment = (commentId) => {
+    setComments((currentComments) =>
+      currentComments.filter((comment) => comment.id !== commentId),
+    );
+
+    setOpenReplies((currentOpenReplies) => {
+      const nextOpenReplies = { ...currentOpenReplies };
+      delete nextOpenReplies[commentId];
+      return nextOpenReplies;
+    });
+
+    setReplyDrafts((currentReplyDrafts) => {
+      const nextReplyDrafts = { ...currentReplyDrafts };
+      delete nextReplyDrafts[commentId];
+      return nextReplyDrafts;
+    });
+
+    setOpenMenuId(null);
   };
 
   return (
-    <div className="modal-background" onClick={() => setOpen(false)}>
-      <div className="modal" onClick={(event) => event.stopPropagation()}>
-        <div className="modal-header">
-          <span>댓글 {comments.length}</span>
+    <div className="comment-modal-layer">
+      <button
+        type="button"
+        className="comment-modal-backdrop"
+        aria-label="댓글창 닫기"
+        onClick={onClose}
+      />
+      <aside
+        ref={modalRef}
+        className="comment-modal"
+        aria-label={`${title} 댓글`}
+      >
+        <header className="comment-modal-header">
+          <div>
+            <span className="comment-modal-label">댓글</span>
+            <h2>{title}</h2>
+          </div>
           <button
-            className="close"
             type="button"
-            onClick={() => setOpen(false)}
+            className="comment-modal-close"
+            onClick={onClose}
           >
-            ×
+            닫기
           </button>
-        </div>
+        </header>
 
         <div className="comment-list">
           {comments.map((comment) => (
@@ -543,10 +344,10 @@ export default function Comments({ setOpen }) {
               key={comment.id}
               comment={comment}
               isOpen={Boolean(openReplies[comment.id])}
-              replyDraft={replyDrafts[comment.id] || ""}
+              replyDraft={replyDrafts[comment.id] ?? ""}
               isMenuOpen={openMenuId === comment.id}
-              onLike={handleLike}
-              onDislike={handleDislike}
+              onLike={(commentId) => handleReaction(commentId, "like")}
+              onDislike={(commentId) => handleReaction(commentId, "dislike")}
               onToggleReplies={handleToggleReplies}
               onReplyDraftChange={handleReplyDraftChange}
               onAddReply={handleAddReply}
@@ -556,14 +357,22 @@ export default function Comments({ setOpen }) {
           ))}
         </div>
 
-        <div className="comment-input">
-          <div className="avatar small"></div>
+        <footer className="comment-input">
+          <div className="comment-avatar is-small" aria-hidden="true" />
           <input
             type="text"
-            placeholder="댓글 추가..."
             value={newComment}
+            placeholder="댓글 추가..."
             onChange={(event) => setNewComment(event.target.value)}
-            onKeyDown={handleInputKeyDown}
+            onKeyDown={(event) => {
+              if (event.nativeEvent.isComposing || event.repeat) {
+                return;
+              }
+
+              if (event.key === "Enter") {
+                handleAddComment();
+              }
+            }}
           />
           <button
             type="button"
@@ -572,8 +381,8 @@ export default function Comments({ setOpen }) {
           >
             등록
           </button>
-        </div>
-      </div>
+        </footer>
+      </aside>
     </div>
   );
 }

@@ -3,10 +3,12 @@ import Header from "./Header";
 
 const Layout = () => {
   return (
-    <div className="page-shell">
+    <div>
+      {/* 상단 메뉴바 (Header) */}
       <Header />
-      <main className="page-content">
-        {/* Outlet 자리에 현재 경로에 element 페이지 컴포넌트가 들어감 */}
+
+      {/* 하단 페이지 내용 (MainPage, LoginPage 등이 여기에 렌더링됨) */}
+      <main>
         <Outlet />
       </main>
     </div>
