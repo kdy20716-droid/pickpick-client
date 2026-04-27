@@ -1,16 +1,164 @@
-.vote-container {
-  max-width: 700px;
-  margin: 60px auto;
-  padding: 20px;
-  background-color: white;
-  border-radius: 20px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+/* 컨테이너 및 배경 설정 */
+.result-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  background-color: #fcfcfc; /* 배경을 약간 밝게 */
 }
 
-.vote-title {
-  text-align: center;
-  font-size: 1.25rem;
+/* 검색바 */
+.search-bar {
+  position: relative;
+  width: 400px;
+  margin: 0 auto 40px;
+}
+.search-bar input {
+  width: 100%;
+  padding: 12px 20px;
+  border-radius: 25px;
+  border: 1px solid #eee;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+  outline: none;
+}
+.search-icon {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #f1a0c0;
+}
+
+/* 메인 카드 (흰 배경의 큰 박스) */
+.result-card {
+  background: white;
+  border-radius: 20px;
+  padding: 50px 30px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 40px; /* 항목 간 간격 */
+}
+
+/* 각 투표 항목 */
+.result-item {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  padding-bottom: 30px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.result-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.result-title {
+  font-size: 1.2rem;
   font-weight: 700;
-  margin-bottom: 50px;
-  color: #222;
+  color: #333;
+  margin: 0;
+  text-align: left;
+}
+
+/* 각 결과 행 */
+.result-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+/* 후보군 (이미지+퍼센트) */
+.candidate {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  width: 100px; /* 고정 너비로 정렬 유지 */
+}
+
+.img-wrapper {
+  width: 85px;
+  height: 85px;
+  border-radius: 20px;
+  overflow: hidden;
+  background: #f0f0f0;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+.img-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.crown {
+  position: absolute;
+  top: -20px;
+  font-size: 26px;
+  z-index: 5;
+}
+
+.percent {
+  margin-top: 10px;
+  font-weight: 700;
+  color: #444;
+  font-size: 16px;
+}
+
+/* 중앙 게이지 바 */
+.gauge-track {
+  flex: 1; /* 중간 공간 모두 차지 */
+  height: 48px;
+  background: #eee; /* 기본 배경 회색 */
+  border-radius: 8px;
+  display: flex;
+  overflow: hidden;
+  position: relative;
+}
+
+.gauge-fill {
+  display: flex;
+  align-items: center;
+  font-size: 13px;
+  font-weight: bold;
+  transition: width 0.5s ease-out;
+  height: 100%;
+}
+
+.left-fill {
+  background-color: #f1a0c0; /* 메인 핑크 */
+  color: white;
+  padding-left: 15px;
+  justify-content: flex-start;
+}
+
+.right-fill {
+  background-color: #ffd1dc; /* 연한 핑크로 변경하여 대비 부여 */
+  color: #f1a0c0;
+  padding-right: 15px;
+  justify-content: flex-end;
+}
+
+.count {
+  white-space: nowrap;
+}
+
+/* 아이콘 버튼 */
+.icon-btn {
+  background: white;
+  border: 1px solid #eee;
+  width: 50px;
+  height: 50px;
+  border-radius: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  color: #999;
+}
+.icon-btn:hover {
+  background: #fdf2f6;
+  color: #f1a0c0;
 }

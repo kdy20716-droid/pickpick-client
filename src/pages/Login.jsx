@@ -1,17 +1,34 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { login } from "../api/users";
 import "./Login.css";
 
 export default function Login() {
+  const navigate = useNavigate();
   const [form, setForm] = useState({ username: "", password: "" });
   const [showModal, setShowModal] = useState(false);
+  const [msg, setMsg] = useState("");
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    if (form.username === "admin" && form.password === "1234") {
-      alert("로그인 성공!");
-    } else {
-      setShowModal(true);
+    try {
+      const data = await login(form);
+      // 로그인 성공 시 토큰과 유저 정보를 저장
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
+
+      setMsg("로그인 성공!");
+
+      // 약간의 지연 후 메인 페이지로 이동
+      setTimeout(() => {
+        navigate("/");
+      }, 500);
+    } catch (error) {
+      console.error(error);
+      const errorMsg =
+        error.response?.data?.message || "아이디 또는 비밀번호 오류";
+      setMsg(errorMsg);
+      setShowModal(true); // 에러 발생 시 모달 표시
     }
   };
 
@@ -27,10 +44,10 @@ export default function Login() {
 
   return (
     <div className="container">
-      {/* 상단 모달 */}
+      {/* 상단 모달 (에러 메시지 표시) */}
       {showModal && (
         <div className="error-modal">
-          <p>비밀번호가 틀렸습니다</p>
+          <p>{msg}</p>
         </div>
       )}
 
@@ -71,21 +88,16 @@ export default function Login() {
 
           {/* 비밀번호 찾기 및 회원가입 */}
           <div className="forgot">
-            <a
-              href="#"
-              onClick={(e) => {
-                e.preventDefault();
-                alert("비밀번호 찾기 페이지로 이동");
-              }}
-            >
-              비밀번호를 잊으셨습니까?
-            </a>
+            <Link to="/findpass">비밀번호를 잊으셨습니까?</Link>
             <div className="signup-link">
               <span>계정이 없으신가요? </span>
               <Link to="/signin">회원가입</Link>
             </div>
           </div>
         </form>
+
+        {/* 메시지 표시 (성공 시 등) */}
+        {!showModal && msg && <p id="message">{msg}</p>}
       </div>
     </div>
   );
