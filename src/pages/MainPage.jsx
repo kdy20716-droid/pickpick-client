@@ -1,11 +1,11 @@
 import { Link } from "react-router-dom";
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import "./MainPage.css";
 import vsLogo from "../assets/vs-logo.svg";
 import { useMainPageAnimations } from "../hooks/useMainPageAnimations.js";
 import { useScrollToVote } from "./animations/useScrollToVote.js";
 import { mainRouteTransitions } from "./animations/routeTransitions.js";
-import { featuredVote } from "../data/votes.js";
+import { getVote } from "../api/posts.js";
 
 const voteLinkState = { transition: mainRouteTransitions.link };
 
@@ -23,12 +23,42 @@ const copy = {
 
 export default function MainPage() {
   const pageRef = useRef(null);
+  const [featuredVote, setFeaturedVote] = useState(null);
 
   useMainPageAnimations(pageRef);
   const isLeavingForVote = useScrollToVote();
 
-  // votes.js에서 가져온 실제 투표 데이터 연동
-  const { title, leftCandidate, rightCandidate } = featuredVote;
+  useEffect(() => {
+    const fetchPopularVote = async () => {
+      try {
+        const data = await getVote();
+        if (data && data.length > 0) {
+          // 조회수 또는 투표수가 가장 높은 게시물을 인기 투표로 선정 (여기서는 총 투표수로 정렬)
+          const sortedData = data.sort((a, b) => {
+            const totalA = (a.candidate_a_count || 0) + (a.candidate_b_count || 0);
+            const totalB = (b.candidate_a_count || 0) + (b.candidate_b_count || 0);
+            return totalB - totalA;
+          });
+          
+          const item = sortedData[0];
+          setFeaturedVote({
+            title: item.title,
+            leftCandidate: {
+              name: item.candidate_a_name,
+              image: item.candidate_a_image ? `http://localhost:4000/uploads/${item.candidate_a_image}` : null,
+            },
+            rightCandidate: {
+              name: item.candidate_b_name,
+              image: item.candidate_b_image ? `http://localhost:4000/uploads/${item.candidate_b_image}` : null,
+            },
+          });
+        }
+      } catch (error) {
+        console.error("인기 투표를 불러오는데 실패했습니다.", error);
+      }
+    };
+    fetchPopularVote();
+  }, []);
 
   return (
     <div
@@ -49,32 +79,40 @@ export default function MainPage() {
           </div>
 
           <article className="vote-card">
-            <h2>{title}</h2>
+            <h2>{featuredVote ? featuredVote.title : "로딩 중..."}</h2>
 
             <div className="vote-match">
-              <Link
-                to="/vote"
-                state={voteLinkState}
-                className="candidate-card"
-                aria-label={`${leftCandidate.name}${copy.candidateSuffix}`}
-              >
-                <img src={leftCandidate.image} alt={leftCandidate.name} />
-                <span className="candidate-name">{leftCandidate.name}</span>
-              </Link>
+              {featuredVote && (
+                <>
+                  <Link
+                    to="/vote"
+                    state={voteLinkState}
+                    className="candidate-card"
+                    aria-label={`${featuredVote.leftCandidate.name}${copy.candidateSuffix}`}
+                  >
+                    {featuredVote.leftCandidate.image && (
+                      <img src={featuredVote.leftCandidate.image} alt={featuredVote.leftCandidate.name} />
+                    )}
+                    <span className="candidate-name">{featuredVote.leftCandidate.name}</span>
+                  </Link>
 
-              <div className="vs-mark" aria-hidden="true">
-                <img src={vsLogo} alt="" />
-              </div>
+                  <div className="vs-mark" aria-hidden="true">
+                    <img src={vsLogo} alt="" />
+                  </div>
 
-              <Link
-                to="/vote"
-                state={voteLinkState}
-                className="candidate-card"
-                aria-label={`${rightCandidate.name}${copy.candidateSuffix}`}
-              >
-                <img src={rightCandidate.image} alt={rightCandidate.name} />
-                <span className="candidate-name">{rightCandidate.name}</span>
-              </Link>
+                  <Link
+                    to="/vote"
+                    state={voteLinkState}
+                    className="candidate-card"
+                    aria-label={`${featuredVote.rightCandidate.name}${copy.candidateSuffix}`}
+                  >
+                    {featuredVote.rightCandidate.image && (
+                      <img src={featuredVote.rightCandidate.image} alt={featuredVote.rightCandidate.name} />
+                    )}
+                    <span className="candidate-name">{featuredVote.rightCandidate.name}</span>
+                  </Link>
+                </>
+              )}
             </div>
           </article>
         </section>

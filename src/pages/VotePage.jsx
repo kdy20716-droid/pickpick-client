@@ -251,8 +251,27 @@ export default function VotePage() {
   const location = useLocation();
   const entersFromMain = isMainRouteTransition(location.state?.transition);
   const [cards, setCards] = useState([]);
-  const [selectedVotes, setSelectedVotes] = useState({});
-  const [cardActions, setCardActions] = useState({});
+  
+  // 상태를 초기화할 때 localStorage에서 값을 가져옵니다.
+  const [selectedVotes, setSelectedVotes] = useState(() => {
+    const saved = localStorage.getItem("selectedVotes");
+    return saved ? JSON.parse(saved) : {};
+  });
+  
+  const [cardActions, setCardActions] = useState(() => {
+    const saved = localStorage.getItem("cardActions");
+    return saved ? JSON.parse(saved) : {};
+  });
+
+  // 상태가 변경될 때마다 localStorage에 저장합니다.
+  useEffect(() => {
+    localStorage.setItem("selectedVotes", JSON.stringify(selectedVotes));
+  }, [selectedVotes]);
+
+  useEffect(() => {
+    localStorage.setItem("cardActions", JSON.stringify(cardActions));
+  }, [cardActions]);
+
   const [copiedCardId, setCopiedCardId] = useState("");
   const [commentCardId, setCommentCardId] = useState("");
   const pageRef = useRef(null);
