@@ -16,7 +16,7 @@ import {
   getVoteFeedIdFromHash,
   getVoteHash,
 } from "./vote/voteCards.js";
-import { getVote } from "../api/posts.js";
+import { getVote, submitVote } from "../api/posts.js";
 
 const actionButtons = [
   {
@@ -283,24 +283,30 @@ export default function VotePage() {
     const fetchVotes = async () => {
       try {
         const data = await getVote();
-        const formattedCards = data.map((item, index) => ({
-          id: item.id.toString(),
-          feedId: `${item.id}-${index + 1}`,
-          title: item.title,
-          leftCandidate: {
-            id: "a",
-            name: item.candidate_a_name,
-            image: item.candidate_a_image ? `http://localhost:4000/uploads/${item.candidate_a_image}` : null,
-            tone: "light",
-          },
-          rightCandidate: {
-            id: "b",
-            name: item.candidate_b_name,
-            image: item.candidate_b_image ? `http://localhost:4000/uploads/${item.candidate_b_image}` : null,
-            tone: "dark",
-          },
-          shares: { left: 50, right: 50 },
-        }));
+        const formattedCards = data.map((item, index) => {
+          const totalVotes = (item.candidate_a_count || 0) + (item.candidate_b_count || 0);
+          const leftShare = totalVotes === 0 ? 50 : Math.round(((item.candidate_a_count || 0) / totalVotes) * 100);
+          const rightShare = totalVotes === 0 ? 50 : Math.round(((item.candidate_b_count || 0) / totalVotes) * 100);
+
+          return {
+            id: item.id.toString(),
+            feedId: `${item.id}-${index + 1}`,
+            title: item.title,
+            leftCandidate: {
+              id: "a",
+              name: item.candidate_a_name,
+              image: item.candidate_a_image ? `http://localhost:4000/uploads/${item.candidate_a_image}` : null,
+              tone: "light",
+            },
+            rightCandidate: {
+              id: "b",
+              name: item.candidate_b_name,
+              image: item.candidate_b_image ? `http://localhost:4000/uploads/${item.candidate_b_image}` : null,
+              tone: "dark",
+            },
+            shares: { left: leftShare, right: rightShare },
+          };
+        });
         setCards(formattedCards);
       } catch (error) {
         console.error("투표 목록을 불러오는데 실패했습니다.", error);
@@ -367,17 +373,44 @@ export default function VotePage() {
 
   useActiveVoteHash(activeCardId, location);
 
-  const handleVote = (cardId, candidateId) => {
-    setSelectedVotes((currentVotes) => {
-      if (currentVotes[cardId]) {
-        return currentVotes;
-      }
+  const handleVote = async (cardId, candidateId) => {
+    if (selectedVotes[cardId]) {
+      return;
+    }
 
-      return {
-        ...currentVotes,
-        [cardId]: candidateId,
-      };
-    });
+    const card = cards.find(c => c.feedId === cardId);
+    if (!card) return;
+
+    // 현재 접속 중인 유저 가져오기
+    const userStr = localStorage.getItem("user");
+    const user = userStr ? JSON.parse(userStr) : { id: 1 }; // 비로그인 시 임시로 1번 유저 사용
+
+    try {
+      const side = candidateId.toUpperCase(); // 'a' -> 'A', 'b' -> 'B'
+      const response = await submitVote(card.id, user.id, side);
+
+      if (response.success) {
+        // 서버에서 받아온 최신 투표수로 퍼센트 재계산
+        const counts = response.counts;
+        const totalVotes = counts.candidate_a_count + counts.candidate_b_count;
+        const leftShare = totalVotes === 0 ? 50 : Math.round((counts.candidate_a_count / totalVotes) * 100);
+        const rightShare = totalVotes === 0 ? 50 : Math.round((counts.candidate_b_count / totalVotes) * 100);
+
+        setCards(currentCards =>
+          currentCards.map(c =>
+            c.feedId === cardId ? { ...c, shares: { left: leftShare, right: rightShare } } : c
+          )
+        );
+
+        setSelectedVotes((currentVotes) => ({
+          ...currentVotes,
+          [cardId]: candidateId,
+        }));
+      }
+    } catch (error) {
+      console.error("투표 전송 에러:", error);
+      alert(error.response?.data?.message || "투표 처리에 실패했습니다.");
+    }
   };
 
   const handleToggleAction = (cardId, actionId) => {
