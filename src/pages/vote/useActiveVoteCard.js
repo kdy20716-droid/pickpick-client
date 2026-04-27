@@ -5,6 +5,12 @@ export function useActiveVoteCard(cards) {
   const feedRef = useRef(null);
   const cardRefs = useRef(new Map());
 
+  useEffect(() => {
+    if (!activeCardId && cards.length > 0) {
+      setActiveCardId(cards[0].feedId);
+    }
+  }, [cards, activeCardId]);
+
   const registerCardRef = (cardId) => (node) => {
     if (node) {
       cardRefs.current.set(cardId, node);

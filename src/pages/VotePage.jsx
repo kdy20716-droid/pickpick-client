@@ -16,6 +16,7 @@ import {
   getVoteFeedIdFromHash,
   getVoteHash,
 } from "./vote/voteCards.js";
+import { getVote } from "../api/posts.js";
 
 const actionButtons = [
   {
@@ -249,9 +250,7 @@ function VoteCard({
 export default function VotePage() {
   const location = useLocation();
   const entersFromMain = isMainRouteTransition(location.state?.transition);
-  const [cards] = useState(() =>
-    createVoteCards(getVoteFeedIdFromHash(location.hash)),
-  );
+  const [cards, setCards] = useState([]);
   const [selectedVotes, setSelectedVotes] = useState({});
   const [cardActions, setCardActions] = useState({});
   const [copiedCardId, setCopiedCardId] = useState("");
@@ -260,6 +259,36 @@ export default function VotePage() {
   const copyTimeoutRef = useRef(null);
   const { activeCardId, cardRefs, feedRef, registerCardRef } =
     useActiveVoteCard(cards);
+
+  useEffect(() => {
+    const fetchVotes = async () => {
+      try {
+        const data = await getVote();
+        const formattedCards = data.map((item, index) => ({
+          id: item.id.toString(),
+          feedId: `${item.id}-${index + 1}`,
+          title: item.title,
+          leftCandidate: {
+            id: "a",
+            name: item.candidate_a_name,
+            image: item.candidate_a_image ? `http://localhost:4000/uploads/${item.candidate_a_image}` : null,
+            tone: "light",
+          },
+          rightCandidate: {
+            id: "b",
+            name: item.candidate_b_name,
+            image: item.candidate_b_image ? `http://localhost:4000/uploads/${item.candidate_b_image}` : null,
+            tone: "dark",
+          },
+          shares: { left: 50, right: 50 },
+        }));
+        setCards(formattedCards);
+      } catch (error) {
+        console.error("투표 목록을 불러오는데 실패했습니다.", error);
+      }
+    };
+    fetchVotes();
+  }, []);
 
   useEffect(() => {
     return () => {
