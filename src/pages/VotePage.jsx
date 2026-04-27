@@ -1,4 +1,4 @@
-﻿import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import "./VotePage.css";
 import vsLogo from "../assets/vs-logo.svg";
@@ -12,10 +12,10 @@ import { useActiveVoteCard } from "./vote/useActiveVoteCard.js";
 import { useActiveVoteHash } from "./vote/useActiveVoteHash.js";
 import { useVotePageScrollSnap } from "./vote/useVotePageScrollSnap.js";
 import {
-  createVoteCards,
   getVoteFeedIdFromHash,
   getVoteHash,
 } from "./vote/voteCards.js";
+import { getVote, vote } from "../api/posts";
 
 const actionButtons = [
   {
@@ -189,7 +189,21 @@ function VoteCard({
                 disabled={hasVoted}
                 onClick={() => onSelect(card.feedId, candidate.id)}
               >
-                <img src={candidate.image} alt={candidate.name} />
+                <img
+                  src={
+                    candidate.image
+                      ? candidate.image.startsWith("http")
+                        ? candidate.image
+                        : `http://localhost:4000/${candidate.image.startsWith("uploads/") ? "" : "uploads/"}${candidate.image}`
+                      : ""
+                  }
+                  alt={candidate.name}
+                  onError={(e) => {
+                    console.error(`이미지 로드 실패: ${e.target.src}`);
+                    e.target.style.display = "none";
+                  }}
+                />
+
                 <span className="vote-choice-overlay" aria-hidden="true" />
                 <p className="vote-choice-name">{candidate.name}</p>
               </button>
@@ -249,9 +263,8 @@ function VoteCard({
 export default function VotePage() {
   const location = useLocation();
   const entersFromMain = isMainRouteTransition(location.state?.transition);
-  const [cards] = useState(() =>
-    createVoteCards(getVoteFeedIdFromHash(location.hash)),
-  );
+  const [cards, setCards] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [selectedVotes, setSelectedVotes] = useState({});
   const [cardActions, setCardActions] = useState({});
   const [copiedCardId, setCopiedCardId] = useState("");
@@ -260,6 +273,65 @@ export default function VotePage() {
   const copyTimeoutRef = useRef(null);
   const { activeCardId, cardRefs, feedRef, registerCardRef } =
     useActiveVoteCard(cards);
+
+  useEffect(() => {
+    const fetchVotes = async () => {
+      try {
+        setLoading(true);
+        const data = await getVote();
+
+        const mappedCards = data.map((item) => {
+          const total = item.candidate_a_count + item.candidate_b_count;
+          const leftShare = total === 0 ? 50 : Math.round((item.candidate_a_count / total) * 100);
+          const rightShare = total === 0 ? 50 : 100 - leftShare;
+
+          return {
+            id: item.id,
+            feedId: String(item.id),
+            title: item.title,
+            category: item.category,
+            leftCandidate: {
+              id: "left",
+              name: item.candidate_a_name,
+              image: item.candidate_a_image,
+              tone: "blue",
+              count: item.candidate_a_count,
+            },
+            rightCandidate: {
+              id: "right",
+              name: item.candidate_b_name,
+              image: item.candidate_b_image,
+              tone: "pink",
+              count: item.candidate_b_count,
+            },
+            shares: {
+              left: leftShare,
+              right: rightShare,
+            },
+          };
+        });
+
+        const pinnedFeedId = getVoteFeedIdFromHash(location.hash);
+        if (pinnedFeedId) {
+          const pinnedIndex = mappedCards.findIndex(
+            (c) => c.feedId === pinnedFeedId,
+          );
+          if (pinnedIndex !== -1) {
+            const pinnedCard = mappedCards.splice(pinnedIndex, 1)[0];
+            mappedCards.unshift(pinnedCard);
+          }
+        }
+
+        setCards(mappedCards);
+      } catch (error) {
+        console.error("Failed to fetch votes:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchVotes();
+  }, [location.hash]);
 
   useEffect(() => {
     return () => {
@@ -319,17 +391,48 @@ export default function VotePage() {
 
   useActiveVoteHash(activeCardId, location);
 
-  const handleVote = (cardId, candidateId) => {
-    setSelectedVotes((currentVotes) => {
-      if (currentVotes[cardId]) {
-        return currentVotes;
-      }
+  const handleVote = async (cardId, candidateId) => {
+    if (selectedVotes[cardId]) return;
 
-      return {
+    const side = candidateId === "left" ? "A" : "B";
+
+    try {
+      // 서버에 투표 반영
+      await vote(cardId, side);
+
+      // 로컬 상태 업데이트 (화면에 즉시 반영)
+      setCards((prevCards) =>
+        prevCards.map((card) => {
+          if (card.feedId === cardId) {
+            const newLeftCount =
+              card.leftCandidate.count + (side === "A" ? 1 : 0);
+            const newRightCount =
+              card.rightCandidate.count + (side === "B" ? 1 : 0);
+            const total = newLeftCount + newRightCount;
+            const leftShare = total === 0 ? 50 : Math.round((newLeftCount / total) * 100);
+
+            return {
+              ...card,
+              leftCandidate: { ...card.leftCandidate, count: newLeftCount },
+              rightCandidate: { ...card.rightCandidate, count: newRightCount },
+              shares: {
+                left: leftShare,
+                right: 100 - leftShare,
+              },
+            };
+          }
+          return card;
+        }),
+      );
+
+      setSelectedVotes((currentVotes) => ({
         ...currentVotes,
         [cardId]: candidateId,
-      };
-    });
+      }));
+    } catch (error) {
+      console.error("투표 실패:", error);
+      alert("투표 처리에 실패했습니다.");
+    }
   };
 
   const handleToggleAction = (cardId, actionId) => {
@@ -376,6 +479,14 @@ export default function VotePage() {
 
   const commentCard = cards.find((card) => card.feedId === commentCardId);
 
+  if (loading) {
+    return (
+      <div className="vote-page-loading">
+        <p>투표 데이터를 불러오는 중...</p>
+      </div>
+    );
+  }
+
   return (
     <div
       ref={pageRef}
@@ -385,27 +496,33 @@ export default function VotePage() {
     >
       <div className="vote-layout">
         <div ref={feedRef} className="vote-feed">
-          {cards.map((card) => {
-            const actionState = cardActions[card.feedId];
+          {cards.length > 0 ? (
+            cards.map((card) => {
+              const actionState = cardActions[card.feedId];
 
-            return (
-              <VoteCard
-                key={card.feedId}
-                card={card}
-                selectedCandidateId={selectedVotes[card.feedId]}
-                onSelect={handleVote}
-                actionState={actionState}
-                likeCount={actionState?.likeCount ?? 0}
-                copied={copiedCardId === card.feedId}
-                onToggleAction={handleToggleAction}
-                onShare={handleShare}
-                onOpenComments={handleOpenComments}
-                isCommentsOpen={commentCardId === card.feedId}
-                isActive={activeCardId === card.feedId}
-                registerCardRef={registerCardRef}
-              />
-            );
-          })}
+              return (
+                <VoteCard
+                  key={card.feedId}
+                  card={card}
+                  selectedCandidateId={selectedVotes[card.feedId]}
+                  onSelect={handleVote}
+                  actionState={actionState}
+                  likeCount={actionState?.likeCount ?? 0}
+                  copied={copiedCardId === card.feedId}
+                  onToggleAction={handleToggleAction}
+                  onShare={handleShare}
+                  onOpenComments={handleOpenComments}
+                  isCommentsOpen={commentCardId === card.feedId}
+                  isActive={activeCardId === card.feedId}
+                  registerCardRef={registerCardRef}
+                />
+              );
+            })
+          ) : (
+            <div className="vote-feed-empty">
+              <p>등록된 투표가 없습니다.</p>
+            </div>
+          )}
         </div>
       </div>
       {commentCard ? (

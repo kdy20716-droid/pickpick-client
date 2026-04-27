@@ -31,3 +31,9 @@ export const addVote = async (
   const response = await instance.post("/recipes", formData);
   return response.data;
 };
+
+// 3. 투표하기 API
+export const vote = async (postId, side) => {
+  const response = await instance.post(`/api/votes/${postId}`, { side });
+  return response.data;
+};
