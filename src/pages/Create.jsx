@@ -1,8 +1,11 @@
 import React, { useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { addVote } from "../api/posts";
+import { Pencil, Trash2, Maximize, Minus, Plus } from "lucide-react";
 import "./Create.css";
 
 const Create = () => {
+  const navigate = useNavigate();
   const [title, setTitle] = useState("");
   const [authorId, setAuthorId] = useState("1"); // 임시 작성자 ID
   const [selectedTag, setSelectedTag] = useState("영화 / 드라마");
@@ -13,6 +16,11 @@ const Create = () => {
   const [previewImage2, setPreviewImage2] = useState(null);
   const [file1, setFile1] = useState(null);
   const [file2, setFile2] = useState(null);
+
+  const [zoom1, setZoom1] = useState(1);
+  const [zoom2, setZoom2] = useState(1);
+  const [showEdit1, setShowEdit1] = useState(false);
+  const [showEdit2, setShowEdit2] = useState(false);
 
   const fileInputRef1 = useRef(null);
   const fileInputRef2 = useRef(null);
@@ -34,22 +42,40 @@ const Create = () => {
     "기타",
   ];
 
-  const handleImageChange = (e, setPreview, setFile) => {
+  const handleImageChange = (e, setPreview, setFile, setZoom) => {
     const file = e.target.files[0];
     if (file) {
       setFile(file);
       processFile(file, setPreview);
+      setZoom(1); // Reset zoom on new image
     }
   };
 
-  const handlePaste = (e, setPreview, setFile) => {
+  const handlePaste = (e, setPreview, setFile, setZoom) => {
     const items = (e.clipboardData || e.originalEvent.clipboardData).items;
     for (const item of items) {
       if (item.kind === "file" && item.type.startsWith("image/")) {
         const file = item.getAsFile();
         setFile(file);
         processFile(file, setPreview);
+        setZoom(1);
         break;
+      }
+    }
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+  };
+
+  const handleDrop = (e, setPreview, setFile, setZoom) => {
+    e.preventDefault();
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      const file = e.dataTransfer.files[0];
+      if (file.type.startsWith("image/")) {
+        setFile(file);
+        processFile(file, setPreview);
+        setZoom(1);
       }
     }
   };
@@ -62,7 +88,12 @@ const Create = () => {
     reader.readAsDataURL(file);
   };
 
-  // alert (추후 바꾸기)
+  const handleRemoveImage = (setPreview, setFile, setZoom, setShowEdit) => {
+    setPreview(null);
+    setFile(null);
+    setZoom(1);
+    setShowEdit(false);
+  };
 
   const handleSubmit = async () => {
     if (!title || !candidate1 || !candidate2) {
@@ -83,6 +114,7 @@ const Create = () => {
 
       if (response.success) {
         alert("투표 게시글이 성공적으로 등록되었습니다!");
+        navigate("/vote");
       }
     } catch (error) {
       console.error("등록 에러:", error);
@@ -105,7 +137,13 @@ const Create = () => {
           <div className="vs-container">
             <div
               className="candidate-box"
-              onPaste={(e) => handlePaste(e, setPreviewImage1, setFile1)}
+              onPaste={(e) =>
+                handlePaste(e, setPreviewImage1, setFile1, setZoom1)
+              }
+              onDragOver={handleDragOver}
+              onDrop={(e) =>
+                handleDrop(e, setPreviewImage1, setFile1, setZoom1)
+              }
               tabIndex="0"
             >
               <input
@@ -114,15 +152,69 @@ const Create = () => {
                 style={{ display: "none" }}
                 accept="image/*"
                 onChange={(e) =>
-                  handleImageChange(e, setPreviewImage1, setFile1)
+                  handleImageChange(e, setPreviewImage1, setFile1, setZoom1)
                 }
               />
               {previewImage1 ? (
-                <img
-                  src={previewImage1}
-                  alt="Preview 1"
-                  className="candidate-box__img"
-                />
+                <>
+                  <div className="image-wrapper">
+                    <img
+                      src={previewImage1}
+                      alt="Preview 1"
+                      className="candidate-box__img"
+                      style={{ transform: `scale(${zoom1})` }}
+                    />
+                  </div>
+                  <button
+                    className="image-edit-trigger"
+                    onClick={() => setShowEdit1(!showEdit1)}
+                  >
+                    <Pencil size={18} />
+                  </button>
+                  {showEdit1 && (
+                    <div className="image-edit-overlay">
+                      <div className="edit-controls">
+                        <button
+                          onClick={() => fileInputRef1.current.click()}
+                          title="이미지 교체"
+                        >
+                          <Maximize size={16} /> <span>교체</span>
+                        </button>
+                        <button
+                          onClick={() =>
+                            handleRemoveImage(
+                              setPreviewImage1,
+                              setFile1,
+                              setZoom1,
+                              setShowEdit1,
+                            )
+                          }
+                          title="이미지 삭제"
+                        >
+                          <Trash2 size={16} /> <span>삭제</span>
+                        </button>
+                      </div>
+                      <div className="zoom-control">
+                        <Minus
+                          size={14}
+                          onClick={() => setZoom1(Math.max(0.5, zoom1 - 0.1))}
+                        />
+                        <input
+                          type="range"
+                          min="0.5"
+                          max="3"
+                          step="0.1"
+                          value={zoom1}
+                          onChange={(e) => setZoom1(parseFloat(e.target.value))}
+                        />
+                        <Plus
+                          size={14}
+                          onClick={() => setZoom1(Math.min(3, zoom1 + 0.1))}
+                        />
+                      </div>
+                    </div>
+                  )}
+                </>
               ) : (
                 <div className="candidate-box__upload">
                   <button
@@ -131,7 +223,7 @@ const Create = () => {
                   >
                     이미지 삽입
                   </button>
-                  <h5>웹이미지 붙여넣기 기능을 지원합니다</h5>
+                  <h5>붙여넣기 및 드래그 앤 드롭 지원</h5>
                 </div>
               )}
               <div className="candidate-box__label">
@@ -145,7 +237,13 @@ const Create = () => {
 
             <div
               className="candidate-box"
-              onPaste={(e) => handlePaste(e, setPreviewImage2, setFile2)}
+              onPaste={(e) =>
+                handlePaste(e, setPreviewImage2, setFile2, setZoom2)
+              }
+              onDragOver={handleDragOver}
+              onDrop={(e) =>
+                handleDrop(e, setPreviewImage2, setFile2, setZoom2)
+              }
               tabIndex="0"
             >
               <input
@@ -154,15 +252,69 @@ const Create = () => {
                 style={{ display: "none" }}
                 accept="image/*"
                 onChange={(e) =>
-                  handleImageChange(e, setPreviewImage2, setFile2)
+                  handleImageChange(e, setPreviewImage2, setFile2, setZoom2)
                 }
               />
               {previewImage2 ? (
-                <img
-                  src={previewImage2}
-                  alt="Preview 2"
-                  className="candidate-box__img"
-                />
+                <>
+                  <div className="image-wrapper">
+                    <img
+                      src={previewImage2}
+                      alt="Preview 2"
+                      className="candidate-box__img"
+                      style={{ transform: `scale(${zoom2})` }}
+                    />
+                  </div>
+                  <button
+                    className="image-edit-trigger"
+                    onClick={() => setShowEdit2(!showEdit2)}
+                  >
+                    <Pencil size={18} />
+                  </button>
+                  {showEdit2 && (
+                    <div className="image-edit-overlay">
+                      <div className="edit-controls">
+                        <button
+                          onClick={() => fileInputRef2.current.click()}
+                          title="이미지 교체"
+                        >
+                          <Maximize size={16} /> <span>교체</span>
+                        </button>
+                        <button
+                          onClick={() =>
+                            handleRemoveImage(
+                              setPreviewImage2,
+                              setFile2,
+                              setZoom2,
+                              setShowEdit2,
+                            )
+                          }
+                          title="이미지 삭제"
+                        >
+                          <Trash2 size={16} /> <span>삭제</span>
+                        </button>
+                      </div>
+                      <div className="zoom-control">
+                        <Minus
+                          size={14}
+                          onClick={() => setZoom2(Math.max(0.5, zoom2 - 0.1))}
+                        />
+                        <input
+                          type="range"
+                          min="0.5"
+                          max="3"
+                          step="0.1"
+                          value={zoom2}
+                          onChange={(e) => setZoom2(parseFloat(e.target.value))}
+                        />
+                        <Plus
+                          size={14}
+                          onClick={() => setZoom2(Math.min(3, zoom2 + 0.1))}
+                        />
+                      </div>
+                    </div>
+                  )}
+                </>
               ) : (
                 <div className="candidate-box__upload">
                   <button
@@ -171,7 +323,7 @@ const Create = () => {
                   >
                     이미지 삽입
                   </button>
-                  <h5>웹이미지 붙여넣기 기능을 지원합니다</h5>
+                  <h5>붙여넣기 및 드래그 앤 드롭 지원</h5>
                 </div>
               )}
               <div className="candidate-box__label">
