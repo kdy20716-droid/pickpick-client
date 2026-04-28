@@ -9,6 +9,7 @@ import Result from "./pages/Result";
 import Create from "./pages/Create";
 import VotePage from "./pages/VotePage";
 import MyPage from "./pages/MyPage";
+import Profile from "./pages/Profile";
 
 const router = createBrowserRouter([
   {
@@ -46,8 +47,33 @@ const router = createBrowserRouter([
       },
       {
         path: "/mypage",
-        element: <MyPage />
-      }
+        element: <MyPage />,
+        children: [
+          { index: true, element: <Profile /> },
+          {
+            path: "history",
+            element: <Result />,
+          },
+          {
+            path: "like",
+            element: (
+              <div style={{ padding: "40px" }}>LIKE PAGE (COMING SOON)</div>
+            ),
+          },
+          {
+            path: "mypoll",
+            element: (
+              <div style={{ padding: "40px" }}>MY POLL PAGE (COMING SOON)</div>
+            ),
+          },
+          {
+            path: "contact",
+            element: (
+              <div style={{ padding: "40px" }}>CONTACT PAGE (COMING SOON)</div>
+            ),
+          },
+        ],
+      },
     ],
   },
 ]);
