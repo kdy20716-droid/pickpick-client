@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+﻿import { useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import "./VotePage.css";
 import vsLogo from "../assets/vs-logo.svg";
@@ -12,10 +12,11 @@ import { useActiveVoteCard } from "./vote/useActiveVoteCard.js";
 import { useActiveVoteHash } from "./vote/useActiveVoteHash.js";
 import { useVotePageScrollSnap } from "./vote/useVotePageScrollSnap.js";
 import {
+  createVoteCards,
   getVoteFeedIdFromHash,
   getVoteHash,
 } from "./vote/voteCards.js";
-import { getVote, vote } from "../api/posts";
+import { getVote, submitVote } from "../api/posts.js";
 
 const actionButtons = [
   {
@@ -189,21 +190,7 @@ function VoteCard({
                 disabled={hasVoted}
                 onClick={() => onSelect(card.feedId, candidate.id)}
               >
-                <img
-                  src={
-                    candidate.image
-                      ? candidate.image.startsWith("http")
-                        ? candidate.image
-                        : `http://localhost:4000/${candidate.image.startsWith("uploads/") ? "" : "uploads/"}${candidate.image}`
-                      : ""
-                  }
-                  alt={candidate.name}
-                  onError={(e) => {
-                    console.error(`이미지 로드 실패: ${e.target.src}`);
-                    e.target.style.display = "none";
-                  }}
-                />
-
+                <img src={candidate.image} alt={candidate.name} />
                 <span className="vote-choice-overlay" aria-hidden="true" />
                 <p className="vote-choice-name">{candidate.name}</p>
               </button>
@@ -264,9 +251,27 @@ export default function VotePage() {
   const location = useLocation();
   const entersFromMain = isMainRouteTransition(location.state?.transition);
   const [cards, setCards] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [selectedVotes, setSelectedVotes] = useState({});
-  const [cardActions, setCardActions] = useState({});
+  
+  // 상태를 초기화할 때 localStorage에서 값을 가져옵니다.
+  const [selectedVotes, setSelectedVotes] = useState(() => {
+    const saved = localStorage.getItem("selectedVotes");
+    return saved ? JSON.parse(saved) : {};
+  });
+  
+  const [cardActions, setCardActions] = useState(() => {
+    const saved = localStorage.getItem("cardActions");
+    return saved ? JSON.parse(saved) : {};
+  });
+
+  // 상태가 변경될 때마다 localStorage에 저장합니다.
+  useEffect(() => {
+    localStorage.setItem("selectedVotes", JSON.stringify(selectedVotes));
+  }, [selectedVotes]);
+
+  useEffect(() => {
+    localStorage.setItem("cardActions", JSON.stringify(cardActions));
+  }, [cardActions]);
+
   const [copiedCardId, setCopiedCardId] = useState("");
   const [commentCardId, setCommentCardId] = useState("");
   const pageRef = useRef(null);
@@ -277,61 +282,38 @@ export default function VotePage() {
   useEffect(() => {
     const fetchVotes = async () => {
       try {
-        setLoading(true);
         const data = await getVote();
-
-        const mappedCards = data.map((item) => {
-          const total = item.candidate_a_count + item.candidate_b_count;
-          const leftShare = total === 0 ? 50 : Math.round((item.candidate_a_count / total) * 100);
-          const rightShare = total === 0 ? 50 : 100 - leftShare;
+        const formattedCards = data.map((item, index) => {
+          const totalVotes = (item.candidate_a_count || 0) + (item.candidate_b_count || 0);
+          const leftShare = totalVotes === 0 ? 50 : Math.round(((item.candidate_a_count || 0) / totalVotes) * 100);
+          const rightShare = totalVotes === 0 ? 50 : Math.round(((item.candidate_b_count || 0) / totalVotes) * 100);
 
           return {
-            id: item.id,
-            feedId: String(item.id),
+            id: item.id.toString(),
+            feedId: `${item.id}-${index + 1}`,
             title: item.title,
-            category: item.category,
             leftCandidate: {
-              id: "left",
+              id: "a",
               name: item.candidate_a_name,
-              image: item.candidate_a_image,
-              tone: "blue",
-              count: item.candidate_a_count,
+              image: item.candidate_a_image ? `http://localhost:4000/uploads/${item.candidate_a_image}` : null,
+              tone: "light",
             },
             rightCandidate: {
-              id: "right",
+              id: "b",
               name: item.candidate_b_name,
-              image: item.candidate_b_image,
-              tone: "pink",
-              count: item.candidate_b_count,
+              image: item.candidate_b_image ? `http://localhost:4000/uploads/${item.candidate_b_image}` : null,
+              tone: "dark",
             },
-            shares: {
-              left: leftShare,
-              right: rightShare,
-            },
+            shares: { left: leftShare, right: rightShare },
           };
         });
-
-        const pinnedFeedId = getVoteFeedIdFromHash(location.hash);
-        if (pinnedFeedId) {
-          const pinnedIndex = mappedCards.findIndex(
-            (c) => c.feedId === pinnedFeedId,
-          );
-          if (pinnedIndex !== -1) {
-            const pinnedCard = mappedCards.splice(pinnedIndex, 1)[0];
-            mappedCards.unshift(pinnedCard);
-          }
-        }
-
-        setCards(mappedCards);
+        setCards(formattedCards);
       } catch (error) {
-        console.error("Failed to fetch votes:", error);
-      } finally {
-        setLoading(false);
+        console.error("투표 목록을 불러오는데 실패했습니다.", error);
       }
     };
-
     fetchVotes();
-  }, [location.hash]);
+  }, []);
 
   useEffect(() => {
     return () => {
@@ -392,46 +374,42 @@ export default function VotePage() {
   useActiveVoteHash(activeCardId, location);
 
   const handleVote = async (cardId, candidateId) => {
-    if (selectedVotes[cardId]) return;
+    if (selectedVotes[cardId]) {
+      return;
+    }
 
-    const side = candidateId === "left" ? "A" : "B";
+    const card = cards.find(c => c.feedId === cardId);
+    if (!card) return;
+
+    // 현재 접속 중인 유저 가져오기
+    const userStr = localStorage.getItem("user");
+    const user = userStr ? JSON.parse(userStr) : { id: 1 }; // 비로그인 시 임시로 1번 유저 사용
 
     try {
-      // 서버에 투표 반영
-      await vote(cardId, side);
+      const side = candidateId.toUpperCase(); // 'a' -> 'A', 'b' -> 'B'
+      const response = await submitVote(card.id, user.id, side);
 
-      // 로컬 상태 업데이트 (화면에 즉시 반영)
-      setCards((prevCards) =>
-        prevCards.map((card) => {
-          if (card.feedId === cardId) {
-            const newLeftCount =
-              card.leftCandidate.count + (side === "A" ? 1 : 0);
-            const newRightCount =
-              card.rightCandidate.count + (side === "B" ? 1 : 0);
-            const total = newLeftCount + newRightCount;
-            const leftShare = total === 0 ? 50 : Math.round((newLeftCount / total) * 100);
+      if (response.success) {
+        // 서버에서 받아온 최신 투표수로 퍼센트 재계산
+        const counts = response.counts;
+        const totalVotes = counts.candidate_a_count + counts.candidate_b_count;
+        const leftShare = totalVotes === 0 ? 50 : Math.round((counts.candidate_a_count / totalVotes) * 100);
+        const rightShare = totalVotes === 0 ? 50 : Math.round((counts.candidate_b_count / totalVotes) * 100);
 
-            return {
-              ...card,
-              leftCandidate: { ...card.leftCandidate, count: newLeftCount },
-              rightCandidate: { ...card.rightCandidate, count: newRightCount },
-              shares: {
-                left: leftShare,
-                right: 100 - leftShare,
-              },
-            };
-          }
-          return card;
-        }),
-      );
+        setCards(currentCards =>
+          currentCards.map(c =>
+            c.feedId === cardId ? { ...c, shares: { left: leftShare, right: rightShare } } : c
+          )
+        );
 
-      setSelectedVotes((currentVotes) => ({
-        ...currentVotes,
-        [cardId]: candidateId,
-      }));
+        setSelectedVotes((currentVotes) => ({
+          ...currentVotes,
+          [cardId]: candidateId,
+        }));
+      }
     } catch (error) {
-      console.error("투표 실패:", error);
-      alert("투표 처리에 실패했습니다.");
+      console.error("투표 전송 에러:", error);
+      alert(error.response?.data?.message || "투표 처리에 실패했습니다.");
     }
   };
 
@@ -479,14 +457,6 @@ export default function VotePage() {
 
   const commentCard = cards.find((card) => card.feedId === commentCardId);
 
-  if (loading) {
-    return (
-      <div className="vote-page-loading">
-        <p>투표 데이터를 불러오는 중...</p>
-      </div>
-    );
-  }
-
   return (
     <div
       ref={pageRef}
@@ -496,33 +466,27 @@ export default function VotePage() {
     >
       <div className="vote-layout">
         <div ref={feedRef} className="vote-feed">
-          {cards.length > 0 ? (
-            cards.map((card) => {
-              const actionState = cardActions[card.feedId];
+          {cards.map((card) => {
+            const actionState = cardActions[card.feedId];
 
-              return (
-                <VoteCard
-                  key={card.feedId}
-                  card={card}
-                  selectedCandidateId={selectedVotes[card.feedId]}
-                  onSelect={handleVote}
-                  actionState={actionState}
-                  likeCount={actionState?.likeCount ?? 0}
-                  copied={copiedCardId === card.feedId}
-                  onToggleAction={handleToggleAction}
-                  onShare={handleShare}
-                  onOpenComments={handleOpenComments}
-                  isCommentsOpen={commentCardId === card.feedId}
-                  isActive={activeCardId === card.feedId}
-                  registerCardRef={registerCardRef}
-                />
-              );
-            })
-          ) : (
-            <div className="vote-feed-empty">
-              <p>등록된 투표가 없습니다.</p>
-            </div>
-          )}
+            return (
+              <VoteCard
+                key={card.feedId}
+                card={card}
+                selectedCandidateId={selectedVotes[card.feedId]}
+                onSelect={handleVote}
+                actionState={actionState}
+                likeCount={actionState?.likeCount ?? 0}
+                copied={copiedCardId === card.feedId}
+                onToggleAction={handleToggleAction}
+                onShare={handleShare}
+                onOpenComments={handleOpenComments}
+                isCommentsOpen={commentCardId === card.feedId}
+                isActive={activeCardId === card.feedId}
+                registerCardRef={registerCardRef}
+              />
+            );
+          })}
         </div>
       </div>
       {commentCard ? (

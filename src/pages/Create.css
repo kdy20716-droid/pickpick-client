@@ -171,7 +171,6 @@
 /* Settings Section */
 .settings-section {
   flex: 0.8; /* 설정 영역 비중 축소 */
-  min-width: 280px; /* 최소 너비 확보하여 tag 란 터짐 방지 */
   max-width: 320px;
   display: flex;
   flex-direction: column;
@@ -197,25 +196,21 @@
 }
 
 .tag-cloud {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr); /* 1000px 이상에서 2열 배치 */
-  gap: 10px;
-  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 .tag-button {
-  padding: 10px 12px;
+  padding: 8px 14px;
   border-radius: 25px;
   border: 1px solid #eee;
   background-color: #fff;
-  font-size: 13px; /* 2열 배치에 맞춰 폰트 크기 최적화 */
+  font-size: 13px;
   color: #888;
   cursor: pointer;
   transition: all 0.2s ease;
-  white-space: nowrap;
-  text-align: center;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  width: 120px;
 }
 
 .tag-button--active {
@@ -285,20 +280,6 @@
     width: 45%;
     max-width: 280px;
     height: 380px;
-  }
-
-  .tag-cloud {
-    display: grid;
-    grid-template-columns: 1fr; /* 1000px 이하에서 1열 배치 */
-    gap: 10px;
-    width: 100%;
-  }
-
-  .tag-button {
-    width: 100%;
-    text-align: center;
-    padding: 12px 10px;
-    font-size: 14px; /* 모바일에서는 시원하게 크게 표시 */
   }
 
   .fab-button {

@@ -1,5 +1,5 @@
 import "./Signin.css";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { signin } from "../api/users";
 
@@ -20,10 +20,21 @@ export default function Signin() {
 
   // ✅ 3️⃣ 체크박스 상태
   const [checks, setChecks] = useState({
-    realname: false,
     required: false,
     marketing: false,
   });
+
+  // ✅ 4️⃣ 에러 모달 상태
+  const [errorMsg, setErrorMsg] = useState("");
+  const [showModal, setShowModal] = useState(false);
+
+  // 모달 자동 닫기 (3초 후)
+  useEffect(() => {
+    if (showModal) {
+      const timer = setTimeout(() => setShowModal(false), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [showModal]);
 
   // 입력값 변경
   const handleChange = (e) => {
@@ -49,28 +60,27 @@ export default function Signin() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!checks.realname) {
-      alert("실명 인증은 필수입니다.");
-      return;
-    }
-
     if (!checks.required) {
-      alert("필수 약관에 동의해주세요.");
+      setErrorMsg("필수 약관에 동의해주세요.");
+      setShowModal(true);
       return;
     }
 
     if (form.id.length < 5) {
-      alert("아이디는 5자 이상 입력하세요.");
+      setErrorMsg("아이디는 5자 이상 입력하세요.");
+      setShowModal(true);
       return;
     }
 
     if (form.pw.length < 8) {
-      alert("비밀번호는 8자 이상 입력하세요.");
+      setErrorMsg("비밀번호는 8자 이상 입력하세요.");
+      setShowModal(true);
       return;
     }
 
     if (form.birth.length !== 8) {
-      alert("생년월일은 8자리 숫자입니다.");
+      setErrorMsg("생년월일은 8자리 숫자입니다.");
+      setShowModal(true);
       return;
     }
 
@@ -80,27 +90,22 @@ export default function Signin() {
       navigate("/login");
     } catch (error) {
       console.error(error);
-      alert(error.response?.data?.message || "회원가입 중 오류가 발생했습니다.");
+      alert(
+        error.response?.data?.message || "회원가입 중 오류가 발생했습니다.",
+      );
     }
   };
 
   return (
     <div className="container">
-      <div className="signup-box">
-        {/* ✅ 상단 체크 (커스텀 + state) */}
-        <div className="checkbox top-check">
-          <label className="custom-check">
-            <input
-              type="checkbox"
-              name="realname"
-              checked={checks.realname}
-              onChange={handleCheck}
-            />
-            <span className="checkmark"></span>
-            <span className="text">실명 인증된 아이디로 가입</span>
-          </label>
+      {/* 상단 에러 모달 */}
+      {showModal && (
+        <div className="error-modal">
+          <p>{errorMsg}</p>
         </div>
+      )}
 
+      <div className="signup-box">
         <h2>회원 가입</h2>
 
         {/* 입력 */}
@@ -202,26 +207,28 @@ export default function Signin() {
 
         {/* 약관 */}
         <div className="checkbox">
-          <label>
+          <label className="custom-check terms-check">
             <input
               type="checkbox"
               name="required"
               checked={checks.required}
               onChange={handleCheck}
             />
-            필수 개인정보 처리 방침 동의
+            <span className="checkmark"></span>
+            <span className="text">필수 개인정보 처리 방침 동의</span>
           </label>
         </div>
 
         <div className="checkbox">
-          <label>
+          <label className="custom-check terms-check">
             <input
               type="checkbox"
               name="marketing"
               checked={checks.marketing}
               onChange={handleCheck}
             />
-            선택 마케팅 동의
+            <span className="checkmark"></span>
+            <span className="text">선택 마케팅 동의</span>
           </label>
         </div>
 
@@ -232,14 +239,7 @@ export default function Signin() {
         {/* 비밀번호 찾기 연결 */}
         <div
           style={{ textAlign: "center", marginTop: "15px", fontSize: "14px" }}
-        >
-          <Link
-            to="/findpass"
-            style={{ color: "#666", textDecoration: "none" }}
-          >
-            비밀번호 찾기
-          </Link>
-        </div>
+        ></div>
       </div>
     </div>
   );

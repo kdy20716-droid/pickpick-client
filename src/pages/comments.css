@@ -15,6 +15,15 @@
   pointer-events: auto;
 }
 
+.comment-modal-backdrop:hover {
+  background: rgba(
+    0,
+    0,
+    0,
+    0.56
+  ); /* 전역 button:hover의 핑크색 속성 덮어쓰기 */
+}
+
 .comment-modal {
   position: fixed;
   top: var(--comment-modal-top, calc(var(--vote-header-offset, 110px) + 52px));
