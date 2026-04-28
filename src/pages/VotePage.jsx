@@ -34,6 +34,7 @@ const tags = [
 ];
 
 const sortOptions = [
+  { id: "random", label: "랜덤순" },
   { id: "latest", label: "최신순" },
   { id: "popular", label: "인기순" },
   { id: "comments", label: "댓글 많은순" },
@@ -213,7 +214,13 @@ function VoteCard({
                 disabled={hasVoted}
                 onClick={() => onSelect(card.feedId, candidate.id)}
               >
-                <img src={candidate.image} alt={candidate.name} />
+                {candidate.image ? (
+                  <img src={candidate.image} alt={candidate.name} />
+                ) : (
+                  <span className="vote-choice-image-fallback" aria-hidden="true">
+                    {candidate.name?.slice(0, 1) || "?"}
+                  </span>
+                )}
                 <span className="vote-choice-overlay" aria-hidden="true" />
                 <p className="vote-choice-name">{candidate.name}</p>
               </button>
@@ -312,7 +319,7 @@ export default function VotePage() {
   const [copiedCardId, setCopiedCardId] = useState("");
   const [commentCardId, setCommentCardId] = useState("");
   const [selectedTag, setSelectedTag] = useState("전체");
-  const [sortBy, setSortBy] = useState("latest");
+  const [sortBy, setSortBy] = useState("random");
   const [searchKeyword, setSearchKeyword] = useState("");
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const pageRef = useRef(null);
