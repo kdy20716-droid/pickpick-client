@@ -9,7 +9,7 @@ export const getVote = async (
   sort = null,
   user_id = null,
 ) => {
-  let url = "/recipes";
+  let url = "/votelist";
   const params = new URLSearchParams();
   if (keyword) params.append("keyword", keyword);
   if (category) params.append("category", category);
