@@ -58,7 +58,7 @@
 }
 
 .candidate-box {
-  width: 280px; /* 시원시원한 너비 */
+  width: 380px; /* 시원시원한 너비 */
   height: 400px; /* 시원시원한 높이 */
   background-color: #d9d9d9;
   border-radius: 20px;
@@ -114,13 +114,109 @@
   color: #555;
 }
 
+.image-wrapper {
+  width: 100%;
+  height: 100%;
+  overflow: hidden; /* 확대된 이미지가 밖으로 나가지 않게 */
+  position: relative;
+  background-color: #000;
+}
+
 .candidate-box__img {
   width: 100%;
   height: 100%;
-  object-fit: cover; /* 이미지가 박스에 꽉 차게 */
+  object-fit: contain;
+  transition: transform 0.2s ease; /* 줌 효과를 부드럽게 */
+}
+
+.image-edit-trigger {
   position: absolute;
-  top: 0;
-  left: 0;
+  top: 15px;
+  right: 15px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.9);
+  border: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  color: #333;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  z-index: 10;
+  transition: all 0.2s;
+}
+
+.image-edit-trigger:hover {
+  background-color: #f7a1c4;
+  color: white;
+  transform: scale(1.1);
+}
+
+.image-edit-overlay {
+  position: absolute;
+  top: 60px;
+  right: 15px;
+  background-color: white;
+  border-radius: 12px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  z-index: 11;
+  width: 160px;
+}
+
+.edit-controls {
+  display: flex;
+  gap: 8px;
+}
+
+.edit-controls button {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid #eee;
+  background: none;
+  cursor: pointer;
+  font-size: 11px;
+  color: #666;
+  transition: all 0.2s;
+}
+
+.edit-controls button:hover {
+  background-color: #fcf6f8;
+  color: #f7a1c4;
+  border-color: #f7a1c4;
+}
+
+.zoom-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-top: 8px;
+  border-top: 1px solid #f5f5f5;
+  color: #888;
+}
+
+.zoom-control input[type="range"] {
+  flex: 1;
+  accent-color: #f7a1c4;
+  cursor: pointer;
+}
+
+.zoom-control svg {
+  cursor: pointer;
+}
+
+.zoom-control svg:hover {
+  color: #f7a1c4;
 }
 
 .candidate-box__label {
@@ -171,7 +267,7 @@
 /* Settings Section */
 .settings-section {
   flex: 0.8; /* 설정 영역 비중 축소 */
-  max-width: 320px;
+  width: 320px;
   display: flex;
   flex-direction: column;
   gap: 25px;
@@ -210,7 +306,7 @@
   color: #888;
   cursor: pointer;
   transition: all 0.2s ease;
-  width: 120px;
+  width: 130px;
 }
 
 .tag-button--active {
@@ -247,7 +343,7 @@
 }
 
 /* 반응형 레이아웃 (화면이 1000px 이하일 때 세로 배치) */
-@media (max-width: 1000px) {
+@media (max-width: 1280px) {
   .create-page-container {
     height: auto;
     min-height: calc(100vh - 80px);

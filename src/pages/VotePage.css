@@ -12,6 +12,190 @@
   overflow: visible;
 }
 
+/* 검색 토글 버튼 */
+.search-toggle-btn {
+  position: absolute;
+  top: -85px;
+  right: 20px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: none;
+  background: white;
+  color: #333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(240, 240, 240, 0.979);
+  z-index: 90;
+  transition: all 0.2s ease;
+  padding-top: 10px;
+  margin-top: 200px;
+  margin-right: 100px;
+}
+
+.search-toggle-btn:hover {
+  transform: scale(1.1);
+  background: #fdfdfd;
+}
+
+/* 검색/필터 오버레이 */
+.search-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(10px);
+  z-index: 1000;
+  display: flex;
+  justify-content: flex-end;
+  animation: fadeIn 0.3s ease;
+}
+
+.search-content {
+  width: min(450px, 100%);
+  background: #1a1a1a;
+  color: white;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  box-shadow: -10px 0 30px rgba(0, 0, 0, 0.3);
+  animation: slideIn 0.3s ease-out;
+}
+
+.search-header {
+  padding: 30px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.search-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 800;
+}
+
+.search-header .close-btn {
+  background: transparent;
+  border: none;
+  color: #888;
+  cursor: pointer;
+  padding: 8px;
+}
+
+.search-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.filter-section h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 16px;
+  color: #d94588;
+}
+
+.search-input-wrapper input {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 14px 18px;
+  border-radius: 12px;
+  color: white;
+  font-size: 1rem;
+  outline: none;
+}
+
+.search-input-wrapper input:focus {
+  border-color: #d94588;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.filter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.filter-chips button {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #bbb;
+  padding: 8px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.filter-chips button:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.filter-chips button.active {
+  background: #d94588;
+  border-color: #d94588;
+  color: white;
+  box-shadow: 0 4px 12px rgba(217, 69, 136, 0.4);
+}
+
+.search-footer {
+  padding: 24px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.apply-btn {
+  width: 100%;
+  background: #d94588;
+  color: white;
+  border: none;
+  padding: 16px;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.apply-btn:hover {
+  transform: translateY(-2px);
+  background: #e65697;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 100px 20px;
+  color: #888;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
 .vote-layout {
   --vote-rail-gap: 25px;
   --vote-action-button-size: 72px;
@@ -20,7 +204,9 @@
   );
   --vote-sheet-glow-space: 22px;
   --vote-sheet-extra-height: 41px;
-  --vote-action-space: calc(var(--vote-action-button-size) + var(--vote-rail-gap));
+  --vote-action-space: calc(
+    var(--vote-action-button-size) + var(--vote-rail-gap)
+  );
   --vote-side-balance: clamp(
     0px,
     calc((max(100vw, 850px) - 850px) * 0.3),
@@ -89,12 +275,19 @@
   flex-direction: column;
   width: 100%;
   margin: 0;
-  height: calc(100% - var(--vote-sheet-glow-space) * 2 + var(--vote-sheet-extra-height));
-  min-height: calc(100% - var(--vote-sheet-glow-space) * 2 + var(--vote-sheet-extra-height));
+  height: calc(
+    100% - var(--vote-sheet-glow-space) * 2 + var(--vote-sheet-extra-height)
+  );
+  min-height: calc(
+    100% - var(--vote-sheet-glow-space) * 2 + var(--vote-sheet-extra-height)
+  );
   padding: 30px var(--vote-action-space) 23px var(--vote-side-balance);
   scroll-snap-align: start;
   scroll-snap-stop: always;
-  flex: 0 0 calc(100% - var(--vote-sheet-glow-space) * 2 + var(--vote-sheet-extra-height));
+  flex: 0 0
+    calc(
+      100% - var(--vote-sheet-glow-space) * 2 + var(--vote-sheet-extra-height)
+    );
 }
 
 .vote-sheet {
@@ -150,7 +343,9 @@
   flex: 1;
   min-height: 0;
   align-items: stretch;
-  transition: min-height 220ms ease, padding-bottom 220ms ease;
+  transition:
+    min-height 220ms ease,
+    padding-bottom 220ms ease;
 }
 
 .vote-sheet.has-results .vote-sheet-match {
@@ -223,28 +418,28 @@
   line-height: 1.05;
   color: #ffffff;
   text-shadow:
-    var(--vote-name-outline-negative-size) var(--vote-name-outline-negative-size)
-      0 #111111,
+    var(--vote-name-outline-negative-size)
+      var(--vote-name-outline-negative-size) 0 #111111,
     0 var(--vote-name-outline-negative-size) 0 #111111,
-    var(--vote-name-outline-size) var(--vote-name-outline-negative-size) 0 #111111,
+    var(--vote-name-outline-size) var(--vote-name-outline-negative-size) 0
+      #111111,
     var(--vote-name-outline-size) 0 0 #111111,
     var(--vote-name-outline-size) var(--vote-name-outline-size) 0 #111111,
     0 var(--vote-name-outline-size) 0 #111111,
-    var(--vote-name-outline-negative-size) var(--vote-name-outline-size) 0 #111111,
+    var(--vote-name-outline-negative-size) var(--vote-name-outline-size) 0
+      #111111,
     var(--vote-name-outline-negative-size) 0 0 #111111,
     var(--vote-name-accent-shadow);
 }
 
 .tone-blue .vote-choice-name {
   --vote-name-accent-shadow:
-    0 0 18px rgba(71, 140, 255, 0.4),
-    0 3px 12px rgba(255, 255, 255, 0.24);
+    0 0 18px rgba(71, 140, 255, 0.4), 0 3px 12px rgba(255, 255, 255, 0.24);
 }
 
 .tone-pink .vote-choice-name {
   --vote-name-accent-shadow:
-    0 0 18px rgba(255, 91, 91, 0.4),
-    0 3px 12px rgba(255, 255, 255, 0.24);
+    0 0 18px rgba(255, 91, 91, 0.4), 0 3px 12px rgba(255, 255, 255, 0.24);
 }
 
 .vote-choice.is-selected {

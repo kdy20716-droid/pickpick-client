@@ -1,10 +1,17 @@
 import instance from "./instance";
 
 // 1. 투표 게시글 목록 조회 API
-export const getVote = async (keyword = null) => {
-  const response = await instance.get(
-    `/recipes${keyword === null ? "" : "?keyword=" + keyword}`,
-  );
+export const getVote = async (keyword = null, category = null, sort = null) => {
+  let url = "/recipes";
+  const params = new URLSearchParams();
+  if (keyword) params.append("keyword", keyword);
+  if (category) params.append("category", category);
+  if (sort) params.append("sort", sort);
+  
+  const queryString = params.toString();
+  if (queryString) url += `?${queryString}`;
+
+  const response = await instance.get(url);
   return response.data;
 };
 
@@ -38,5 +45,56 @@ export const submitVote = async (postId, user_id, selected_side) => {
     user_id,
     selected_side,
   });
+  return response.data;
+};
+
+// 4. 좋아요 토글 API
+export const toggleLike = async (postId, user_id) => {
+  const response = await instance.post(`/api/votes/${postId}/like`, {
+    user_id,
+  });
+  return response.data;
+};
+
+// 5. 댓글 목록 조회 API
+export const getComments = async (postId) => {
+  const response = await instance.get(`/api/votes/${postId}/comments`);
+  return response.data;
+};
+
+// 6. 댓글 추가 API
+export const addComment = async (postId, user_id, content) => {
+  const response = await instance.post(`/api/votes/${postId}/comments`, {
+    user_id,
+    content,
+  });
+  return response.data;
+};
+
+// 7. 댓글 삭제 API
+export const deleteComment = async (postId, commentId, user_id) => {
+  const response = await instance.delete(`/api/votes/${postId}/comments/${commentId}`, {
+    data: { user_id },
+  });
+  return response.data;
+};
+
+// 8. 댓글 좋아요 토글 API
+export const toggleCommentLike = async (postId, commentId, user_id) => {
+  const response = await instance.post(`/api/votes/${postId}/comments/${commentId}/like`, {
+    user_id,
+  });
+  return response.data;
+};
+
+// 9. 랭킹 데이터 조회 API
+export const getRanking = async () => {
+  const response = await instance.get("/recipes/ranking");
+  return response.data;
+};
+
+// 10. 조회수 증가 API
+export const incrementView = async (postId) => {
+  const response = await instance.post(`/recipes/${postId}/view`);
   return response.data;
 };
