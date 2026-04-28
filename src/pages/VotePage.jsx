@@ -298,15 +298,6 @@ export default function VotePage() {
     return saved ? JSON.parse(saved) : {};
   });
 
-  // 유저가 바뀌면(로그인/로그아웃) 기록을 다시 로드합니다.
-  useEffect(() => {
-    const savedVotes = localStorage.getItem(`selectedVotes_${userId}`);
-    setSelectedVotes(savedVotes ? JSON.parse(savedVotes) : {});
-    
-    const savedActions = localStorage.getItem(`cardActions_${userId}`);
-    setCardActions(savedActions ? JSON.parse(savedActions) : {});
-  }, [userId]);
-
   // 상태가 변경될 때마다 유저별 키로 localStorage에 저장합니다.
   useEffect(() => {
     localStorage.setItem(`selectedVotes_${userId}`, JSON.stringify(selectedVotes));
@@ -371,11 +362,7 @@ export default function VotePage() {
       }
     };
     fetchVotes();
-<<<<<<< Updated upstream
-  }, [selectedTag, searchKeyword, sortBy]);
-=======
   }, [searchKeyword, selectedTag, sortBy]);
->>>>>>> Stashed changes
 
   useEffect(() => {
     return () => {

@@ -1,15 +1,13 @@
 import { useEffect, useEffectEvent, useRef, useState } from "react";
 
 export function useActiveVoteCard(cards) {
-  const [activeCardId, setActiveCardId] = useState(() => cards[0]?.feedId ?? "");
+  const [scrolledCardId, setScrolledCardId] = useState("");
+  const activeCardId =
+    cards.some((card) => card.feedId === scrolledCardId)
+      ? scrolledCardId
+      : cards[0]?.feedId ?? "";
   const feedRef = useRef(null);
   const cardRefs = useRef(new Map());
-
-  useEffect(() => {
-    if (!activeCardId && cards.length > 0) {
-      setActiveCardId(cards[0].feedId);
-    }
-  }, [cards, activeCardId]);
 
   const registerCardRef = (cardId) => (node) => {
     if (node) {
@@ -42,7 +40,7 @@ export function useActiveVoteCard(cards) {
     });
 
     if (nearestCardId && nearestCardId !== activeCardId) {
-      setActiveCardId(nearestCardId);
+      setScrolledCardId(nearestCardId);
     }
   });
 
