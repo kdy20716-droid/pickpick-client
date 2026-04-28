@@ -49,6 +49,9 @@ nav a {
 .signup-box h2 {
   text-align: center;
   color: #ff8db5;
+  font-size: 28px; /* 폰트 크기 키우기 */
+  margin-top: 10px; /* 위쪽 여백 추가 */
+  margin-bottom: 25px; /* 아래쪽 여백 확보 */
 }
 
 .verified {
@@ -65,6 +68,64 @@ nav a {
   border-radius: 10px;
   padding: 10px;
   margin-top: 10px;
+  flex: 1;
+}
+
+.input-group-with-btn {
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+}
+
+.verify-btn, .verify-confirm-btn {
+  height: 44px;
+  margin-top: 10px;
+  padding: 0 15px;
+  border-radius: 10px;
+  border: none;
+  background-color: #ff8db5;
+  color: white;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+
+.verify-btn:hover, .verify-confirm-btn:hover {
+  background-color: #ff6fa3;
+}
+
+.verify-btn:disabled {
+  background-color: #ccc;
+  cursor: default;
+}
+
+.verified-badge {
+  margin-top: 10px;
+  background-color: #f0fdf4;
+  color: #16a34a;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  border: 1px solid #bbf7d0;
+  text-align: center;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.4s ease-out forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .input-group span {
@@ -96,6 +157,7 @@ nav a {
   border-radius: 15px;
   background: #eee;
   cursor: pointer;
+  color: #888888; /* 입력창 기본 텍스트 색상과 통일 */
 }
 
 .option-group button.active {
@@ -128,16 +190,18 @@ nav a {
 
 .top-check {
   display: flex;
-  justify-content: flex-end;
+  justify-content: flex-start;
   font-size: 12px;
   color: #666;
-  margin-bottom: 10px;
+  margin-top: 8px; /* 생년월일 입력창과의 간격 */
+  margin-bottom: 15px; /* 성별/내외국인 선택 버튼과의 간격 */
+  margin-left: 5px; /* 하단 체크박스와 위치 동일하게 맞춤 */
 }
 
 .custom-check {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: flex-start;
   cursor: pointer;
 }
 
@@ -175,4 +239,45 @@ nav a {
 .custom-check .text {
   margin-left: 8px;
   font-size: 12px;
+}
+
+/* 상단 실명 인증 체크박스 텍스트 간격도 하단과 동일하게 맞춤 */
+.top-check .text {
+  margin-left: 12px;
+}
+
+/* 하단 약관 동의 체크박스 전용 스타일 */
+.terms-check {
+  justify-content: flex-start;
+  margin-left: 5px; /* 체크박스를 전체적으로 오른쪽으로 살짝 이동 */
+}
+
+.terms-check .text {
+  margin-left: 12px; /* 텍스트를 체크박스에서 조금 더 떨어지게 간격 확보 */
+}
+
+/* 상단 에러 모달 */
+.error-modal {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #ff4d4d;
+  color: white;
+  padding: 12px 30px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    top: -50px;
+    opacity: 0;
+  }
+  to {
+    top: 20px;
+    opacity: 1;
+  }
 }

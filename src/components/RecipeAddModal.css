@@ -1,0 +1,78 @@
+.modal-background {
+  position: fixed;
+  background-color: rgba(0, 0, 0, 0.5);
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background-color: #fff;
+  padding: 32px;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 400px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 18px;
+  color: #1a1a1a;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 20px;
+  color: #888;
+  cursor: pointer;
+  line-height: 1;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.close-btn:hover {
+  background-color: #f0f0f0;
+  color: #333;
+}
+
+.input {
+  padding: 10px 14px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
+  width: 100%;
+  outline: none;
+  margin-bottom: 10px;
+}
+
+.input:focus {
+  border-color: #4b3a2f;
+}
+
+.btn {
+  padding: 12px;
+  background-color: #4b3a2f;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 15px;
+  margin-top: 4px;
+  width: 100%;
+}
+
+.btn:hover {
+  background-color: #3a2c22;
+}

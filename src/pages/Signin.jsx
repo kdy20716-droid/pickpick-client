@@ -1,7 +1,10 @@
 import "./Signin.css";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { signin } from "../api/users";
 
 export default function Signin() {
+  const navigate = useNavigate();
   // ✅ 1️⃣ 입력값 상태 관리
   const [form, setForm] = useState({
     id: "",
@@ -17,10 +20,27 @@ export default function Signin() {
 
   // ✅ 3️⃣ 체크박스 상태
   const [checks, setChecks] = useState({
-    realname: false,
     required: false,
     marketing: false,
   });
+
+  // ✅ 4️⃣ 에러 모달 상태
+  const [errorMsg, setErrorMsg] = useState("");
+  const [showModal, setShowModal] = useState(false);
+
+  // ✅ 5️⃣ 이메일 인증 관련 상태
+  const [emailCodeSent, setEmailCodeSent] = useState(false);
+  const [verificationInput, setVerificationInput] = useState("");
+  const [isEmailVerified, setIsEmailVerified] = useState(false);
+  const [serverCode, setServerCode] = useState(""); // 실제로는 서버에서 처리하지만 현재는 프론트에서 관리
+
+  // 모달 자동 닫기 (3초 후)
+  useEffect(() => {
+    if (showModal) {
+      const timer = setTimeout(() => setShowModal(false), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [showModal]);
 
   // 입력값 변경
   const handleChange = (e) => {
@@ -42,60 +62,105 @@ export default function Signin() {
     setChecks({ ...checks, [name]: checked });
   };
 
-  // 제출
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    if (!checks.realname) {
-      alert("실명 인증은 필수입니다.");
+  // 이메일 코드 전송
+  const handleSendEmailCode = () => {
+    if (!form.email) {
+      setErrorMsg("이메일 주소를 먼저 입력해주세요.");
+      setShowModal(true);
       return;
     }
 
+    // 간단한 이메일 형식 체크
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(form.email)) {
+      setErrorMsg("올바른 이메일 형식이 아닙니다.");
+      setShowModal(true);
+      return;
+    }
+
+    // 6자리 랜덤 코드 생성 (Mocking)
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
+    setServerCode(code);
+    setEmailCodeSent(true);
+    
+    // 유저가 확인할 수 있도록 알림 (실제로는 서버가 이메일을 발송함)
+    alert(`인증 코드가 발송되었습니다: ${code}`);
+    console.log(`Email Verification Code: ${code}`);
+  };
+
+  // 이메일 코드 확인
+  const handleVerifyEmailCode = () => {
+    if (verificationInput === serverCode && serverCode !== "") {
+      setIsEmailVerified(true);
+      alert("이메일 인증이 완료되었습니다.");
+    } else {
+      setErrorMsg("인증 코드가 일치하지 않습니다.");
+      setShowModal(true);
+    }
+  };
+
+  // 제출
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
     if (!checks.required) {
-      alert("필수 약관에 동의해주세요.");
+      setErrorMsg("필수 약관에 동의해주세요.");
+      setShowModal(true);
       return;
     }
 
     if (form.id.length < 5) {
-      alert("아이디는 5자 이상 입력하세요.");
+      setErrorMsg("아이디는 5자 이상 입력하세요.");
+      setShowModal(true);
       return;
     }
 
     if (form.pw.length < 8) {
-      alert("비밀번호는 8자 이상 입력하세요.");
+      setErrorMsg("비밀번호는 8자 이상 입력하세요.");
+      setShowModal(true);
+      return;
+    }
+
+    if (!form.email) {
+      setErrorMsg("이메일 주소를 입력해주세요.");
+      setShowModal(true);
+      return;
+    }
+
+    if (!isEmailVerified) {
+      setErrorMsg("이메일 인증을 완료해주세요.");
+      setShowModal(true);
       return;
     }
 
     if (form.birth.length !== 8) {
-      alert("생년월일은 8자리 숫자입니다.");
+      setErrorMsg("생년월일은 8자리 숫자입니다.");
+      setShowModal(true);
       return;
     }
 
-    console.log("회원가입 데이터:", {
-      ...form,
-      gender,
-      nationality,
-      ...checks,
-    });
+    try {
+      await signin(form);
+      alert("회원가입이 완료되었습니다!");
+      navigate("/login");
+    } catch (error) {
+      console.error(error);
+      alert(
+        error.response?.data?.message || "회원가입 중 오류가 발생했습니다.",
+      );
+    }
   };
 
   return (
     <div className="container">
-      <div className="signup-box">
-        {/* ✅ 상단 체크 (커스텀 + state) */}
-        <div className="checkbox top-check">
-          <label className="custom-check">
-            <input
-              type="checkbox"
-              name="realname"
-              checked={checks.realname}
-              onChange={handleCheck}
-            />
-            <span className="checkmark"></span>
-            <span className="text">실명 인증된 아이디로 가입</span>
-          </label>
+      {/* 상단 에러 모달 */}
+      {showModal && (
+        <div className="error-modal">
+          <p>{errorMsg}</p>
         </div>
+      )}
 
+      <div className="signup-box">
         <h2>회원 가입</h2>
 
         {/* 입력 */}
@@ -121,16 +186,55 @@ export default function Signin() {
           />
         </div>
 
-        <div className="input-group">
-          <span>✉️</span>
-          <input
-            type="email"
-            name="email"
-            placeholder="[선택] 이메일 주소"
-            value={form.email}
-            onChange={handleChange}
-          />
+        <div className="input-group-with-btn">
+          <div className="input-group">
+            <span>✉️</span>
+            <input
+              type="email"
+              name="email"
+              placeholder="이메일 주소"
+              value={form.email}
+              onChange={handleChange}
+              disabled={isEmailVerified}
+            />
+          </div>
+          <button 
+            type="button" 
+            className="verify-btn" 
+            onClick={handleSendEmailCode}
+            disabled={isEmailVerified}
+          >
+            {emailCodeSent ? "재전송" : "코드받기"}
+          </button>
         </div>
+
+        {emailCodeSent && !isEmailVerified && (
+          <div className="input-group-with-btn animate-fade-in">
+            <div className="input-group">
+              <span>🔢</span>
+              <input
+                type="text"
+                placeholder="인증코드 6자리"
+                value={verificationInput}
+                onChange={(e) => setVerificationInput(e.target.value)}
+                maxLength={6}
+              />
+            </div>
+            <button 
+              type="button" 
+              className="verify-confirm-btn" 
+              onClick={handleVerifyEmailCode}
+            >
+              확인
+            </button>
+          </div>
+        )}
+
+        {isEmailVerified && (
+          <div className="verified-badge animate-fade-in">
+            ✅ 이메일 인증 완료
+          </div>
+        )}
 
         <div className="input-group">
           <span>👤</span>
@@ -197,32 +301,39 @@ export default function Signin() {
 
         {/* 약관 */}
         <div className="checkbox">
-          <label>
+          <label className="custom-check terms-check">
             <input
               type="checkbox"
               name="required"
               checked={checks.required}
               onChange={handleCheck}
             />
-            필수 개인정보 처리 방침 동의
+            <span className="checkmark"></span>
+            <span className="text">필수 개인정보 처리 방침 동의</span>
           </label>
         </div>
 
         <div className="checkbox">
-          <label>
+          <label className="custom-check terms-check">
             <input
               type="checkbox"
               name="marketing"
               checked={checks.marketing}
               onChange={handleCheck}
             />
-            선택 마케팅 동의
+            <span className="checkmark"></span>
+            <span className="text">선택 마케팅 동의</span>
           </label>
         </div>
 
         <button className="submit-btn" onClick={handleSubmit}>
           회원 가입
         </button>
+
+        {/* 비밀번호 찾기 연결 */}
+        <div
+          style={{ textAlign: "center", marginTop: "15px", fontSize: "14px" }}
+        ></div>
       </div>
     </div>
   );

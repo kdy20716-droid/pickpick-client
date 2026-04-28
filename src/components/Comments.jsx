@@ -1,181 +1,418 @@
-import React, { useState } from "react";
-import "./comments.css";
+﻿import { useLayoutEffect, useRef, useState, useEffect } from "react";
+import { ThumbsUp, ThumbsDown } from "lucide-react";
+import "../pages/comments.css";
+import { getComments, addComment, deleteComment, toggleCommentLike } from "../api/posts.js";
 
-const initialComments = [
-  { id: 1, name: "지존 지훈", text: "1빠", likes: 54, replyItems: [] },
-  {
-    id: 2,
-    name: "어그로꾼",
-    text: "얘들아 내가 재밌는 얘기 해줄게...더보기",
-    likes: 128,
-    replyItems: [
-      { id: 201, name: "반박러", text: "안 궁금한데 계속 해봐", likes: 12 },
-      { id: 202, name: "구경꾼", text: "그래서 다음이 뭔데?", likes: 7 },
-      { id: 203, name: "웃참실패", text: "이미 재밌다", likes: 3 },
-    ],
-  },
-  {
-    id: 3,
-    name: "차미새",
-    text: "o(*≧▽≦)ツ",
-    likes: 234,
-    replyItems: [
-      { id: 301, name: "팬1", text: "이 이모티콘 너무 귀엽다", likes: 21 },
-      { id: 302, name: "팬2", text: "오늘도 등장했다", likes: 8 },
-    ],
-  },
-  {
-    id: 4,
-    name: "익명",
-    text: "＼(((￣▽￣)))／",
-    likes: 2,
-    replyItems: [
-      { id: 401, name: "지나가던 사람", text: "텐션 좋네", likes: 1 },
-      { id: 402, name: "익명2", text: "나도 따라 해봄", likes: 0 },
-    ],
-  },
-];
+const COMMENT_OVERLAY_BREAKPOINT = 1320;
 
-const ReplyItem = ({ reply }) => {
+function formatRelativeTime(createdAt) {
+  const diffMinutes = Math.max(0, Math.floor((Date.now() - new Date(createdAt).getTime()) / 60000));
+
+  if (diffMinutes < 1) {
+    return "방금 전";
+  }
+
+  if (diffMinutes < 60) {
+    return `${diffMinutes}분 전`;
+  }
+
+  const diffHours = Math.floor(diffMinutes / 60);
+  if (diffHours < 24) {
+    return `${diffHours}시간 전`;
+  }
+
+  return `${Math.floor(diffHours / 24)}일 전`;
+}
+
+function CommentItem({
+  comment,
+  currentUser,
+  isOpen,
+  replyDraft,
+  onLike,
+  onDislike,
+  onToggleReplies,
+  onReplyDraftChange,
+  onAddReply,
+  onDelete,
+}) {
   return (
-    <div className="reply-item">
-      <div className="avatar small"></div>
-      <div className="reply-content">
-        <span className="name">{reply.name}</span>
-        <p className="comment-text">{reply.text}</p>
-      </div>
-    </div>
-  );
-};
-
-const CommentItem = ({ comment, isOpen, onLike, onToggleReplies }) => {
-  const replyCount = comment.replyItems.length;
-
-  return (
-    <div className="comment">
-      <div className="avatar"></div>
-      <div className="content">
-        <div className="top-row">
-          <span className="name">{comment.name}</span>
-          <span className="menu">⋯</span>
+    <article className="comment-item">
+      <div className="comment-avatar" aria-hidden="true" />
+      <div className="comment-body">
+        <div className="comment-top">
+          <div>
+            <strong className="comment-name">{comment.author}</strong>
+            <span className="comment-time">
+              {formatRelativeTime(comment.created_at)}
+            </span>
+          </div>
+          {currentUser && currentUser.id === comment.user_id && (
+            <button
+              type="button"
+              className="comment-delete"
+              onClick={() => onDelete(comment.id)}
+            >
+              삭제
+            </button>
+          )}
         </div>
-        <p className="comment-text">{comment.text}</p>
-        <div className="actions">
+
+        <p className="comment-text">{comment.content}</p>
+
+        <div className="comment-actions">
           <button
             type="button"
-            className="action-button"
+            className={`comment-action action-like${comment.reaction === "like" ? " is-active" : ""}`}
             onClick={() => onLike(comment.id)}
           >
-            👍 {comment.likes}
+            <ThumbsUp /> 좋아요 {comment.likes > 0 ? comment.likes : ""}
           </button>
           <button
             type="button"
-            className="action-button"
-            onClick={() => onToggleReplies(comment.id)}
+            className={`comment-action action-dislike${comment.reaction === "dislike" ? " is-active" : ""}`}
+            onClick={() => onDislike(comment.id)}
           >
-            💬 {replyCount > 0 ? replyCount : ""}
+            <ThumbsDown /> 싫어요
           </button>
         </div>
-        {replyCount > 0 && (
-          <button
-            type="button"
-            className="reply"
-            onClick={() => onToggleReplies(comment.id)}
-          >
-            {isOpen ? "답글 숨기기" : `답글 ${replyCount}개`}
-          </button>
-        )}
-        {isOpen && replyCount > 0 && (
-          <div className="reply-list">
-            {comment.replyItems.map((reply) => (
-              <ReplyItem key={reply.id} reply={reply} />
-            ))}
-          </div>
-        )}
       </div>
-    </div>
+    </article>
   );
-};
+}
 
-const CommentApp = () => {
-  const [comments, setComments] = useState(initialComments);
-  const [openReplies, setOpenReplies] = useState({});
+export default function Comments({ title, targetCardId, onClose, postDbId }) {
+  const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
+  const [openReplies, setOpenReplies] = useState({});
+  const [replyDrafts, setReplyDrafts] = useState({});
+  const modalRef = useRef(null);
 
-  const handleLike = (commentId) => {
-    setComments((prevComments) =>
-      prevComments.map((comment) =>
-        comment.id === commentId
-          ? { ...comment, likes: comment.likes + 1 }
-          : comment,
-      ),
+  const userStr = localStorage.getItem("user");
+  const currentUser = userStr ? JSON.parse(userStr) : null;
+
+  const [commentReactions, setCommentReactions] = useState(() => {
+    const saved = localStorage.getItem("commentReactions");
+    return saved ? JSON.parse(saved) : {};
+  });
+
+  useEffect(() => {
+    localStorage.setItem("commentReactions", JSON.stringify(commentReactions));
+  }, [commentReactions]);
+
+  useEffect(() => {
+    if (postDbId) {
+      getComments(postDbId)
+        .then(res => {
+          if (res.success) {
+            const formatted = res.comments.map(c => ({
+              ...c,
+              reaction: commentReactions[c.id] || null
+            }));
+            setComments(formatted);
+          }
+        })
+        .catch(console.error);
+    }
+  }, [postDbId]);
+
+  useLayoutEffect(() => {
+    const modal = modalRef.current;
+    if (!modal) {
+      return undefined;
+    }
+
+    const page = modal.closest(".vote-page");
+    const compactLayoutQuery = window.matchMedia(
+      `(max-width: ${COMMENT_OVERLAY_BREAKPOINT}px)`,
     );
-  };
+    let frameId = 0;
+    let settleTimeoutId = 0;
 
-  const handleToggleReplies = (commentId) => {
-    setOpenReplies((prevOpenReplies) => ({
-      ...prevOpenReplies,
-      [commentId]: !prevOpenReplies[commentId],
-    }));
-  };
+    const getTargetVoteSheet = () => {
+      const targetCard = targetCardId
+        ? document.getElementById(targetCardId)
+        : null;
 
-  const handleAddComment = () => {
-    const trimmedComment = newComment.trim();
+      return (
+        targetCard?.querySelector(".vote-sheet") ??
+        document.querySelector(".vote-feed-item.is-active .vote-sheet") ??
+        document.querySelector(".vote-sheet")
+      );
+    };
 
-    if (!trimmedComment) {
+    const syncModalSize = () => {
+      if (compactLayoutQuery.matches) {
+        page?.style.removeProperty("--vote-comment-sheet-width");
+        page?.style.removeProperty("--vote-comment-group-shift");
+      } else {
+        page?.style.setProperty("--vote-comment-group-shift", "0px");
+      }
+
+      const voteSheet = getTargetVoteSheet();
+      if (!voteSheet) {
+        return;
+      }
+
+      const targetCard = targetCardId
+        ? document.getElementById(targetCardId)
+        : null;
+      const actionRail = targetCard?.querySelector(".vote-action-rail");
+      let sheetRect = voteSheet.getBoundingClientRect();
+      let railRect = actionRail?.getBoundingClientRect();
+      const modalWidth = modal.getBoundingClientRect().width;
+
+      if (railRect && !compactLayoutQuery.matches) {
+        const sheetToRailGap = Math.max(0, railRect.left - sheetRect.right);
+        const maxSheetWidth = Math.max(
+          420,
+          Math.min(
+            850,
+            window.innerWidth -
+              modalWidth -
+              railRect.width -
+              sheetToRailGap * 2 -
+              48,
+          ),
+        );
+        const nextSheetWidth = `${Math.round(maxSheetWidth)}px`;
+        page?.style.setProperty("--vote-comment-sheet-width", nextSheetWidth);
+        page?.style.setProperty("--vote-comment-group-shift", "0px");
+
+        sheetRect = voteSheet.getBoundingClientRect();
+        railRect = actionRail.getBoundingClientRect();
+
+        const settledGap = Math.max(0, railRect.left - sheetRect.right);
+        const groupWidth =
+          sheetRect.width +
+          settledGap +
+          railRect.width +
+          settledGap +
+          modalWidth;
+        const centeredGroupLeft = (window.innerWidth - groupWidth) / 2;
+        const nextGroupLeft = Math.max(24, centeredGroupLeft);
+        const nextShift = nextGroupLeft - sheetRect.left;
+        const nextModalLeft =
+          nextGroupLeft +
+          sheetRect.width +
+          settledGap +
+          railRect.width +
+          settledGap;
+
+        page?.style.setProperty("--vote-comment-group-shift", `${nextShift}px`);
+
+        modal.style.setProperty("--comment-modal-left", `${nextModalLeft}px`);
+        modal.style.setProperty("--comment-modal-right", "auto");
+      }
+
+      modal.style.setProperty("--comment-modal-top", `${sheetRect.top}px`);
+      modal.style.setProperty(
+        "--comment-modal-height",
+        `${sheetRect.height}px`,
+      );
+    };
+
+    const scheduleSync = () => {
+      if (frameId) {
+        cancelAnimationFrame(frameId);
+      }
+
+      frameId = requestAnimationFrame(syncModalSize);
+    };
+
+    syncModalSize();
+    settleTimeoutId = window.setTimeout(scheduleSync, 280);
+
+    const targetVoteSheet = getTargetVoteSheet();
+    const feed = document.querySelector(".vote-feed");
+    const resizeObserver =
+      window.ResizeObserver && targetVoteSheet
+        ? new ResizeObserver(scheduleSync)
+        : null;
+
+    resizeObserver?.observe(targetVoteSheet);
+    window.addEventListener("resize", scheduleSync);
+    feed?.addEventListener("scroll", scheduleSync, { passive: true });
+
+    return () => {
+      if (frameId) {
+        cancelAnimationFrame(frameId);
+      }
+
+      window.clearTimeout(settleTimeoutId);
+      resizeObserver?.disconnect();
+      page?.style.removeProperty("--vote-comment-sheet-width");
+      page?.style.removeProperty("--vote-comment-group-shift");
+      window.removeEventListener("resize", scheduleSync);
+      feed?.removeEventListener("scroll", scheduleSync);
+    };
+  }, [targetCardId]);
+
+  const handleAddComment = async () => {
+    const text = newComment.trim();
+
+    if (!text || !postDbId) {
       return;
     }
 
-    setComments((prevComments) => [
-      ...prevComments,
-      {
-        id: Date.now(),
-        name: "익명",
-        text: trimmedComment,
-        likes: 0,
-        replyItems: [],
-      },
-    ]);
-    setNewComment("");
-  };
+    if (!currentUser) {
+      alert("로그인이 필요합니다.");
+      return;
+    }
 
-  const handleInputKeyDown = (event) => {
-    if (event.key === "Enter") {
-      handleAddComment();
+    try {
+      const res = await addComment(postDbId, currentUser.id, text);
+      if (res.success) {
+        setComments((prev) => [{ ...res.comment, reaction: null }, ...prev]);
+        setNewComment("");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("댓글 작성에 실패했습니다.");
     }
   };
 
+  const handleDeleteComment = async (commentId) => {
+    if (!currentUser) return;
+    try {
+      const res = await deleteComment(postDbId, commentId, currentUser.id);
+      if (res.success) {
+        setComments((currentComments) =>
+          currentComments.filter((comment) => comment.id !== commentId),
+        );
+      }
+    } catch (err) {
+      console.error(err);
+      alert("댓글 삭제에 실패했습니다.");
+    }
+  };
+
+  const handleLike = async (commentId) => {
+    if (!currentUser) {
+      alert("로그인이 필요합니다.");
+      return;
+    }
+    try {
+      const res = await toggleCommentLike(postDbId, commentId, currentUser.id);
+      if (res.success) {
+        setCommentReactions((prev) => ({ ...prev, [commentId]: res.liked ? "like" : null }));
+        setComments((current) =>
+          current.map((c) => {
+            if (c.id === commentId) {
+              return {
+                ...c,
+                reaction: res.liked ? "like" : null,
+                likes: res.liked ? (c.likes || 0) + 1 : Math.max(0, (c.likes || 0) - 1),
+              };
+            }
+            return c;
+          }),
+        );
+      }
+    } catch (error) {
+      console.error(error);
+      alert("좋아요 처리에 실패했습니다.");
+    }
+  };
+
+  const handleDislike = async (commentId) => {
+    if (!currentUser) {
+      alert("로그인이 필요합니다.");
+      return;
+    }
+
+    setComments((current) =>
+      current.map((c) => {
+        if (c.id === commentId) {
+          const hadLike = c.reaction === "like";
+          const hadDislike = c.reaction === "dislike";
+          const willDislike = !hadDislike;
+
+          if (hadLike && willDislike) {
+            // 좋아요 취소 처리 (await 하지 않고 백그라운드 호출)
+            toggleCommentLike(postDbId, commentId, currentUser.id).catch(console.error);
+          }
+
+          setCommentReactions((prev) => ({ ...prev, [commentId]: willDislike ? "dislike" : null }));
+
+          return {
+            ...c,
+            reaction: willDislike ? "dislike" : null,
+            likes: hadLike ? Math.max(0, (c.likes || 0) - 1) : c.likes,
+          };
+        }
+        return c;
+      }),
+    );
+  };
+
   return (
-    <div className="modal">
-      <div className="modal-header">
-        <span>댓글 {comments.length}</span>
-        <button className="close">×</button>
-      </div>
+    <div className="comment-modal-layer">
+      <button
+        type="button"
+        className="comment-modal-backdrop"
+        aria-label="댓글창 닫기"
+        onClick={onClose}
+      />
+      <aside
+        ref={modalRef}
+        className="comment-modal"
+        aria-label={`${title} 댓글`}
+      >
+        <header className="comment-modal-header">
+          <div>
+            <span className="comment-modal-label">댓글</span>
+            <h2>{title}</h2>
+          </div>
+          <button
+            type="button"
+            className="comment-modal-close"
+            onClick={onClose}
+          >
+            닫기
+          </button>
+        </header>
 
-      <div className="comment-list">
-        {comments.map((comment) => (
-          <CommentItem
-            key={comment.id}
-            comment={comment}
-            isOpen={Boolean(openReplies[comment.id])}
-            onLike={handleLike}
-            onToggleReplies={handleToggleReplies}
+        <div className="comment-list">
+          {comments.map((comment) => (
+            <CommentItem
+              key={comment.id}
+              comment={comment}
+              currentUser={currentUser}
+              isOpen={Boolean(openReplies[comment.id])}
+              replyDraft={replyDrafts[comment.id] ?? ""}
+              onLike={handleLike}
+              onDislike={handleDislike}
+              onToggleReplies={(commentId) => {}}
+              onReplyDraftChange={(commentId, value) => {}}
+              onAddReply={() => {}}
+              onDelete={handleDeleteComment}
+            />
+          ))}
+        </div>
+
+        <footer className="comment-input">
+          <div className="comment-avatar is-small" aria-hidden="true" />
+          <input
+            type="text"
+            value={newComment}
+            placeholder="댓글 추가..."
+            onChange={(event) => setNewComment(event.target.value)}
+            onKeyDown={(event) => {
+              if (event.nativeEvent.isComposing || event.repeat) {
+                return;
+              }
+
+              if (event.key === "Enter") {
+                handleAddComment();
+              }
+            }}
           />
-        ))}
-      </div>
-
-      <div className="comment-input">
-        <div className="avatar small"></div>
-        <input
-          type="text"
-          placeholder="댓글 추가..."
-          value={newComment}
-          onChange={(event) => setNewComment(event.target.value)}
-          onKeyDown={handleInputKeyDown}
-        />
-      </div>
+          <button type="button" onClick={handleAddComment}>
+            등록
+          </button>
+        </footer>
+      </aside>
     </div>
   );
-};
-
-export default CommentApp;
+}
