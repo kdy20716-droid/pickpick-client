@@ -1,99 +1,133 @@
-import React from 'react';
-import "./Profile.css";
+import { useState, useEffect } from "react";
+import styles from "./MyPage.module.css";
+import candLeft from "../assets/candidate-left.jpg";
+import candRight from "../assets/candidate-right.jpg";
+import {
+  getNotifications,
+  markNotificationRead,
+  markAllNotificationsRead,
+} from "../api/users";
 
-const ProfileSection = () => {
+const Profile = () => {
+  const [notifications, setNotifications] = useState([]);
+
+  const userStr = localStorage.getItem("user");
+  const currentUser = userStr ? JSON.parse(userStr) : null;
+
+  useEffect(() => {
+    if (currentUser) {
+      fetchNotifications();
+    }
+  }, []);
+
+  const fetchNotifications = async () => {
+    try {
+      const res = await getNotifications(currentUser.id);
+      if (res.success) {
+        setNotifications(res.notifications);
+      }
+    } catch (error) {
+      console.error("알림 조회 실패:", error);
+    }
+  };
+
+  const handleReadNotification = async (notifId) => {
+    try {
+      await markNotificationRead(currentUser.id, notifId);
+      setNotifications((prev) =>
+        prev.map((n) => (n.id === notifId ? { ...n, is_read: 1 } : n)),
+      );
+    } catch (error) {
+      console.error("알림 읽음 처리 실패:", error);
+    }
+  };
+
+  const handleReadAll = async () => {
+    try {
+      await markAllNotificationsRead(currentUser.id);
+      setNotifications((prev) => prev.map((n) => ({ ...n, is_read: 1 })));
+    } catch (error) {
+      console.error("모든 알림 읽음 처리 실패:", error);
+    }
+  };
+
   return (
-    <div className="profile-container">
-      <div className="breadcrumb">
-        마이페이지 &gt; 내 프로필 &gt; 프로필 설정
+    <>
+      <div className={styles.topSearchRow}>
+        <p className={styles.breadcrumb}>마이페이지 〉 내 프로필</p>
+        <div className={styles.searchBar}>
+          <input type="text" placeholder="" />
+          <span className={styles.searchIcon}>🔍</span>
+        </div>
       </div>
 
-      <div className="profile-card">
-        <div className="card-header">
-          <div className="button-group">
-            <button className="btn-cancel">취소</button>
-            <button className="btn-save">저장</button>
+      <section className={styles.contentBody}>
+        <div className={styles.leftPanel}>
+          <div className={styles.profileHeader}>
+            <div className={`${styles.card} ${styles.profileImgCard}`}>
+              <div className={styles.circleBig}>
+                <div className={styles.silhouette}></div>
+              </div>
+              <div className={styles.camIconWrapper}>
+                <div className={styles.camIcon}>📷</div>
+              </div>
+            </div>
+            <div className={`${styles.card} ${styles.nicknameCard}`}>
+              <div className={styles.lvBadge}>
+                LV.99 <span className={styles.qMark}>?</span>{" "}
+                <span className={styles.playBtn}>▶</span>
+              </div>
+              <h2 className={styles.nickname}>홍길동 님</h2>
+              <span className={styles.gearIcon}>⚙</span>
+            </div>
           </div>
         </div>
 
-        <div className="card-content">
-          {/* 왼쪽: 프로필 사진 영역 */}
-          <div className="profile-image-section">
-            <div className="image-circle">
-              <div className="avatar-placeholder"></div>
+        <div className={styles.rightPanel}>
+          <div className={`${styles.card} ${styles.notifCard}`}>
+            <h3 className={styles.panelTitle}>NOTIFICATION</h3>
+
+            <div className={styles.msgBubbleContainer}>
+              {notifications.length === 0 ? (
+                <div className={styles.msgGray}>새로운 알림이 없습니다.</div>
+              ) : (
+                notifications.map((notif) => (
+                  <div
+                    key={notif.id}
+                    className={notif.is_read ? styles.msgGray : styles.msgPink}
+                    onClick={() =>
+                      !notif.is_read && handleReadNotification(notif.id)
+                    }
+                    style={{ cursor: notif.is_read ? "default" : "pointer" }}
+                  >
+                    {notif.type === "COMMENT_ON_POST" &&
+                      `${notif.sender_name}님이 내 투표에 댓글을 남겼습니다: "${notif.comment_content}"`}
+                    {notif.type === "REPLY_ON_COMMENT" && (
+                      <>
+                        <span className={styles.mIcon}>M</span> ↳{" "}
+                        {notif.sender_name}님이 내 댓글에 답글을 남겼습니다: "
+                        {notif.comment_content}"
+                      </>
+                    )}
+                  </div>
+                ))
+              )}
             </div>
-            <div className="image-buttons">
-              <button className="btn-sub">사진 편집</button>
-              <button className="btn-sub">기본이미지</button>
-            </div>
-          </div>
 
-          {/* 오른쪽: 입력 폼 영역 */}
-          <div className="profile-form">
-            <div className="form-grid">
-              {/* 이름 */}
-              <div className="form-group full">
-                <label>이름</label>
-                <input type="text" className="input-field" />
+            {notifications.length > 0 && (
+              <div
+                className={styles.bottomCheck}
+                onClick={handleReadAll}
+                style={{ cursor: "pointer" }}
+              >
+                <span className={styles.checkCircle}>✔</span> 확인했어요
               </div>
-
-              {/* 성별 */}
-              <div className="form-group gender-group">
-                <label>성별</label>
-                <div className="gender-options">
-                  <button className="gender-btn">남자</button>
-                  <button className="gender-btn active">여자</button>
-                  <button className="gender-btn">밝히고 싶지 않음</button>
-                </div>
-              </div>
-
-              {/* 별명 */}
-              <div className="form-group full">
-                <label>별명</label>
-                <div className="input-with-status">
-                  <input type="text" className="input-field" />
-                  <span className="status-msg success">
-                    <i className="check-icon">✓</i> 사용 가능합니다.
-                  </span>
-                </div>
-              </div>
-
-              {/* 생년월일 */}
-              <div className="form-group full">
-                <label>생년월일</label>
-                <div className="birth-inputs">
-                  <input type="text" placeholder="YEAR" className="input-field" />
-                  <input type="text" placeholder="MONTH" className="input-field" />
-                  <input type="text" placeholder="DAY" className="input-field" />
-                </div>
-              </div>
-
-              {/* 전화번호 */}
-              <div className="form-group full">
-                <label>전화번호</label>
-                <div className="input-with-status">
-                  <input type="text" className="input-field" />
-                  <span className="status-msg success">
-                    <i className="check-icon">✓</i> 인증이 완료되었습니다.
-                  </span>
-                </div>
-              </div>
-
-              {/* 이메일 */}
-              <div className="form-group full">
-                <label>이메일</label>
-                <div className="email-inputs">
-                  <input type="text" className="input-field" />
-                  <div className="select-box">선택</div>
-                  <input type="text" placeholder="@email.com" className="input-field" />
-                </div>
-              </div>
-            </div>
+            )}
           </div>
         </div>
-      </div>
-    </div>
+      </section>
+    </>
   );
 };
 
-export default ProfileSection;
+export default Profile;

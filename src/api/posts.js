@@ -3,13 +3,19 @@ import instance from "./instance";
 const VOTE_LIST_PATH = "/votelist";
 
 // 1. 투표 게시글 목록 조회 API
-export const getVote = async (keyword = null, category = null, sort = null) => {
-  let url = VOTE_LIST_PATH;
+export const getVote = async (
+  keyword = null,
+  category = null,
+  sort = null,
+  user_id = null,
+) => {
+  let url = "/votelist";
   const params = new URLSearchParams();
   if (keyword) params.append("keyword", keyword);
   if (category) params.append("category", category);
   if (sort) params.append("sort", sort);
-  
+  if (user_id) params.append("user_id", user_id);
+
   const queryString = params.toString();
   if (queryString) url += `?${queryString}`;
 
@@ -65,27 +71,39 @@ export const getComments = async (postId) => {
 };
 
 // 6. 댓글 추가 API
-export const addComment = async (postId, user_id, content) => {
+export const addComment = async (
+  postId,
+  user_id,
+  content,
+  parent_id = null,
+) => {
   const response = await instance.post(`/api/votes/${postId}/comments`, {
     user_id,
     content,
+    parent_id,
   });
   return response.data;
 };
 
 // 7. 댓글 삭제 API
 export const deleteComment = async (postId, commentId, user_id) => {
-  const response = await instance.delete(`/api/votes/${postId}/comments/${commentId}`, {
-    data: { user_id },
-  });
+  const response = await instance.delete(
+    `/api/votes/${postId}/comments/${commentId}`,
+    {
+      data: { user_id },
+    },
+  );
   return response.data;
 };
 
 // 8. 댓글 좋아요 토글 API
 export const toggleCommentLike = async (postId, commentId, user_id) => {
-  const response = await instance.post(`/api/votes/${postId}/comments/${commentId}/like`, {
-    user_id,
-  });
+  const response = await instance.post(
+    `/api/votes/${postId}/comments/${commentId}/like`,
+    {
+      user_id,
+    },
+  );
   return response.data;
 };
 
