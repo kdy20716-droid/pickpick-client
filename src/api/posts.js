@@ -1,12 +1,13 @@
 import instance from "./instance";
 
 // 1. 투표 게시글 목록 조회 API
-export const getVote = async (keyword = null, category = null, sort = null) => {
+export const getVote = async (keyword = null, category = null, sort = null, user_id = null) => {
   let url = "/recipes";
   const params = new URLSearchParams();
   if (keyword) params.append("keyword", keyword);
   if (category) params.append("category", category);
   if (sort) params.append("sort", sort);
+  if (user_id) params.append("user_id", user_id);
   
   const queryString = params.toString();
   if (queryString) url += `?${queryString}`;
@@ -63,10 +64,11 @@ export const getComments = async (postId) => {
 };
 
 // 6. 댓글 추가 API
-export const addComment = async (postId, user_id, content) => {
+export const addComment = async (postId, user_id, content, parent_id = null) => {
   const response = await instance.post(`/api/votes/${postId}/comments`, {
     user_id,
     content,
+    parent_id,
   });
   return response.data;
 };

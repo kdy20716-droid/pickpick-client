@@ -1,8 +1,50 @@
+import { useState, useEffect } from "react";
 import styles from "./MyPage.module.css";
 import candLeft from "../assets/candidate-left.jpg";
 import candRight from "../assets/candidate-right.jpg";
+import { getNotifications, markNotificationRead, markAllNotificationsRead } from "../api/users";
 
 const MyPage = () => {
+    const [notifications, setNotifications] = useState([]);
+    
+    const userStr = localStorage.getItem("user");
+    const currentUser = userStr ? JSON.parse(userStr) : null;
+
+    useEffect(() => {
+        if (currentUser) {
+            fetchNotifications();
+        }
+    }, []);
+
+    const fetchNotifications = async () => {
+        try {
+            const res = await getNotifications(currentUser.id);
+            if (res.success) {
+                setNotifications(res.notifications);
+            }
+        } catch (error) {
+            console.error("알림 조회 실패:", error);
+        }
+    };
+
+    const handleReadNotification = async (notifId) => {
+        try {
+            await markNotificationRead(currentUser.id, notifId);
+            setNotifications(prev => prev.map(n => n.id === notifId ? { ...n, is_read: 1 } : n));
+        } catch (error) {
+            console.error("알림 읽음 처리 실패:", error);
+        }
+    };
+
+    const handleReadAll = async () => {
+        try {
+            await markAllNotificationsRead(currentUser.id);
+            setNotifications(prev => prev.map(n => ({ ...n, is_read: 1 })));
+        } catch (error) {
+            console.error("모든 알림 읽음 처리 실패:", error);
+        }
+    };
+
     return (
         <div className={styles.wrapper}> 
             <nav className={styles.sidebar}>
@@ -16,7 +58,7 @@ const MyPage = () => {
                 </div>
                 <div className={styles.sidebarUser}>
                     <div className={styles.userThumb}></div>
-                    <span>홍길동 <small className={styles.sideArrow}>〉</small></span>
+                    <span>{currentUser ? currentUser.name : "게스트"} <small className={styles.sideArrow}>〉</small></span>
                 </div>
             </nav>
 
@@ -44,7 +86,7 @@ const MyPage = () => {
                                 <div className={styles.lvBadge}>
                                     LV.99 <span className={styles.qMark}>?</span> <span className={styles.playBtn}>▶</span>
                                 </div>
-                                <h2 className={styles.nickname}>홍길동 님</h2>
+                                <h2 className={styles.nickname}>{currentUser ? `${currentUser.name} 님` : "로그인 해주세요"}</h2>
                                 <span className={styles.gearIcon}>⚙</span>
                             </div>
                         </div>
@@ -71,47 +113,32 @@ const MyPage = () => {
                             <h3 className={styles.panelTitle}>NOTIFICATION</h3>
                             
                             <div className={styles.msgBubbleContainer}>
-                                <div className={styles.msgPink}>HEY PLZ VOTE !</div>
-                                <div className={styles.msgReply}>
-                                    <span className={styles.mIcon}>M</span> ↳ REPLY
-                                </div>
+                                {notifications.length === 0 ? (
+                                    <div className={styles.msgGray}>새로운 알림이 없습니다.</div>
+                                ) : (
+                                    notifications.map(notif => (
+                                        <div 
+                                            key={notif.id} 
+                                            className={notif.is_read ? styles.msgGray : styles.msgPink}
+                                            onClick={() => !notif.is_read && handleReadNotification(notif.id)}
+                                            style={{ cursor: notif.is_read ? 'default' : 'pointer' }}
+                                        >
+                                            {notif.type === 'COMMENT_ON_POST' && `${notif.sender_name}님이 내 투표에 댓글을 남겼습니다: "${notif.comment_content}"`}
+                                            {notif.type === 'REPLY_ON_COMMENT' && (
+                                                <>
+                                                    <span className={styles.mIcon}>M</span> ↳ {notif.sender_name}님이 내 댓글에 답글을 남겼습니다: "{notif.comment_content}"
+                                                </>
+                                            )}
+                                        </div>
+                                    ))
+                                )}
                             </div>
 
-                            <div className={styles.msgGray}>YOU GOT 987 LIKES !</div>
-                            <div className={styles.msgGray}>MARK POST NEW POLL</div>
-
-                            <div className={styles.trendingBox}>
-                                <p className={styles.trendingTitle}>TRENDING NOW</p>
-                                
-                                <div className={styles.rankRow}>
-                                    <span className={styles.rankLabel}>TOP 1</span>
-                                    <div className={styles.vsFlex}>
-                                        <div className={styles.charBox}><img src={candLeft} alt="" /></div>
-                                        <span className={styles.vsTxt}>VS</span>
-                                        <div className={styles.charBox}><img src={candRight} alt="" /></div>
-                                    </div>
+                            {notifications.length > 0 && (
+                                <div className={styles.bottomCheck} onClick={handleReadAll} style={{ cursor: 'pointer' }}>
+                                    <span className={styles.checkCircle}>✔</span> 확인했어요
                                 </div>
-                                <div className={styles.rankRow}>
-                                    <span className={styles.rankLabel}>TOP 2</span>
-                                    <div className={styles.vsFlex}>
-                                        <div className={styles.charBox}><img src={candLeft} alt="" /></div>
-                                        <span className={styles.vsTxt}>VS</span>
-                                        <div className={styles.charBox}><img src={candRight} alt="" /></div>
-                                    </div>
-                                </div>
-                                <div className={styles.rankRow}>
-                                    <span className={styles.rankLabel}>TOP 3</span>
-                                    <div className={styles.vsFlex}>
-                                        <div className={styles.charBox}><img src={candLeft} alt="" /></div>
-                                        <span className={styles.vsTxt}>VS</span>
-                                        <div className={styles.charBox}><img src={candRight} alt="" /></div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className={styles.bottomCheck}>
-                                <span className={styles.checkCircle}>✔</span> 확인했어요
-                            </div>
+                            )}
                         </div>
                     </div>
                 </section>

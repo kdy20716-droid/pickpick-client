@@ -337,15 +337,24 @@ export default function VotePage() {
   useEffect(() => {
     const fetchVotes = async () => {
       try {
-        const data = await getVote(searchKeyword, selectedTag, sortBy);
+        const passedUserId = userId === 'guest' ? null : userId;
+        const data = await getVote(searchKeyword, selectedTag, sortBy, passedUserId);
+        
+        const serverVotes = {};
         const formattedCards = data.map((item, index) => {
           const totalVotes = (item.candidate_a_count || 0) + (item.candidate_b_count || 0);
           const leftShare = totalVotes === 0 ? 50 : Math.round(((item.candidate_a_count || 0) / totalVotes) * 100);
           const rightShare = totalVotes === 0 ? 50 : Math.round(((item.candidate_b_count || 0) / totalVotes) * 100);
 
+          const feedId = `${item.id}-${index + 1}`;
+          
+          if (item.user_voted_side) {
+            serverVotes[feedId] = item.user_voted_side.toLowerCase();
+          }
+
           return {
             id: item.id.toString(),
-            feedId: `${item.id}-${index + 1}`,
+            feedId,
             title: item.title,
             leftCandidate: {
               id: "a",
@@ -362,13 +371,16 @@ export default function VotePage() {
             shares: { left: leftShare, right: rightShare },
           };
         });
+        
+        // Merge server votes into local state (server has priority)
+        setSelectedVotes(prev => ({ ...prev, ...serverVotes }));
         setCards(formattedCards);
       } catch (error) {
         console.error("투표 목록을 불러오는데 실패했습니다.", error);
       }
     };
     fetchVotes();
-  }, [selectedTag, searchKeyword, sortBy]);
+  }, [selectedTag, searchKeyword, sortBy, userId]);
 
   useEffect(() => {
     return () => {
