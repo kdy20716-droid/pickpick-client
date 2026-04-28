@@ -1,99 +1,103 @@
-import React from 'react';
-import "./Profile.css";
+import styles from "./MyPage.module.css";
+import candLeft from "../assets/candidate-left.jpg";
+import candRight from "../assets/candidate-right.jpg";
 
-const ProfileSection = () => {
+const Profile = () => {
   return (
-    <div className="profile-container">
-      <div className="breadcrumb">
-        마이페이지 &gt; 내 프로필 &gt; 프로필 설정
+    <>
+      <div className={styles.topSearchRow}>
+        <p className={styles.breadcrumb}>마이페이지 〉 내 프로필</p>
+        <div className={styles.searchBar}>
+          <input type="text" placeholder="" />
+          <span className={styles.searchIcon}>🔍</span>
+        </div>
       </div>
 
-      <div className="profile-card">
-        <div className="card-header">
-          <div className="button-group">
-            <button className="btn-cancel">취소</button>
-            <button className="btn-save">저장</button>
+      <section className={styles.contentBody}>
+        <div className={styles.leftPanel}>
+          <div className={styles.profileHeader}>
+            <div className={`${styles.card} ${styles.profileImgCard}`}>
+              <div className={styles.circleBig}>
+                <div className={styles.silhouette}></div>
+              </div>
+              <div className={styles.camIconWrapper}>
+                <div className={styles.camIcon}>📷</div>
+              </div>
+            </div>
+            <div className={`${styles.card} ${styles.nicknameCard}`}>
+              <div className={styles.lvBadge}>
+                LV.99 <span className={styles.qMark}>?</span>{" "}
+                <span className={styles.playBtn}>▶</span>
+              </div>
+              <h2 className={styles.nickname}>홍길동 님</h2>
+              <span className={styles.gearIcon}>⚙</span>
+            </div>
           </div>
         </div>
 
-        <div className="card-content">
-          {/* 왼쪽: 프로필 사진 영역 */}
-          <div className="profile-image-section">
-            <div className="image-circle">
-              <div className="avatar-placeholder"></div>
+        <div className={styles.rightPanel}>
+          <div className={`${styles.card} ${styles.notifCard}`}>
+            <h3 className={styles.panelTitle}>NOTIFICATION</h3>
+
+            <div className={styles.msgBubbleContainer}>
+              <div className={styles.msgPink}>HEY PLZ VOTE !</div>
+              <div className={styles.msgReply}>
+                <span className={styles.mIcon}>M</span> ↳ REPLY
+              </div>
             </div>
-            <div className="image-buttons">
-              <button className="btn-sub">사진 편집</button>
-              <button className="btn-sub">기본이미지</button>
+
+            <div className={styles.msgGray}>YOU GOT 987 LIKES !</div>
+            <div className={styles.msgGray}>MARK POST NEW POLL</div>
+
+            <div className={styles.trendingBox}>
+              <p className={styles.trendingTitle}>TRENDING NOW</p>
+
+              <div className={styles.rankRow}>
+                <span className={styles.rankLabel}>TOP 1</span>
+                <div className={styles.vsFlex}>
+                  <div className={styles.charBox}>
+                    <img src={candLeft} alt="" />
+                  </div>
+                  <span className={styles.vsTxt}>VS</span>
+                  <div className={styles.charBox}>
+                    <img src={candRight} alt="" />
+                  </div>
+                </div>
+              </div>
+              <div className={styles.rankRow}>
+                <span className={styles.rankLabel}>TOP 2</span>
+                <div className={styles.vsFlex}>
+                  <div className={styles.charBox}>
+                    <img src={candLeft} alt="" />
+                  </div>
+                  <span className={styles.vsTxt}>VS</span>
+                  <div className={styles.charBox}>
+                    <img src={candRight} alt="" />
+                  </div>
+                </div>
+              </div>
+              <div className={styles.rankRow}>
+                <span className={styles.rankLabel}>TOP 3</span>
+                <div className={styles.vsFlex}>
+                  <div className={styles.charBox}>
+                    <img src={candLeft} alt="" />
+                  </div>
+                  <span className={styles.vsTxt}>VS</span>
+                  <div className={styles.charBox}>
+                    <img src={candRight} alt="" />
+                  </div>
+                </div>
+              </div>
             </div>
-          </div>
 
-          {/* 오른쪽: 입력 폼 영역 */}
-          <div className="profile-form">
-            <div className="form-grid">
-              {/* 이름 */}
-              <div className="form-group full">
-                <label>이름</label>
-                <input type="text" className="input-field" />
-              </div>
-
-              {/* 성별 */}
-              <div className="form-group gender-group">
-                <label>성별</label>
-                <div className="gender-options">
-                  <button className="gender-btn">남자</button>
-                  <button className="gender-btn active">여자</button>
-                  <button className="gender-btn">밝히고 싶지 않음</button>
-                </div>
-              </div>
-
-              {/* 별명 */}
-              <div className="form-group full">
-                <label>별명</label>
-                <div className="input-with-status">
-                  <input type="text" className="input-field" />
-                  <span className="status-msg success">
-                    <i className="check-icon">✓</i> 사용 가능합니다.
-                  </span>
-                </div>
-              </div>
-
-              {/* 생년월일 */}
-              <div className="form-group full">
-                <label>생년월일</label>
-                <div className="birth-inputs">
-                  <input type="text" placeholder="YEAR" className="input-field" />
-                  <input type="text" placeholder="MONTH" className="input-field" />
-                  <input type="text" placeholder="DAY" className="input-field" />
-                </div>
-              </div>
-
-              {/* 전화번호 */}
-              <div className="form-group full">
-                <label>전화번호</label>
-                <div className="input-with-status">
-                  <input type="text" className="input-field" />
-                  <span className="status-msg success">
-                    <i className="check-icon">✓</i> 인증이 완료되었습니다.
-                  </span>
-                </div>
-              </div>
-
-              {/* 이메일 */}
-              <div className="form-group full">
-                <label>이메일</label>
-                <div className="email-inputs">
-                  <input type="text" className="input-field" />
-                  <div className="select-box">선택</div>
-                  <input type="text" placeholder="@email.com" className="input-field" />
-                </div>
-              </div>
+            <div className={styles.bottomCheck}>
+              <span className={styles.checkCircle}>✔</span> 확인했어요
             </div>
           </div>
         </div>
-      </div>
-    </div>
+      </section>
+    </>
   );
 };
 
-export default ProfileSection;
+export default Profile;
