@@ -63,7 +63,7 @@ export default function Signin() {
   };
 
   // 이메일 코드 전송
-  const handleSendEmailCode = () => {
+  const handleSendEmailCode = async () => {
     if (!form.email) {
       setErrorMsg("이메일 주소를 먼저 입력해주세요.");
       setShowModal(true);
@@ -78,14 +78,30 @@ export default function Signin() {
       return;
     }
 
-    // 6자리 랜덤 코드 생성 (Mocking)
-    const code = Math.floor(100000 + Math.random() * 900000).toString();
-    setServerCode(code);
-    setEmailCodeSent(true);
-    
-    // 유저가 확인할 수 있도록 알림 (실제로는 서버가 이메일을 발송함)
-    alert(`인증 코드가 발송되었습니다: ${code}`);
-    console.log(`Email Verification Code: ${code}`);
+    try {
+      // 백엔드 API 호출하여 이메일 전송
+      const response = await fetch("http://localhost:4000/users/send-email-code", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: form.email }),
+      });
+
+      if (!response.ok) {
+        throw new Error("서버에서 이메일을 발송하지 못했습니다.");
+      }
+
+      const data = await response.json();
+      
+      // 서버에서 전달받은 코드를 프론트엔드 상태로 저장 (프론트에서 검증하기 위함)
+      setServerCode(data.code);
+      setEmailCodeSent(true);
+
+      alert(`인증 코드가 발송되었습니다`);
+    } catch (error) {
+      setErrorMsg("이메일 발송 중 오류가 발생했습니다.");
+      setShowModal(true);
+      console.error(error);
+    }
   };
 
   // 이메일 코드 확인
@@ -198,9 +214,9 @@ export default function Signin() {
               disabled={isEmailVerified}
             />
           </div>
-          <button 
-            type="button" 
-            className="verify-btn" 
+          <button
+            type="button"
+            className="verify-btn"
             onClick={handleSendEmailCode}
             disabled={isEmailVerified}
           >
@@ -220,9 +236,9 @@ export default function Signin() {
                 maxLength={6}
               />
             </div>
-            <button 
-              type="button" 
-              className="verify-confirm-btn" 
+            <button
+              type="button"
+              className="verify-confirm-btn"
               onClick={handleVerifyEmailCode}
             >
               확인
