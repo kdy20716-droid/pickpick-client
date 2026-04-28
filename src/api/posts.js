@@ -1,8 +1,10 @@
 import instance from "./instance";
 
+const VOTE_LIST_PATH = "/votelist";
+
 // 1. 투표 게시글 목록 조회 API
 export const getVote = async (keyword = null, category = null, sort = null) => {
-  let url = "/recipes";
+  let url = VOTE_LIST_PATH;
   const params = new URLSearchParams();
   if (keyword) params.append("keyword", keyword);
   if (category) params.append("category", category);
@@ -35,7 +37,7 @@ export const addVote = async (
   formData.append("candidate_b_name", candidate_b_name);
   formData.append("candidate_b_image", candidate_b_image); // 파일 객체
 
-  const response = await instance.post("/recipes", formData);
+  const response = await instance.post(VOTE_LIST_PATH, formData);
   return response.data;
 };
 
@@ -89,12 +91,12 @@ export const toggleCommentLike = async (postId, commentId, user_id) => {
 
 // 9. 랭킹 데이터 조회 API
 export const getRanking = async () => {
-  const response = await instance.get("/recipes/ranking");
+  const response = await instance.get(`${VOTE_LIST_PATH}/ranking`);
   return response.data;
 };
 
 // 10. 조회수 증가 API
 export const incrementView = async (postId) => {
-  const response = await instance.post(`/recipes/${postId}/view`);
+  const response = await instance.post(`${VOTE_LIST_PATH}/${postId}/view`);
   return response.data;
 };
