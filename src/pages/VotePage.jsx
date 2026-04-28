@@ -1,4 +1,4 @@
-﻿import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import "./VotePage.css";
 import vsLogo from "../assets/vs-logo.svg";
@@ -279,25 +279,39 @@ export default function VotePage() {
   const entersFromMain = isMainRouteTransition(location.state?.transition);
   const [cards, setCards] = useState([]);
   
-  // 상태를 초기화할 때 localStorage에서 값을 가져옵니다.
+  // 현재 접속 중인 유저 가져오기
+  const userStr = localStorage.getItem("user");
+  const currentUser = userStr ? JSON.parse(userStr) : { id: 'guest' };
+  const userId = currentUser.id;
+
+  // 상태를 초기화할 때 유저별 키를 사용하여 localStorage에서 값을 가져옵니다.
   const [selectedVotes, setSelectedVotes] = useState(() => {
-    const saved = localStorage.getItem("selectedVotes");
+    const saved = localStorage.getItem(`selectedVotes_${userId}`);
     return saved ? JSON.parse(saved) : {};
   });
   
   const [cardActions, setCardActions] = useState(() => {
-    const saved = localStorage.getItem("cardActions");
+    const saved = localStorage.getItem(`cardActions_${userId}`);
     return saved ? JSON.parse(saved) : {};
   });
 
-  // 상태가 변경될 때마다 localStorage에 저장합니다.
+  // 유저가 바뀌면(로그인/로그아웃) 기록을 다시 로드합니다.
   useEffect(() => {
-    localStorage.setItem("selectedVotes", JSON.stringify(selectedVotes));
-  }, [selectedVotes]);
+    const savedVotes = localStorage.getItem(`selectedVotes_${userId}`);
+    setSelectedVotes(savedVotes ? JSON.parse(savedVotes) : {});
+    
+    const savedActions = localStorage.getItem(`cardActions_${userId}`);
+    setCardActions(savedActions ? JSON.parse(savedActions) : {});
+  }, [userId]);
+
+  // 상태가 변경될 때마다 유저별 키로 localStorage에 저장합니다.
+  useEffect(() => {
+    localStorage.setItem(`selectedVotes_${userId}`, JSON.stringify(selectedVotes));
+  }, [selectedVotes, userId]);
 
   useEffect(() => {
-    localStorage.setItem("cardActions", JSON.stringify(cardActions));
-  }, [cardActions]);
+    localStorage.setItem(`cardActions_${userId}`, JSON.stringify(cardActions));
+  }, [cardActions, userId]);
 
   const [copiedCardId, setCopiedCardId] = useState("");
   const [commentCardId, setCommentCardId] = useState("");
@@ -354,7 +368,7 @@ export default function VotePage() {
       }
     };
     fetchVotes();
-  }, [selectedTag]);
+  }, [selectedTag, searchKeyword, sortBy]);
 
   useEffect(() => {
     return () => {
@@ -422,13 +436,9 @@ export default function VotePage() {
     const card = cards.find(c => c.feedId === cardId);
     if (!card) return;
 
-    // 현재 접속 중인 유저 가져오기
-    const userStr = localStorage.getItem("user");
-    const user = userStr ? JSON.parse(userStr) : { id: 1 }; // 비로그인 시 임시로 1번 유저 사용
-
     try {
       const side = candidateId.toUpperCase(); // 'a' -> 'A', 'b' -> 'B'
-      const response = await submitVote(card.id, user.id, side);
+      const response = await submitVote(card.id, userId === 'guest' ? 1 : userId, side);
 
       if (response.success) {
         // 서버에서 받아온 최신 투표수로 퍼센트 재계산
@@ -459,15 +469,13 @@ export default function VotePage() {
       const card = cards.find(c => c.feedId === cardId);
       if (!card) return;
 
-      const userStr = localStorage.getItem("user");
-      if (!userStr) {
+      if (userId === 'guest') {
         alert("로그인이 필요합니다.");
         return;
       }
-      const user = JSON.parse(userStr);
 
       try {
-        const res = await toggleLike(card.id, user.id);
+        const res = await toggleLike(card.id, userId);
         if (res.success) {
           setCardActions((currentActions) =>
             updateCardActionState(currentActions, cardId, actionId),

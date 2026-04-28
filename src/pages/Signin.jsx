@@ -28,6 +28,12 @@ export default function Signin() {
   const [errorMsg, setErrorMsg] = useState("");
   const [showModal, setShowModal] = useState(false);
 
+  // ✅ 5️⃣ 이메일 인증 관련 상태
+  const [emailCodeSent, setEmailCodeSent] = useState(false);
+  const [verificationInput, setVerificationInput] = useState("");
+  const [isEmailVerified, setIsEmailVerified] = useState(false);
+  const [serverCode, setServerCode] = useState(""); // 실제로는 서버에서 처리하지만 현재는 프론트에서 관리
+
   // 모달 자동 닫기 (3초 후)
   useEffect(() => {
     if (showModal) {
@@ -56,6 +62,43 @@ export default function Signin() {
     setChecks({ ...checks, [name]: checked });
   };
 
+  // 이메일 코드 전송
+  const handleSendEmailCode = () => {
+    if (!form.email) {
+      setErrorMsg("이메일 주소를 먼저 입력해주세요.");
+      setShowModal(true);
+      return;
+    }
+
+    // 간단한 이메일 형식 체크
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(form.email)) {
+      setErrorMsg("올바른 이메일 형식이 아닙니다.");
+      setShowModal(true);
+      return;
+    }
+
+    // 6자리 랜덤 코드 생성 (Mocking)
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
+    setServerCode(code);
+    setEmailCodeSent(true);
+    
+    // 유저가 확인할 수 있도록 알림 (실제로는 서버가 이메일을 발송함)
+    alert(`인증 코드가 발송되었습니다: ${code}`);
+    console.log(`Email Verification Code: ${code}`);
+  };
+
+  // 이메일 코드 확인
+  const handleVerifyEmailCode = () => {
+    if (verificationInput === serverCode && serverCode !== "") {
+      setIsEmailVerified(true);
+      alert("이메일 인증이 완료되었습니다.");
+    } else {
+      setErrorMsg("인증 코드가 일치하지 않습니다.");
+      setShowModal(true);
+    }
+  };
+
   // 제출
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -74,6 +117,18 @@ export default function Signin() {
 
     if (form.pw.length < 8) {
       setErrorMsg("비밀번호는 8자 이상 입력하세요.");
+      setShowModal(true);
+      return;
+    }
+
+    if (!form.email) {
+      setErrorMsg("이메일 주소를 입력해주세요.");
+      setShowModal(true);
+      return;
+    }
+
+    if (!isEmailVerified) {
+      setErrorMsg("이메일 인증을 완료해주세요.");
       setShowModal(true);
       return;
     }
@@ -131,16 +186,55 @@ export default function Signin() {
           />
         </div>
 
-        <div className="input-group">
-          <span>✉️</span>
-          <input
-            type="email"
-            name="email"
-            placeholder="[선택] 이메일 주소"
-            value={form.email}
-            onChange={handleChange}
-          />
+        <div className="input-group-with-btn">
+          <div className="input-group">
+            <span>✉️</span>
+            <input
+              type="email"
+              name="email"
+              placeholder="이메일 주소"
+              value={form.email}
+              onChange={handleChange}
+              disabled={isEmailVerified}
+            />
+          </div>
+          <button 
+            type="button" 
+            className="verify-btn" 
+            onClick={handleSendEmailCode}
+            disabled={isEmailVerified}
+          >
+            {emailCodeSent ? "재전송" : "코드받기"}
+          </button>
         </div>
+
+        {emailCodeSent && !isEmailVerified && (
+          <div className="input-group-with-btn animate-fade-in">
+            <div className="input-group">
+              <span>🔢</span>
+              <input
+                type="text"
+                placeholder="인증코드 6자리"
+                value={verificationInput}
+                onChange={(e) => setVerificationInput(e.target.value)}
+                maxLength={6}
+              />
+            </div>
+            <button 
+              type="button" 
+              className="verify-confirm-btn" 
+              onClick={handleVerifyEmailCode}
+            >
+              확인
+            </button>
+          </div>
+        )}
+
+        {isEmailVerified && (
+          <div className="verified-badge animate-fade-in">
+            ✅ 이메일 인증 완료
+          </div>
+        )}
 
         <div className="input-group">
           <span>👤</span>
