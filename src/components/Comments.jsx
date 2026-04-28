@@ -1,53 +1,116 @@
-import { useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import CommentItem from "./CommentItem.jsx";
-import { commentSeedItems } from "./comments.js";
 import "../pages/comments.css";
+import {
+  addComment,
+  deleteComment,
+  getComments,
+  toggleCommentLike,
+} from "../api/posts.js";
 
 const COMMENT_OVERLAY_BREAKPOINT = 1320;
 
-function getSeedCreatedAt(item) {
-  const minutesAgo = item.minutesAgo ?? item.hoursAgo * 60;
-  return Date.now() - minutesAgo * 60 * 1000;
+function getCurrentUser() {
+  try {
+    const userStr = localStorage.getItem("user");
+    return userStr ? JSON.parse(userStr) : null;
+  } catch {
+    return null;
+  }
 }
 
-function createInitialComments() {
-  return commentSeedItems.map((comment) => ({
-    ...comment,
-    createdAt: getSeedCreatedAt(comment),
-    reaction: null,
-    replyItems: comment.replyItems.map((reply) => ({
-      ...reply,
-      createdAt: getSeedCreatedAt(reply),
-    })),
-  }));
+function getSavedCommentReactions() {
+  try {
+    const saved = localStorage.getItem("commentReactions");
+    return saved ? JSON.parse(saved) : {};
+  } catch {
+    return {};
+  }
 }
 
-function updateReaction(comment, nextReaction) {
-  const hadLike = comment.reaction === "like";
-  const hadDislike = comment.reaction === "dislike";
-  const willLike = nextReaction === "like" && !hadLike;
-  const willDislike = nextReaction === "dislike" && !hadDislike;
+function toTimestamp(value) {
+  if (!value) {
+    return Date.now();
+  }
 
+  const timestamp = new Date(value).getTime();
+  return Number.isNaN(timestamp) ? Date.now() : timestamp;
+}
+
+function normalizeReply(reply) {
   return {
-    ...comment,
-    likes: Math.max(0, comment.likes + (willLike ? 1 : 0) - (hadLike ? 1 : 0)),
-    dislikes: Math.max(
-      0,
-      comment.dislikes + (willDislike ? 1 : 0) - (hadDislike ? 1 : 0),
-    ),
-    reaction: willLike ? "like" : willDislike ? "dislike" : null,
+    ...reply,
+    id: reply.id,
+    name: reply.name ?? reply.author ?? reply.user_name ?? "익명",
+    text: reply.text ?? reply.content ?? "",
+    createdAt: reply.createdAt ?? toTimestamp(reply.created_at),
+    likes: reply.likes ?? 0,
   };
 }
 
-export default function Comments({ title, targetCardId, onClose }) {
-  const [comments, setComments] = useState(createInitialComments);
+function normalizeComment(comment, reaction = null) {
+  return {
+    ...comment,
+    id: comment.id,
+    user_id: comment.user_id,
+    name: comment.name ?? comment.author ?? comment.user_name ?? "익명",
+    text: comment.text ?? comment.content ?? "",
+    createdAt: comment.createdAt ?? toTimestamp(comment.created_at),
+    likes: comment.likes ?? 0,
+    dislikes: comment.dislikes ?? 0,
+    reaction,
+    replyItems: (comment.replyItems ?? comment.replies ?? []).map(
+      normalizeReply,
+    ),
+  };
+}
+
+export default function Comments({ title, targetCardId, onClose, postDbId }) {
+  const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
   const [openReplies, setOpenReplies] = useState({});
   const [replyDrafts, setReplyDrafts] = useState({});
   const [openMenuId, setOpenMenuId] = useState(null);
   const modalRef = useRef(null);
-  const lastCommentSubmitRef = useRef({ text: "", time: 0 });
   const lastReplySubmitRef = useRef({});
+
+  const currentUser = getCurrentUser();
+
+  const [commentReactions, setCommentReactions] = useState(
+    getSavedCommentReactions,
+  );
+
+  useEffect(() => {
+    localStorage.setItem("commentReactions", JSON.stringify(commentReactions));
+  }, [commentReactions]);
+
+  useEffect(() => {
+    let ignore = false;
+
+    if (!postDbId) {
+      return () => {
+        ignore = true;
+      };
+    }
+
+    getComments(postDbId)
+      .then((res) => {
+        if (ignore || !res.success) {
+          return;
+        }
+
+        setComments(
+          res.comments.map((comment) =>
+            normalizeComment(comment, commentReactions[comment.id] ?? null),
+          ),
+        );
+      })
+      .catch(console.error);
+
+    return () => {
+      ignore = true;
+    };
+  }, [commentReactions, postDbId]);
 
   useLayoutEffect(() => {
     const modal = modalRef.current;
@@ -182,44 +245,28 @@ export default function Comments({ title, targetCardId, onClose }) {
     };
   }, [targetCardId]);
 
-  const handleReaction = (commentId, reaction) => {
-    setComments((currentComments) =>
-      currentComments.map((comment) =>
-        comment.id === commentId ? updateReaction(comment, reaction) : comment,
-      ),
-    );
-  };
-
-  const handleAddComment = () => {
+  const handleAddComment = async () => {
     const text = newComment.trim();
-    const now = Date.now();
 
-    if (!text) {
+    if (!text || !postDbId) {
       return;
     }
 
-    if (
-      lastCommentSubmitRef.current.text === text &&
-      now - lastCommentSubmitRef.current.time < 800
-    ) {
+    if (!currentUser) {
+      alert("로그인이 필요합니다.");
       return;
     }
 
-    lastCommentSubmitRef.current = { text, time: now };
-    setComments((currentComments) => [
-      ...currentComments,
-      {
-        id: now,
-        name: "익명",
-        text,
-        createdAt: now,
-        likes: 0,
-        dislikes: 0,
-        reaction: null,
-        replyItems: [],
-      },
-    ]);
-    setNewComment("");
+    try {
+      const res = await addComment(postDbId, currentUser.id, text);
+      if (res.success) {
+        setComments((prev) => [normalizeComment(res.comment, null), ...prev]);
+        setNewComment("");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("댓글 작성에 실패했습니다.");
+    }
   };
 
   const handleToggleReplies = (commentId) => {
@@ -241,18 +288,11 @@ export default function Comments({ title, targetCardId, onClose }) {
     const now = Date.now();
     const lastSubmit = lastReplySubmitRef.current[commentId];
 
-    if (!text) {
+    if (!text || now - (lastSubmit ?? 0) < 400) {
       return;
     }
 
-    if (lastSubmit?.text === text && now - lastSubmit.time < 800) {
-      return;
-    }
-
-    lastReplySubmitRef.current = {
-      ...lastReplySubmitRef.current,
-      [commentId]: { text, time: now },
-    };
+    lastReplySubmitRef.current[commentId] = now;
 
     setComments((currentComments) =>
       currentComments.map((comment) =>
@@ -262,8 +302,8 @@ export default function Comments({ title, targetCardId, onClose }) {
               replyItems: [
                 ...comment.replyItems,
                 {
-                  id: now + commentId,
-                  name: "익명",
+                  id: `reply-${commentId}-${now}`,
+                  name: currentUser?.name ?? currentUser?.nickname ?? "익명",
                   text,
                   createdAt: now,
                   likes: 0,
@@ -291,24 +331,110 @@ export default function Comments({ title, targetCardId, onClose }) {
     );
   };
 
-  const handleDeleteComment = (commentId) => {
-    setComments((currentComments) =>
-      currentComments.filter((comment) => comment.id !== commentId),
+  const handleDeleteComment = async (commentId) => {
+    if (!currentUser) {
+      alert("로그인이 필요합니다.");
+      return;
+    }
+
+    try {
+      const res = await deleteComment(postDbId, commentId, currentUser.id);
+      if (res.success) {
+        setComments((currentComments) =>
+          currentComments.filter((comment) => comment.id !== commentId),
+        );
+        setOpenMenuId(null);
+      }
+    } catch (err) {
+      console.error(err);
+      alert("댓글 삭제에 실패했습니다.");
+    }
+  };
+
+  const handleLike = async (commentId) => {
+    if (!currentUser) {
+      alert("로그인이 필요합니다.");
+      return;
+    }
+
+    try {
+      const res = await toggleCommentLike(postDbId, commentId, currentUser.id);
+      if (!res.success) {
+        return;
+      }
+
+      setCommentReactions((prev) => ({
+        ...prev,
+        [commentId]: res.liked ? "like" : null,
+      }));
+      setComments((current) =>
+        current.map((comment) => {
+          if (comment.id !== commentId) {
+            return comment;
+          }
+
+          const hadDislike = comment.reaction === "dislike";
+
+          return {
+            ...comment,
+            reaction: res.liked ? "like" : null,
+            likes:
+              res.likes ??
+              (res.liked
+                ? (comment.likes || 0) + 1
+                : Math.max(0, (comment.likes || 0) - 1)),
+            dislikes: hadDislike
+              ? Math.max(0, (comment.dislikes || 0) - 1)
+              : comment.dislikes,
+          };
+        }),
+      );
+    } catch (error) {
+      console.error(error);
+      alert("좋아요 처리에 실패했습니다.");
+    }
+  };
+
+  const handleDislike = (commentId) => {
+    if (!currentUser) {
+      alert("로그인이 필요합니다.");
+      return;
+    }
+
+    const targetComment = comments.find((comment) => comment.id === commentId);
+    const hadLike = targetComment?.reaction === "like";
+    const hadDislike = targetComment?.reaction === "dislike";
+    const willDislike = !hadDislike;
+
+    if (hadLike && willDislike) {
+      toggleCommentLike(postDbId, commentId, currentUser.id).catch(
+        console.error,
+      );
+    }
+
+    setCommentReactions((prev) => ({
+      ...prev,
+      [commentId]: willDislike ? "dislike" : null,
+    }));
+    setComments((current) =>
+      current.map((comment) => {
+        if (comment.id !== commentId) {
+          return comment;
+        }
+
+        return {
+          ...comment,
+          reaction: willDislike ? "dislike" : null,
+          likes: hadLike
+            ? Math.max(0, (comment.likes || 0) - 1)
+            : comment.likes,
+          dislikes: Math.max(
+            0,
+            (comment.dislikes || 0) + (willDislike ? 1 : -1),
+          ),
+        };
+      }),
     );
-
-    setOpenReplies((currentOpenReplies) => {
-      const nextOpenReplies = { ...currentOpenReplies };
-      delete nextOpenReplies[commentId];
-      return nextOpenReplies;
-    });
-
-    setReplyDrafts((currentReplyDrafts) => {
-      const nextReplyDrafts = { ...currentReplyDrafts };
-      delete nextReplyDrafts[commentId];
-      return nextReplyDrafts;
-    });
-
-    setOpenMenuId(null);
   };
 
   return (
@@ -346,8 +472,8 @@ export default function Comments({ title, targetCardId, onClose }) {
               isOpen={Boolean(openReplies[comment.id])}
               replyDraft={replyDrafts[comment.id] ?? ""}
               isMenuOpen={openMenuId === comment.id}
-              onLike={(commentId) => handleReaction(commentId, "like")}
-              onDislike={(commentId) => handleReaction(commentId, "dislike")}
+              onLike={handleLike}
+              onDislike={handleDislike}
               onToggleReplies={handleToggleReplies}
               onReplyDraftChange={handleReplyDraftChange}
               onAddReply={handleAddReply}

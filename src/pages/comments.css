@@ -468,6 +468,9 @@ p {
 }
 
 .comment-action {
+  display: flex;
+  align-items: center;
+  gap: 4px;
   padding: 0;
   background: transparent;
   color: #69707a;
@@ -475,8 +478,34 @@ p {
   font-weight: 800;
 }
 
+.comment-action svg {
+  width: 15px;
+  height: 15px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+}
+
 .comment-action-active {
   color: #d94588;
+}
+
+.comment-action.action-like.is-active {
+  color: #ff3b30;
+}
+
+.comment-action.action-like.is-active svg {
+  fill: #ff3b30;
+  stroke: #ff3b30;
+}
+
+.comment-action.action-dislike.is-active {
+  color: #007aff;
+}
+
+.comment-action.action-dislike.is-active svg {
+  fill: #007aff;
+  stroke: #007aff;
 }
 
 .reply-block {
