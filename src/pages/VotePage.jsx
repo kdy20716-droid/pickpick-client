@@ -11,11 +11,7 @@ import { isMainRouteTransition } from "./animations/routeTransitions.js";
 import { useActiveVoteCard } from "./vote/useActiveVoteCard.js";
 import { useActiveVoteHash } from "./vote/useActiveVoteHash.js";
 import { useVotePageScrollSnap } from "./vote/useVotePageScrollSnap.js";
-import {
-  createVoteCards,
-  getVoteFeedIdFromHash,
-  getVoteHash,
-} from "./vote/voteCards.js";
+import { getVoteHash } from "./vote/voteCards.js";
 import { Search, X } from "lucide-react";
 import { getVote, submitVote, toggleLike, incrementView } from "../api/posts.js";
 
@@ -368,7 +364,11 @@ export default function VotePage() {
       }
     };
     fetchVotes();
+<<<<<<< Updated upstream
   }, [selectedTag, searchKeyword, sortBy]);
+=======
+  }, [searchKeyword, selectedTag, sortBy]);
+>>>>>>> Stashed changes
 
   useEffect(() => {
     return () => {

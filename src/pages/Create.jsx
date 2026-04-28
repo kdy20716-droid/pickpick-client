@@ -7,7 +7,7 @@ import "./Create.css";
 const Create = () => {
   const navigate = useNavigate();
   const [title, setTitle] = useState("");
-  const [authorId, setAuthorId] = useState("1"); // 임시 작성자 ID
+  const authorId = "1"; // 임시 작성자 ID
   const [selectedTag, setSelectedTag] = useState("영화 / 드라마");
   const [candidate1, setCandidate1] = useState("");
   const [candidate2, setCandidate2] = useState("");
