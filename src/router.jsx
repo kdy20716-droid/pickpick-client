@@ -8,6 +8,7 @@ import Ranking from "./pages/Ranking";
 import Result from "./pages/Result";
 import Create from "./pages/Create";
 import VotePage from "./pages/VotePage";
+import MyPage from "./pages/MyPage";
 
 const router = createBrowserRouter([
   {
@@ -43,6 +44,10 @@ const router = createBrowserRouter([
         path: "/vote",
         element: <VotePage />,
       },
+      {
+        path: "/mypage",
+        element: <MyPage />
+      }
     ],
   },
 ]);
