@@ -77,10 +77,11 @@ nav a {
   align-items: flex-end;
 }
 
-.verify-btn, .verify-confirm-btn {
+.verify-btn {
+  width: 100px;
   height: 44px;
-  margin-top: 10px;
   padding: 0 15px;
+  margin-bottom: 30px;
   border-radius: 10px;
   border: none;
   background-color: #ff8db5;
@@ -92,10 +93,26 @@ nav a {
   transition: all 0.2s;
 }
 
-.verify-btn:hover, .verify-confirm-btn:hover {
+.verify-btn:hover,
+.verify-confirm-btn:hover {
   background-color: #ff6fa3;
 }
 
+.verify-confirm-btn {
+  width: 100px;
+  height: 44px;
+  padding: 0 15px;
+  margin-bottom: 30px;
+  border-radius: 10px;
+  border: none;
+  background-color: #ff8db5;
+  color: white;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
 .verify-btn:disabled {
   background-color: #ccc;
   cursor: default;
