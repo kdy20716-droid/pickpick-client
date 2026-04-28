@@ -68,6 +68,64 @@ nav a {
   border-radius: 10px;
   padding: 10px;
   margin-top: 10px;
+  flex: 1;
+}
+
+.input-group-with-btn {
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+}
+
+.verify-btn, .verify-confirm-btn {
+  height: 44px;
+  margin-top: 10px;
+  padding: 0 15px;
+  border-radius: 10px;
+  border: none;
+  background-color: #ff8db5;
+  color: white;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+
+.verify-btn:hover, .verify-confirm-btn:hover {
+  background-color: #ff6fa3;
+}
+
+.verify-btn:disabled {
+  background-color: #ccc;
+  cursor: default;
+}
+
+.verified-badge {
+  margin-top: 10px;
+  background-color: #f0fdf4;
+  color: #16a34a;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  border: 1px solid #bbf7d0;
+  text-align: center;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.4s ease-out forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .input-group span {
