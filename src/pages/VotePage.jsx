@@ -16,7 +16,34 @@ import {
   getVoteFeedIdFromHash,
   getVoteHash,
 } from "./vote/voteCards.js";
-import { getVote, submitVote } from "../api/posts.js";
+import { Search, X } from "lucide-react";
+import { getVote, submitVote, toggleLike, incrementView } from "../api/posts.js";
+
+const tags = [
+  "전체",
+  "연예",
+  "음식",
+  "애니메이션",
+  "동물",
+  "스포츠",
+  "일상",
+  "게임",
+  "음악",
+  "영화 / 드라마",
+  "웹툰 / 웹소설",
+  "유튜버 / 스트리머",
+  "밸런스 게임",
+  "밈",
+  "기타",
+];
+
+const sortOptions = [
+  { id: "latest", label: "최신순" },
+  { id: "popular", label: "인기순" },
+  { id: "comments", label: "댓글 많은순" },
+  { id: "name_asc", label: "이름(ㄱ~ㅎ)순" },
+  { id: "name_desc", label: "이름(ㅎ~ㄱ)순" },
+];
 
 const actionButtons = [
   {
@@ -274,15 +301,29 @@ export default function VotePage() {
 
   const [copiedCardId, setCopiedCardId] = useState("");
   const [commentCardId, setCommentCardId] = useState("");
+  const [selectedTag, setSelectedTag] = useState("전체");
+  const [sortBy, setSortBy] = useState("latest");
+  const [searchKeyword, setSearchKeyword] = useState("");
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const pageRef = useRef(null);
   const copyTimeoutRef = useRef(null);
   const { activeCardId, cardRefs, feedRef, registerCardRef } =
     useActiveVoteCard(cards);
 
+  // 조회수 증가 로직
+  useEffect(() => {
+    if (activeCardId) {
+      const card = cards.find(c => c.feedId === activeCardId);
+      if (card) {
+        incrementView(card.id).catch(console.error);
+      }
+    }
+  }, [activeCardId, cards]);
+
   useEffect(() => {
     const fetchVotes = async () => {
       try {
-        const data = await getVote();
+        const data = await getVote(searchKeyword, selectedTag, sortBy);
         const formattedCards = data.map((item, index) => {
           const totalVotes = (item.candidate_a_count || 0) + (item.candidate_b_count || 0);
           const leftShare = totalVotes === 0 ? 50 : Math.round(((item.candidate_a_count || 0) / totalVotes) * 100);
@@ -313,7 +354,7 @@ export default function VotePage() {
       }
     };
     fetchVotes();
-  }, []);
+  }, [selectedTag]);
 
   useEffect(() => {
     return () => {
@@ -413,10 +454,34 @@ export default function VotePage() {
     }
   };
 
-  const handleToggleAction = (cardId, actionId) => {
-    setCardActions((currentActions) =>
-      updateCardActionState(currentActions, cardId, actionId),
-    );
+  const handleToggleAction = async (cardId, actionId) => {
+    if (actionId === "like") {
+      const card = cards.find(c => c.feedId === cardId);
+      if (!card) return;
+
+      const userStr = localStorage.getItem("user");
+      if (!userStr) {
+        alert("로그인이 필요합니다.");
+        return;
+      }
+      const user = JSON.parse(userStr);
+
+      try {
+        const res = await toggleLike(card.id, user.id);
+        if (res.success) {
+          setCardActions((currentActions) =>
+            updateCardActionState(currentActions, cardId, actionId),
+          );
+        }
+      } catch (error) {
+        console.error(error);
+        alert("좋아요 처리에 실패했습니다.");
+      }
+    } else {
+      setCardActions((currentActions) =>
+        updateCardActionState(currentActions, cardId, actionId),
+      );
+    }
   };
 
   const handleShare = async (cardId) => {
@@ -464,9 +529,77 @@ export default function VotePage() {
         commentCardId ? " has-comment-modal" : ""
       }`}
     >
+      <button 
+        type="button" 
+        className="search-toggle-btn"
+        onClick={() => setIsSearchOpen(true)}
+        aria-label="검색 및 필터"
+      >
+        <Search size={24} />
+      </button>
+
+      {isSearchOpen && (
+        <div className="search-overlay">
+          <div className="search-content">
+            <header className="search-header">
+              <h2>검색 및 필터</h2>
+              <button onClick={() => setIsSearchOpen(false)} className="close-btn"><X size={24} /></button>
+            </header>
+
+            <div className="search-body">
+              <section className="filter-section">
+                <h3>제목 검색</h3>
+                <div className="search-input-wrapper">
+                  <input 
+                    type="text" 
+                    placeholder="투표 제목을 입력하세요..." 
+                    value={searchKeyword}
+                    onChange={(e) => setSearchKeyword(e.target.value)}
+                  />
+                </div>
+              </section>
+
+              <section className="filter-section">
+                <h3>정렬 기준</h3>
+                <div className="filter-chips">
+                  {sortOptions.map(opt => (
+                    <button 
+                      key={opt.id}
+                      className={sortBy === opt.id ? "active" : ""}
+                      onClick={() => setSortBy(opt.id)}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+              </section>
+
+              <section className="filter-section">
+                <h3>카테고리</h3>
+                <div className="filter-chips">
+                  {tags.map(tag => (
+                    <button 
+                      key={tag}
+                      className={selectedTag === tag ? "active" : ""}
+                      onClick={() => setSelectedTag(tag)}
+                    >
+                      {tag}
+                    </button>
+                  ))}
+                </div>
+              </section>
+            </div>
+            
+            <footer className="search-footer">
+               <button className="apply-btn" onClick={() => setIsSearchOpen(false)}>검색 결과 보기</button>
+            </footer>
+          </div>
+        </div>
+      )}
+
       <div className="vote-layout">
         <div ref={feedRef} className="vote-feed">
-          {cards.map((card) => {
+          {cards.length > 0 ? cards.map((card) => {
             const actionState = cardActions[card.feedId];
 
             return (
@@ -486,13 +619,16 @@ export default function VotePage() {
                 registerCardRef={registerCardRef}
               />
             );
-          })}
+          }) : (
+            <div className="empty-state">검색 결과가 없습니다.</div>
+          )}
         </div>
       </div>
       {commentCard ? (
         <Comments
           title={commentCard.title}
           targetCardId={commentCard.feedId}
+          postDbId={commentCard.id}
           onClose={handleCloseComments}
         />
       ) : null}
