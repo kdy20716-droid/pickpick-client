@@ -7,7 +7,12 @@ import "./Create.css";
 const Create = () => {
   const navigate = useNavigate();
   const [title, setTitle] = useState("");
-  const [authorId, setAuthorId] = useState("1"); // 임시 작성자 ID
+  
+  // localStorage에서 실제 로그인된 유저 정보 가져오기
+  const userStr = localStorage.getItem("user");
+  const currentUser = userStr ? JSON.parse(userStr) : null;
+  const authorId = currentUser ? currentUser.id : null;
+
   const [selectedTag, setSelectedTag] = useState("영화 / 드라마");
   const [candidate1, setCandidate1] = useState("");
   const [candidate2, setCandidate2] = useState("");
