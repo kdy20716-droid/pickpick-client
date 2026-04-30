@@ -137,6 +137,12 @@ export default function Signin() {
       return;
     }
 
+    if (!form.name || form.name.length > 5) {
+      setErrorMsg("이름은 1자 이상 5자 이하로 입력해주세요.");
+      setShowModal(true);
+      return;
+    }
+
     if (!form.email) {
       setErrorMsg("이메일 주소를 입력해주세요.");
       setShowModal(true);
@@ -257,9 +263,10 @@ export default function Signin() {
           <input
             type="text"
             name="name"
-            placeholder="이름"
+            placeholder="이름 (최대 5글자)"
             value={form.name}
             onChange={handleChange}
+            maxLength={5}
           />
         </div>
 
