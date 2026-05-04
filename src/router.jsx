@@ -56,15 +56,11 @@ const router = createBrowserRouter([
           },
           {
             path: "like",
-            element: (
-              <div style={{ padding: "40px" }}>LIKE PAGE (COMING SOON)</div>
-            ),
+            element: <Result />,
           },
           {
             path: "mypoll",
-            element: (
-              <div style={{ padding: "40px" }}>MY POLL PAGE (COMING SOON)</div>
-            ),
+            element: <Result />,
           },
           {
             path: "contact",

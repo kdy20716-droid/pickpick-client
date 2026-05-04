@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import Menu from "../components/menu";
 import styles from "./MyPage.module.css";
@@ -7,6 +7,14 @@ import instance from "../api/instance";
 const MyPage = () => {
   const navigate = useNavigate();
   const [confirmModal, setConfirmModal] = useState(null); // 'logout', 'delete', or null
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("로그인이 필요한 페이지입니다.");
+      navigate("/login");
+    }
+  }, [navigate]);
 
   const userStr = localStorage.getItem("user");
   const currentUser = userStr ? JSON.parse(userStr) : null;
