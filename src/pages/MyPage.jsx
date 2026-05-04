@@ -63,20 +63,6 @@ const MyPage = () => {
         <div className={styles.navLinks}>
           <Menu />
         </div>
-        <div className={styles.sidebarUserWrapper}>
-          <button 
-            className={styles.logoutBtn} 
-            onClick={handleLogoutClick}
-          >
-            LOGOUT
-          </button>
-          <button 
-            className={styles.deleteBtn} 
-            onClick={handleDeleteClick}
-          >
-            DELETE ACCOUNT
-          </button>
-        </div>
       </nav>
 
       <main className={styles.mainContent}>
@@ -84,8 +70,14 @@ const MyPage = () => {
       </main>
 
       {confirmModal && (
-        <div className={styles.modalOverlay} onClick={() => setConfirmModal(null)}>
-          <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+        <div
+          className={styles.modalOverlay}
+          onClick={() => setConfirmModal(null)}
+        >
+          <div
+            className={styles.modalContent}
+            onClick={(e) => e.stopPropagation()}
+          >
             <h3 className={styles.modalTitle}>
               {confirmModal === "logout" ? "로그아웃" : "회원 탈퇴"}
             </h3>
@@ -95,11 +87,18 @@ const MyPage = () => {
                 : "정말로 탈퇴하시겠습니까?\n이 작업은 되돌릴 수 없으며 모든 데이터가 삭제됩니다."}
             </p>
             <div className={styles.modalActions}>
-              <button className={styles.modalCancelBtn} onClick={() => setConfirmModal(null)}>
+              <button
+                className={styles.modalCancelBtn}
+                onClick={() => setConfirmModal(null)}
+              >
                 취소
               </button>
-              <button 
-                className={confirmModal === "logout" ? styles.modalConfirmBtn : styles.modalDangerBtn} 
+              <button
+                className={
+                  confirmModal === "logout"
+                    ? styles.modalConfirmBtn
+                    : styles.modalDangerBtn
+                }
                 onClick={handleConfirm}
               >
                 확인
