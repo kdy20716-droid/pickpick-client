@@ -10,6 +10,7 @@ import Create from "./pages/Create";
 import VotePage from "./pages/VotePage";
 import MyPage from "./pages/MyPage";
 import Profile from "./pages/Profile";
+import Like from "./pages/Like";
 
 const router = createBrowserRouter([
   {
@@ -56,7 +57,7 @@ const router = createBrowserRouter([
           },
           {
             path: "like",
-            element: <Result />,
+            element: <Like />,
           },
           {
             path: "mypoll",
