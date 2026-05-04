@@ -9,12 +9,6 @@ const MyPage = () => {
         <div className={styles.navLinks}>
           <Menu />
         </div>
-        <div className={styles.sidebarUser}>
-          <div className={styles.userThumb}></div>
-          <span>
-            홍길동 <small className={styles.sideArrow}>〉</small>
-          </span>
-        </div>
       </nav>
 
       <main className={styles.mainContent}>
