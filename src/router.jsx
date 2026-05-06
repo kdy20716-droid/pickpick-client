@@ -12,6 +12,7 @@ import MyPage from "./pages/mypage/MyPage";
 import Profile from "./pages/mypage/Profile";
 import Like from "./pages/mypage/Like";
 import MyCreate from "./pages/mypage/MyCreate";
+import Admin from "./pages/Admin";
 
 const router = createBrowserRouter([
   {
