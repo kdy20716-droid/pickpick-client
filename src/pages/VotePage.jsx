@@ -11,7 +11,7 @@ import { isMainRouteTransition } from "./animations/routeTransitions.js";
 import { useActiveVoteCard } from "./vote/useActiveVoteCard.js";
 import { useActiveVoteHash } from "./vote/useActiveVoteHash.js";
 import { useVotePageScrollSnap } from "./vote/useVotePageScrollSnap.js";
-import { getVoteHash } from "./vote/voteCards.js";
+import { getVoteFeedIdFromHash, getVoteHash } from "./vote/voteCards.js";
 import { Search, X } from "lucide-react";
 import {
   getVote,
@@ -387,13 +387,29 @@ export default function VotePage() {
         };
       });
 
+      const pinnedFeedId = getVoteFeedIdFromHash(location.hash);
+      const nextCards = pinnedFeedId
+        ? [
+            ...formattedCards.filter((card) => card.feedId === pinnedFeedId),
+            ...formattedCards.filter((card) => card.feedId !== pinnedFeedId),
+          ]
+        : formattedCards;
+
       // Merge server votes into local state (server has priority)
       setSelectedVotes((prev) => ({ ...prev, ...serverVotes }));
-      setCards(formattedCards);
+      setCards(nextCards);
     } catch (error) {
       console.error("투표 목록을 불러오는데 실패했습니다.", error);
     }
-  }, [selectedTag, searchKeyword, sortBy, userId, isLoggedIn, currentUser]);
+  }, [
+    selectedTag,
+    searchKeyword,
+    sortBy,
+    userId,
+    isLoggedIn,
+    currentUser,
+    location.hash,
+  ]);
 
   useEffect(() => {
     const t = setTimeout(() => {

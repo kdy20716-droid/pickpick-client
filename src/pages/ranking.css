@@ -8,9 +8,9 @@
   display: flex;
   justify-content: center;
   align-items: flex-end;
-  gap: 30px;
-  margin-top: 16px;
-  margin-bottom: 60px;
+  gap: 92px;
+  margin-top: 45px;
+  margin-bottom: 80px;
   flex-wrap: wrap;
 }
 
@@ -32,7 +32,7 @@
   top: -32px;
   left: 50%;
   transform: translateX(-50%);
-  z-index: 10;
+  z-index: 1;
 }
 
 .rank-label {
@@ -43,8 +43,8 @@
 }
 
 .card {
-  width: 180px;
-  height: 230px;
+  width: 196px;
+  height: 250px;
   background: #fff;
   border-radius: 24px;
   position: relative;
@@ -54,16 +54,45 @@
   line-height: 0;
 }
 
+.ranking-link {
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.ranking-link:hover {
+  transform: translateY(-2px);
+}
+
+.card.ranking-link:hover {
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.16);
+}
+
 .card.big {
-  width: 200px;
-  height: 260px;
+  width: 218px;
+  height: 284px;
 }
 
 .vote-title {
-  font-size: 15px;
-  font-weight: 700;
-  color: #343a40;
+  max-width: 220px;
+  font-size: 17px;
+  font-weight: 800;
+  line-height: 1.35;
+  color: #111111;
   text-align: center;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.ranking-title-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.ranking-title-link:hover {
+  text-decoration: underline;
 }
 
 .img {
@@ -102,6 +131,10 @@
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
 }
 
+.item.placeholder {
+  opacity: 0.72;
+}
+
 .num {
   width: 36px;
   font-size: 20px;
@@ -126,9 +159,18 @@
   display: block;
 }
 
+.placeholder-image {
+  background: #eef0f3;
+}
+
+.placeholder-title {
+  color: #9aa0a6;
+}
+
 .vs-small {
   width: 28px !important;
   height: 28px !important;
+  transform: translateX(2px);
 }
 
 .title {
