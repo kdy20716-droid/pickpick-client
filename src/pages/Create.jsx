@@ -7,16 +7,12 @@ import "./Create.css";
 const Create = () => {
   const navigate = useNavigate();
   const [title, setTitle] = useState("");
-<<<<<<< HEAD
-  const authorId = "1"; // 임시 작성자 ID
-=======
-  
+
   // localStorage에서 실제 로그인된 유저 정보 가져오기
   const userStr = localStorage.getItem("user");
   const currentUser = userStr ? JSON.parse(userStr) : null;
   const authorId = currentUser ? currentUser.id : null;
 
->>>>>>> main
   const [selectedTag, setSelectedTag] = useState("영화 / 드라마");
   const [candidate1, setCandidate1] = useState("");
   const [candidate2, setCandidate2] = useState("");
@@ -107,6 +103,12 @@ const Create = () => {
   const handleSubmit = async () => {
     if (!title || !candidate1 || !candidate2) {
       alert("필수 항목을 모두 입력해주세요.");
+      return;
+    }
+
+    if (!authorId) {
+      alert("로그인이 필요합니다.");
+      navigate("/login");
       return;
     }
 
