@@ -77,7 +77,7 @@ const Profile = () => {
                 LV.99 <span className={styles.qMark}>?</span>{" "}
                 <span className={styles.playBtn}>▶</span>
               </div>
-              <h2 className={styles.nickname}>홍길동 님</h2>
+              <h2 className={styles.nickname}>{currentUser?.name || "게스트"} 님</h2>
               <span className={styles.gearIcon}>⚙</span>
             </div>
           </div>

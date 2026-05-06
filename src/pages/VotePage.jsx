@@ -435,6 +435,11 @@ export default function VotePage() {
   useActiveVoteHash(activeCardId, location);
 
   const handleVote = async (cardId, candidateId) => {
+    if (userId === 'guest') {
+      alert("로그인 후 이용할 수 있습니다.");
+      return;
+    }
+
     if (selectedVotes[cardId]) {
       return;
     }
@@ -444,7 +449,7 @@ export default function VotePage() {
 
     try {
       const side = candidateId.toUpperCase(); // 'a' -> 'A', 'b' -> 'B'
-      const response = await submitVote(card.id, userId === 'guest' ? 1 : userId, side);
+      const response = await submitVote(card.id, userId, side);
 
       if (response.success) {
         // 서버에서 받아온 최신 투표수로 퍼센트 재계산
