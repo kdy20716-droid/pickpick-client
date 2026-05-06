@@ -19,7 +19,6 @@ function getCurrentUser() {
   }
 }
 
-<<<<<<< HEAD
 function getSavedCommentReactions() {
   try {
     const saved = localStorage.getItem("commentReactions");
@@ -28,50 +27,12 @@ function getSavedCommentReactions() {
     return {};
   }
 }
-=======
-function CommentItem({
-  comment,
-  currentUser,
-  isOpen,
-  replyDraft,
-  onLike,
-  onDislike,
-  onToggleReplies,
-  onReplyDraftChange,
-  onAddReply,
-  onDelete,
-  replies = [],
-  isReply = false
-}) {
-  return (
-    <article className={`comment-item ${isReply ? 'comment-reply' : ''}`}>
-      <div className="comment-avatar" aria-hidden="true" />
-      <div className="comment-body" style={{ width: '100%' }}>
-        <div className="comment-top">
-          <div>
-            <strong className="comment-name">{comment.author}</strong>
-            <span className="comment-time">
-              {formatRelativeTime(comment.created_at)}
-            </span>
-          </div>
-          {currentUser && currentUser.id === comment.user_id && (
-            <button
-              type="button"
-              className="comment-delete"
-              onClick={() => onDelete(comment.id)}
-            >
-              삭제
-            </button>
-          )}
-        </div>
->>>>>>> main
 
 function toTimestamp(value) {
   if (!value) {
     return Date.now();
   }
 
-<<<<<<< HEAD
   const timestamp = new Date(value).getTime();
   return Number.isNaN(timestamp) ? Date.now() : timestamp;
 }
@@ -92,6 +53,7 @@ function normalizeComment(comment, reaction = null) {
     ...comment,
     id: comment.id,
     user_id: comment.user_id,
+    parent_id: comment.parent_id ?? null,
     name: comment.name ?? comment.author ?? comment.user_name ?? "익명",
     text: comment.text ?? comment.content ?? "",
     createdAt: comment.createdAt ?? toTimestamp(comment.created_at),
@@ -102,67 +64,33 @@ function normalizeComment(comment, reaction = null) {
       normalizeReply,
     ),
   };
-=======
-        <div className="comment-actions">
-          <button
-            type="button"
-            className={`comment-action action-like${comment.reaction === "like" ? " is-active" : ""}`}
-            onClick={() => onLike(comment.id)}
-          >
-            <ThumbsUp /> 좋아요 {comment.likes > 0 ? comment.likes : ""}
-          </button>
-          <button
-            type="button"
-            className={`comment-action action-dislike${comment.reaction === "dislike" ? " is-active" : ""}`}
-            onClick={() => onDislike(comment.id)}
-          >
-            <ThumbsDown /> 싫어요
-          </button>
-          {!isReply && (
-            <button type="button" className="comment-action action-reply" onClick={() => onToggleReplies && onToggleReplies(comment.id)} style={{ marginLeft: '10px' }}>
-              답글 {replies.length > 0 ? replies.length : ""}
-            </button>
-          )}
-        </div>
+}
 
-        {!isReply && isOpen && (
-          <div className="comment-replies" style={{ width: '100%', marginTop: '12px' }}>
-            <div className="youtube-reply-container">
-              <div className="comment-avatar comment-avatar-small" aria-hidden="true" />
-              <div className="youtube-reply-content">
-                <input
-                  type="text"
-                  value={replyDraft}
-                  placeholder="답글 추가..."
-                  className="youtube-reply-input"
-                  onChange={(e) => onReplyDraftChange && onReplyDraftChange(comment.id, e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" && replyDraft.trim()) onAddReply && onAddReply(comment.id);
-                  }}
-                />
-                <div className="youtube-reply-actions">
-                  <button type="button" className="btn-cancel" onClick={() => onToggleReplies && onToggleReplies(comment.id)}>취소</button>
-                  <button type="button" className="btn-submit" onClick={() => onAddReply && onAddReply(comment.id)} disabled={!replyDraft.trim()}>답글</button>
-                </div>
-              </div>
-            </div>
-            {replies.map(reply => (
-               <CommentItem
-                 key={reply.id}
-                 comment={reply}
-                 currentUser={currentUser}
-                 onLike={onLike}
-                 onDislike={onDislike}
-                 onDelete={onDelete}
-                 isReply={true}
-               />
-            ))}
-          </div>
-        )}
-      </div>
-    </article>
-  );
->>>>>>> main
+function buildCommentTree(comments, reactions) {
+  const parents = [];
+  const parentById = new Map();
+  const replies = [];
+
+  comments.forEach((comment) => {
+    const normalized = normalizeComment(comment, reactions[comment.id] ?? null);
+
+    if (normalized.parent_id) {
+      replies.push(normalized);
+      return;
+    }
+
+    parents.push(normalized);
+    parentById.set(normalized.id, normalized);
+  });
+
+  replies.forEach((reply) => {
+    const parent = parentById.get(reply.parent_id);
+    if (parent) {
+      parent.replyItems.push(normalizeReply(reply));
+    }
+  });
+
+  return parents;
 }
 
 export default function Comments({ title, targetCardId, onClose, postDbId }) {
@@ -172,7 +100,6 @@ export default function Comments({ title, targetCardId, onClose, postDbId }) {
   const [replyDrafts, setReplyDrafts] = useState({});
   const [openMenuId, setOpenMenuId] = useState(null);
   const modalRef = useRef(null);
-  const lastReplySubmitRef = useRef({});
 
   const currentUser = getCurrentUser();
 
@@ -199,11 +126,7 @@ export default function Comments({ title, targetCardId, onClose, postDbId }) {
           return;
         }
 
-        setComments(
-          res.comments.map((comment) =>
-            normalizeComment(comment, commentReactions[comment.id] ?? null),
-          ),
-        );
+        setComments(buildCommentTree(res.comments, commentReactions));
       })
       .catch(console.error);
 
@@ -383,46 +306,47 @@ export default function Comments({ title, targetCardId, onClose, postDbId }) {
     }));
   };
 
-  const handleAddReply = (commentId) => {
-    const text = (replyDrafts[commentId] ?? "").trim();
-    const now = Date.now();
-    const lastSubmit = lastReplySubmitRef.current[commentId];
+  const handleAddReply = async (parentId) => {
+    const text = (replyDrafts[parentId] ?? "").trim();
 
-    if (!text || now - (lastSubmit ?? 0) < 400) {
+    if (!text || !postDbId) {
       return;
     }
 
-    lastReplySubmitRef.current[commentId] = now;
+    if (!currentUser) {
+      alert("로그인이 필요합니다.");
+      return;
+    }
 
-    setComments((currentComments) =>
-      currentComments.map((comment) =>
-        comment.id === commentId
-          ? {
-              ...comment,
-              replyItems: [
-                ...comment.replyItems,
-                {
-                  id: `reply-${commentId}-${now}`,
-                  name: currentUser?.name ?? currentUser?.nickname ?? "익명",
-                  text,
-                  createdAt: now,
-                  likes: 0,
-                },
-              ],
-            }
-          : comment,
-      ),
-    );
-
-    setReplyDrafts((currentReplyDrafts) => ({
-      ...currentReplyDrafts,
-      [commentId]: "",
-    }));
-
-    setOpenReplies((currentOpenReplies) => ({
-      ...currentOpenReplies,
-      [commentId]: true,
-    }));
+    try {
+      const res = await addComment(postDbId, currentUser.id, text, parentId);
+      if (res.success) {
+        setComments((currentComments) =>
+          currentComments.map((comment) =>
+            comment.id === parentId
+              ? {
+                  ...comment,
+                  replyItems: [
+                    ...comment.replyItems,
+                    normalizeReply(res.comment),
+                  ],
+                }
+              : comment,
+          ),
+        );
+        setReplyDrafts((currentReplyDrafts) => ({
+          ...currentReplyDrafts,
+          [parentId]: "",
+        }));
+        setOpenReplies((currentOpenReplies) => ({
+          ...currentOpenReplies,
+          [parentId]: true,
+        }));
+      }
+    } catch (err) {
+      console.error(err);
+      alert("답글 작성에 실패했습니다.");
+    }
   };
 
   const handleToggleMenu = (commentId) => {
@@ -537,35 +461,6 @@ export default function Comments({ title, targetCardId, onClose, postDbId }) {
     );
   };
 
-  const handleToggleReplies = (commentId) => {
-    setOpenReplies(prev => ({ ...prev, [commentId]: !prev[commentId] }));
-  };
-
-  const handleReplyDraftChange = (commentId, value) => {
-    setReplyDrafts(prev => ({ ...prev, [commentId]: value }));
-  };
-
-  const handleAddReply = async (parentId) => {
-    const text = replyDrafts[parentId]?.trim();
-    if (!text || !postDbId || !currentUser) return;
-
-    try {
-      const res = await addComment(postDbId, currentUser.id, text, parentId);
-      if (res.success) {
-        // 백엔드에서 반환된 새 답글 추가
-        setComments((prev) => [...prev, { ...res.comment, reaction: null }]);
-        setReplyDrafts(prev => ({ ...prev, [parentId]: "" }));
-        setOpenReplies(prev => ({ ...prev, [parentId]: true }));
-      }
-    } catch (err) {
-      console.error(err);
-      alert("답글 작성에 실패했습니다.");
-    }
-  };
-
-  const parentComments = comments.filter(c => !c.parent_id);
-  const getReplies = (parentId) => comments.filter(c => c.parent_id === parentId);
-
   return (
     <div className="comment-modal-layer">
       <button
@@ -594,7 +489,7 @@ export default function Comments({ title, targetCardId, onClose, postDbId }) {
         </header>
 
         <div className="comment-list">
-          {parentComments.map((comment) => (
+          {comments.map((comment) => (
             <CommentItem
               key={comment.id}
               comment={comment}
@@ -606,13 +501,8 @@ export default function Comments({ title, targetCardId, onClose, postDbId }) {
               onToggleReplies={handleToggleReplies}
               onReplyDraftChange={handleReplyDraftChange}
               onAddReply={handleAddReply}
-<<<<<<< HEAD
               onToggleMenu={handleToggleMenu}
               onDeleteComment={handleDeleteComment}
-=======
-              onDelete={handleDeleteComment}
-              replies={getReplies(comment.id)}
->>>>>>> main
             />
           ))}
         </div>

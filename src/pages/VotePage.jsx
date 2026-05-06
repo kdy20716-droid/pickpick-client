@@ -374,11 +374,7 @@ export default function VotePage() {
       }
     };
     fetchVotes();
-<<<<<<< HEAD
-  }, [searchKeyword, selectedTag, sortBy]);
-=======
   }, [selectedTag, searchKeyword, sortBy, userId]);
->>>>>>> main
 
   useEffect(() => {
     return () => {
