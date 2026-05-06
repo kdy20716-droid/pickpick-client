@@ -132,8 +132,8 @@ const Admin = () => {
   return (
     <div className="admin-wrapper">
       <div className="admin-header">
-        <h1>⚙️ 관리자 페이지</h1>
-        <p>환영합니다, {currentUser?.name} 관리자님</p>
+        <h1>관리자 <span>Dashboard</span></h1>
+        <p>안녕하세요, {currentUser?.name}님</p>
       </div>
 
       <div className="admin-container">
@@ -149,7 +149,7 @@ const Admin = () => {
               className="search-input"
             />
             <button type="submit" className="search-btn" disabled={loading}>
-              {loading ? "검색 중..." : "🔍 검색"}
+              {loading ? "검색 중..." : "투표 검색"}
             </button>
             <button 
               type="button" 
@@ -157,7 +157,7 @@ const Admin = () => {
               onClick={handleLoadAllVotes}
               disabled={loading}
             >
-              {loading ? "로딩 중..." : "📋 전체 보기"}
+              {loading ? "로딩 중..." : "전체 투표 보기"}
             </button>
           </form>
         </div>
@@ -216,7 +216,7 @@ const Admin = () => {
                         onClick={() => handleViewComments(vote.id)}
                         disabled={loading}
                       >
-                        💬 댓글 보기
+                        댓글 보기
                       </button>
                       <button 
                         className="delete-btn"
@@ -226,7 +226,7 @@ const Admin = () => {
                         }}
                         disabled={loading}
                       >
-                        🗑️ 삭제
+                        삭제
                       </button>
                     </div>
                   </div>
@@ -269,7 +269,7 @@ const Admin = () => {
                       }}
                       disabled={loading}
                     >
-                      🗑️ 삭제
+                      삭제
                     </button>
                   </div>
                 ))}
@@ -288,8 +288,8 @@ const Admin = () => {
             </h3>
             <p className="modal-text">
               {deleteModal === 'vote' 
-                ? `"${itemToDelete?.title}"를 정말로 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.`
-                : `이 댓글을 정말로 삭제하시겠습니까?\n"${itemToDelete?.content?.substring(0, 50)}..."`
+                ? `"${itemToDelete?.title}" 투표를 삭제하시겠습니까?`
+                : `댓글을 삭제하시겠습니까?`
               }
             </p>
             <div className="modal-actions">
@@ -305,7 +305,7 @@ const Admin = () => {
                 onClick={deleteModal === 'vote' ? handleDeleteVote : handleDeleteComment}
                 disabled={loading}
               >
-                {loading ? '삭제 중...' : '삭제'}
+                {loading ? '처리 중...' : '삭제'}
               </button>
             </div>
           </div>

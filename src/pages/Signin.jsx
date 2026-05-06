@@ -162,7 +162,12 @@ export default function Signin() {
     }
 
     try {
-      await signin(form);
+      const formData = {
+        ...form,
+        gender,
+        nationality
+      };
+      await signin(formData);
       alert("회원가입이 완료되었습니다!");
       navigate("/login");
     } catch (error) {
