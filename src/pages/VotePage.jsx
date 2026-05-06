@@ -13,7 +13,13 @@ import { useActiveVoteHash } from "./vote/useActiveVoteHash.js";
 import { useVotePageScrollSnap } from "./vote/useVotePageScrollSnap.js";
 import { getVoteHash } from "./vote/voteCards.js";
 import { Search, X } from "lucide-react";
-import { getVote, submitVote, toggleLike, incrementView } from "../api/posts.js";
+import {
+  getVote,
+  submitVote,
+  toggleLike,
+  incrementView,
+} from "../api/posts.js";
+import { useAuth } from "../contexts/AuthContext";
 
 const tags = [
   "전체",
@@ -87,10 +93,7 @@ function updateCardActionState(currentActions, cardId, actionId) {
         ...previousState,
         like: nextLike,
         dislike: false,
-        likeCount: Math.max(
-          0,
-          previousState.likeCount + (nextLike ? 1 : -1),
-        ),
+        likeCount: Math.max(0, previousState.likeCount + (nextLike ? 1 : -1)),
       },
     };
   }
@@ -217,7 +220,10 @@ function VoteCard({
                 {candidate.image ? (
                   <img src={candidate.image} alt={candidate.name} />
                 ) : (
-                  <span className="vote-choice-image-fallback" aria-hidden="true">
+                  <span
+                    className="vote-choice-image-fallback"
+                    aria-hidden="true"
+                  >
                     {candidate.name?.slice(0, 1) || "?"}
                   </span>
                 )}
@@ -281,9 +287,9 @@ export default function VotePage() {
   const location = useLocation();
   const entersFromMain = isMainRouteTransition(location.state?.transition);
   const [cards, setCards] = useState([]);
-  
+
   const { user: currentUser, isLoggedIn } = useAuth();
-  const userId = currentUser?.id || 'guest';
+  const userId = currentUser?.id || "guest";
 
   // 상태를 초기화할 때 유저별 키를 사용하여 localStorage에서 값을 가져옵니다.
   const [selectedVotes, setSelectedVotes] = useState(() => {
@@ -297,7 +303,10 @@ export default function VotePage() {
 
   // 상태가 변경될 때마다 유저별 키로 localStorage에 저장합니다.
   useEffect(() => {
-    localStorage.setItem(`selectedVotes_${userId}`, JSON.stringify(selectedVotes));
+    localStorage.setItem(
+      `selectedVotes_${userId}`,
+      JSON.stringify(selectedVotes),
+    );
   }, [selectedVotes, userId]);
 
   useEffect(() => {
@@ -318,7 +327,7 @@ export default function VotePage() {
   // 조회수 증가 로직
   useEffect(() => {
     if (activeCardId) {
-      const card = cards.find(c => c.id === activeCardId);
+      const card = cards.find((c) => c.id === activeCardId);
       if (card) {
         incrementView(card.id).catch(console.error);
       }
@@ -328,16 +337,28 @@ export default function VotePage() {
   const fetchVotes = useCallback(async () => {
     try {
       const passedUserId = !isLoggedIn ? null : currentUser?.id;
-      const data = await getVote(searchKeyword, selectedTag, sortBy, passedUserId);
-      
+      const data = await getVote(
+        searchKeyword,
+        selectedTag,
+        sortBy,
+        passedUserId,
+      );
+
       const serverVotes = {};
       const formattedCards = data.map((item) => {
-        const totalVotes = (item.candidate_a_count || 0) + (item.candidate_b_count || 0);
-        const leftShare = totalVotes === 0 ? 50 : Math.round(((item.candidate_a_count || 0) / totalVotes) * 100);
-        const rightShare = totalVotes === 0 ? 50 : Math.round(((item.candidate_b_count || 0) / totalVotes) * 100);
+        const totalVotes =
+          (item.candidate_a_count || 0) + (item.candidate_b_count || 0);
+        const leftShare =
+          totalVotes === 0
+            ? 50
+            : Math.round(((item.candidate_a_count || 0) / totalVotes) * 100);
+        const rightShare =
+          totalVotes === 0
+            ? 50
+            : Math.round(((item.candidate_b_count || 0) / totalVotes) * 100);
 
         const cardId = item.id.toString();
-        
+
         if (item.user_voted_side) {
           serverVotes[cardId] = item.user_voted_side.toLowerCase();
         }
@@ -349,21 +370,25 @@ export default function VotePage() {
           leftCandidate: {
             id: "a",
             name: item.candidate_a_name,
-            image: item.candidate_a_image ? `http://localhost:4000/uploads/${item.candidate_a_image}` : null,
+            image: item.candidate_a_image
+              ? `http://localhost:4000/uploads/${item.candidate_a_image}`
+              : null,
             tone: "light",
           },
           rightCandidate: {
             id: "b",
             name: item.candidate_b_name,
-            image: item.candidate_b_image ? `http://localhost:4000/uploads/${item.candidate_b_image}` : null,
+            image: item.candidate_b_image
+              ? `http://localhost:4000/uploads/${item.candidate_b_image}`
+              : null,
             tone: "dark",
           },
           shares: { left: leftShare, right: rightShare },
         };
       });
-      
+
       // Merge server votes into local state (server has priority)
-      setSelectedVotes(prev => ({ ...prev, ...serverVotes }));
+      setSelectedVotes((prev) => ({ ...prev, ...serverVotes }));
       setCards(formattedCards);
     } catch (error) {
       console.error("투표 목록을 불러오는데 실패했습니다.", error);
@@ -376,7 +401,6 @@ export default function VotePage() {
     }, 0);
     return () => clearTimeout(t);
   }, [fetchVotes]);
-
 
   useEffect(() => {
     return () => {
@@ -437,7 +461,7 @@ export default function VotePage() {
   useActiveVoteHash(activeCardId, location);
 
   const handleVote = async (cardId, candidateId) => {
-    if (userId === 'guest') {
+    if (userId === "guest") {
       alert("로그인 후 이용할 수 있습니다.");
       return;
     }
@@ -446,7 +470,7 @@ export default function VotePage() {
       return;
     }
 
-    const card = cards.find(c => c.feedId === cardId);
+    const card = cards.find((c) => c.feedId === cardId);
     if (!card) return;
 
     try {
@@ -457,13 +481,21 @@ export default function VotePage() {
         // 서버에서 받아온 최신 투표수로 퍼센트 재계산
         const counts = response.counts;
         const totalVotes = counts.candidate_a_count + counts.candidate_b_count;
-        const leftShare = totalVotes === 0 ? 50 : Math.round((counts.candidate_a_count / totalVotes) * 100);
-        const rightShare = totalVotes === 0 ? 50 : Math.round((counts.candidate_b_count / totalVotes) * 100);
+        const leftShare =
+          totalVotes === 0
+            ? 50
+            : Math.round((counts.candidate_a_count / totalVotes) * 100);
+        const rightShare =
+          totalVotes === 0
+            ? 50
+            : Math.round((counts.candidate_b_count / totalVotes) * 100);
 
-        setCards(currentCards =>
-          currentCards.map(c =>
-            c.feedId === cardId ? { ...c, shares: { left: leftShare, right: rightShare } } : c
-          )
+        setCards((currentCards) =>
+          currentCards.map((c) =>
+            c.feedId === cardId
+              ? { ...c, shares: { left: leftShare, right: rightShare } }
+              : c,
+          ),
         );
 
         setSelectedVotes((currentVotes) => ({
@@ -479,10 +511,10 @@ export default function VotePage() {
 
   const handleToggleAction = async (cardId, actionId) => {
     if (actionId === "like") {
-      const card = cards.find(c => c.feedId === cardId);
+      const card = cards.find((c) => c.feedId === cardId);
       if (!card) return;
 
-      if (userId === 'guest') {
+      if (userId === "guest") {
         alert("로그인이 필요합니다.");
         return;
       }
@@ -551,8 +583,8 @@ export default function VotePage() {
         commentCardId ? " has-comment-modal" : ""
       }`}
     >
-      <button 
-        type="button" 
+      <button
+        type="button"
         className="search-toggle-btn"
         onClick={() => setIsSearchOpen(true)}
         aria-label="검색 및 필터"
@@ -565,16 +597,21 @@ export default function VotePage() {
           <div className="search-content">
             <header className="search-header">
               <h2>검색 및 필터</h2>
-              <button onClick={() => setIsSearchOpen(false)} className="close-btn"><X size={24} /></button>
+              <button
+                onClick={() => setIsSearchOpen(false)}
+                className="close-btn"
+              >
+                <X size={24} />
+              </button>
             </header>
 
             <div className="search-body">
               <section className="filter-section">
                 <h3>제목 검색</h3>
                 <div className="search-input-wrapper">
-                  <input 
-                    type="text" 
-                    placeholder="투표 제목을 입력하세요..." 
+                  <input
+                    type="text"
+                    placeholder="투표 제목을 입력하세요..."
                     value={searchKeyword}
                     onChange={(e) => setSearchKeyword(e.target.value)}
                   />
@@ -584,8 +621,8 @@ export default function VotePage() {
               <section className="filter-section">
                 <h3>정렬 기준</h3>
                 <div className="filter-chips">
-                  {sortOptions.map(opt => (
-                    <button 
+                  {sortOptions.map((opt) => (
+                    <button
                       key={opt.id}
                       className={sortBy === opt.id ? "active" : ""}
                       onClick={() => setSortBy(opt.id)}
@@ -599,8 +636,8 @@ export default function VotePage() {
               <section className="filter-section">
                 <h3>카테고리</h3>
                 <div className="filter-chips">
-                  {tags.map(tag => (
-                    <button 
+                  {tags.map((tag) => (
+                    <button
                       key={tag}
                       className={selectedTag === tag ? "active" : ""}
                       onClick={() => setSelectedTag(tag)}
@@ -611,9 +648,14 @@ export default function VotePage() {
                 </div>
               </section>
             </div>
-            
+
             <footer className="search-footer">
-               <button className="apply-btn" onClick={() => setIsSearchOpen(false)}>검색 결과 보기</button>
+              <button
+                className="apply-btn"
+                onClick={() => setIsSearchOpen(false)}
+              >
+                검색 결과 보기
+              </button>
             </footer>
           </div>
         </div>
@@ -621,27 +663,29 @@ export default function VotePage() {
 
       <div className="vote-layout">
         <div ref={feedRef} className="vote-feed">
-          {cards.length > 0 ? cards.map((card) => {
-            const actionState = cardActions[card.feedId];
+          {cards.length > 0 ? (
+            cards.map((card) => {
+              const actionState = cardActions[card.feedId];
 
-            return (
-              <VoteCard
-                key={card.feedId}
-                card={card}
-                selectedCandidateId={selectedVotes[card.feedId]}
-                onSelect={handleVote}
-                actionState={actionState}
-                likeCount={actionState?.likeCount ?? 0}
-                copied={copiedCardId === card.feedId}
-                onToggleAction={handleToggleAction}
-                onShare={handleShare}
-                onOpenComments={handleOpenComments}
-                isCommentsOpen={commentCardId === card.feedId}
-                isActive={activeCardId === card.feedId}
-                registerCardRef={registerCardRef}
-              />
-            );
-          }) : (
+              return (
+                <VoteCard
+                  key={card.feedId}
+                  card={card}
+                  selectedCandidateId={selectedVotes[card.feedId]}
+                  onSelect={handleVote}
+                  actionState={actionState}
+                  likeCount={actionState?.likeCount ?? 0}
+                  copied={copiedCardId === card.feedId}
+                  onToggleAction={handleToggleAction}
+                  onShare={handleShare}
+                  onOpenComments={handleOpenComments}
+                  isCommentsOpen={commentCardId === card.feedId}
+                  isActive={activeCardId === card.feedId}
+                  registerCardRef={registerCardRef}
+                />
+              );
+            })
+          ) : (
             <div className="empty-state">검색 결과가 없습니다.</div>
           )}
         </div>
