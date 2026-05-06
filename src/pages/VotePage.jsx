@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import "./VotePage.css";
 import vsLogo from "../assets/vs-logo.svg";
@@ -6,13 +6,13 @@ import favoriteIcon from "../assets/favorite.svg";
 import dislikeIcon from "../assets/thumb_down.svg";
 import commentIcon from "../assets/comment.svg";
 import shareIcon from "../assets/share.svg";
+import filterIcon from "../assets/filter.svg";
 import Comments from "../components/Comments.jsx";
 import { isMainRouteTransition } from "./animations/routeTransitions.js";
 import { useActiveVoteCard } from "./vote/useActiveVoteCard.js";
 import { useActiveVoteHash } from "./vote/useActiveVoteHash.js";
 import { useVotePageScrollSnap } from "./vote/useVotePageScrollSnap.js";
 import { getVoteHash } from "./vote/voteCards.js";
-import { Search, X } from "lucide-react";
 import { getVote, submitVote, toggleLike, incrementView } from "../api/posts.js";
 
 const tags = [
@@ -319,13 +319,85 @@ export default function VotePage() {
   const [copiedCardId, setCopiedCardId] = useState("");
   const [commentCardId, setCommentCardId] = useState("");
   const [selectedTag, setSelectedTag] = useState("전체");
-  const [sortBy, setSortBy] = useState("random");
-  const [searchKeyword, setSearchKeyword] = useState("");
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [sortBy] = useState("random");
+  const [searchKeyword] = useState("");
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
   const pageRef = useRef(null);
   const copyTimeoutRef = useRef(null);
   const { activeCardId, cardRefs, feedRef, registerCardRef } =
     useActiveVoteCard(cards);
+
+  useLayoutEffect(() => {
+    const page = pageRef.current;
+    const feed = feedRef.current;
+    if (!page) {
+      return undefined;
+    }
+
+    let frameId = 0;
+
+    const getActiveVoteSheet = () => {
+      const targetCard = activeCardId
+        ? document.getElementById(activeCardId)
+        : null;
+
+      return (
+        targetCard?.querySelector(".vote-sheet") ??
+        document.querySelector(".vote-feed-item.is-active .vote-sheet") ??
+        document.querySelector(".vote-sheet")
+      );
+    };
+
+    const syncFilterPosition = () => {
+      const voteSheet = getActiveVoteSheet();
+      if (!voteSheet) {
+        return;
+      }
+
+      const sheetRect = voteSheet.getBoundingClientRect();
+      const filterTop = sheetRect.top;
+      const panelGap = 25;
+      const buttonSize = 64;
+      const brandRect = document
+        .querySelector(".brand")
+        ?.getBoundingClientRect();
+      const panelRight = sheetRect.left - panelGap;
+      const panelLeft = Math.max(12, Math.round(brandRect?.left ?? 70));
+      const panelWidth = Math.max(150, panelRight - panelLeft);
+      const buttonLeft = Math.max(12, sheetRect.left - panelGap - buttonSize - 4);
+
+      page.style.setProperty("--vote-filter-panel-left", `${panelLeft}px`);
+      page.style.setProperty("--vote-filter-panel-width", `${panelWidth}px`);
+      page.style.setProperty("--vote-filter-panel-top", `${filterTop}px`);
+      page.style.setProperty(
+        "--vote-filter-panel-height",
+        `${sheetRect.height}px`,
+      );
+      page.style.setProperty("--vote-filter-button-left", `${buttonLeft}px`);
+      page.style.setProperty("--vote-filter-button-top", `${filterTop}px`);
+    };
+
+    const scheduleSync = () => {
+      if (frameId) {
+        cancelAnimationFrame(frameId);
+      }
+
+      frameId = requestAnimationFrame(syncFilterPosition);
+    };
+
+    syncFilterPosition();
+    window.addEventListener("resize", scheduleSync);
+    feed?.addEventListener("scroll", scheduleSync, { passive: true });
+
+    return () => {
+      if (frameId) {
+        cancelAnimationFrame(frameId);
+      }
+
+      window.removeEventListener("resize", scheduleSync);
+      feed?.removeEventListener("scroll", scheduleSync);
+    };
+  }, [activeCardId, cards.length, feedRef]);
 
   // 조회수 증가 로직
   useEffect(() => {
@@ -524,6 +596,7 @@ export default function VotePage() {
   };
 
   const handleOpenComments = (cardId) => {
+    setIsFilterOpen(false);
     setCommentCardId(cardId);
   };
 
@@ -540,73 +613,47 @@ export default function VotePage() {
         commentCardId ? " has-comment-modal" : ""
       }`}
     >
-      <button 
-        type="button" 
-        className="search-toggle-btn"
-        onClick={() => setIsSearchOpen(true)}
-        aria-label="검색 및 필터"
-      >
-        <Search size={24} />
-      </button>
+      {!isFilterOpen ? (
+        <button
+          type="button"
+          className="vote-action-button vote-filter-toggle action-filter"
+          onClick={() => setIsFilterOpen(true)}
+          aria-label="카테고리 필터 열기"
+        >
+          <img src={filterIcon} alt="" aria-hidden="true" />
+        </button>
+      ) : null}
 
-      {isSearchOpen && (
-        <div className="search-overlay">
-          <div className="search-content">
-            <header className="search-header">
-              <h2>검색 및 필터</h2>
-              <button onClick={() => setIsSearchOpen(false)} className="close-btn"><X size={24} /></button>
-            </header>
+      {isFilterOpen ? (
+        <aside className="vote-filter-panel" aria-label="카테고리 필터">
+          <header className="vote-filter-header">
+            <h2>카테고리</h2>
+            <button
+              type="button"
+              className="vote-filter-close"
+              onClick={() => setIsFilterOpen(false)}
+              aria-label="카테고리 필터 닫기"
+            >
+              X
+            </button>
+          </header>
 
-            <div className="search-body">
-              <section className="filter-section">
-                <h3>제목 검색</h3>
-                <div className="search-input-wrapper">
-                  <input 
-                    type="text" 
-                    placeholder="투표 제목을 입력하세요..." 
-                    value={searchKeyword}
-                    onChange={(e) => setSearchKeyword(e.target.value)}
-                  />
-                </div>
-              </section>
-
-              <section className="filter-section">
-                <h3>정렬 기준</h3>
-                <div className="filter-chips">
-                  {sortOptions.map(opt => (
-                    <button 
-                      key={opt.id}
-                      className={sortBy === opt.id ? "active" : ""}
-                      onClick={() => setSortBy(opt.id)}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
-              </section>
-
-              <section className="filter-section">
-                <h3>카테고리</h3>
-                <div className="filter-chips">
-                  {tags.map(tag => (
-                    <button 
-                      key={tag}
-                      className={selectedTag === tag ? "active" : ""}
-                      onClick={() => setSelectedTag(tag)}
-                    >
-                      {tag}
-                    </button>
-                  ))}
-                </div>
-              </section>
-            </div>
-            
-            <footer className="search-footer">
-               <button className="apply-btn" onClick={() => setIsSearchOpen(false)}>검색 결과 보기</button>
-            </footer>
+          <div className="vote-filter-list">
+            {tags.map((tag) => (
+              <button
+                key={tag}
+                type="button"
+                className={`vote-filter-chip${
+                  selectedTag === tag ? " is-active" : ""
+                }`}
+                onClick={() => setSelectedTag(tag)}
+              >
+                {tag}
+              </button>
+            ))}
           </div>
-        </div>
-      )}
+        </aside>
+      ) : null}
 
       <div className="vote-layout">
         <div ref={feedRef} className="vote-feed">

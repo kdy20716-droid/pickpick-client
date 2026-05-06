@@ -1,6 +1,26 @@
 .vote-page {
   --vote-header-offset: 110px;
   --vote-min-height: 600px;
+  --vote-action-bg: rgba(255, 255, 255, 0.95);
+  --vote-action-shadow: 0 14px 28px rgba(17, 17, 17, 0.08);
+  --vote-action-icon-opacity: 0.56;
+  --vote-action-hover-shadow: 0 16px 30px rgba(252, 146, 199, 0.22);
+  --vote-action-hover-icon-opacity: 1;
+  --vote-action-hover-icon-filter: invert(72%) sepia(20%) saturate(1351%)
+    hue-rotate(290deg) brightness(104%) contrast(99%);
+  --vote-action-active-bg: linear-gradient(180deg, #ffb6db 0%, #fc92c7 100%);
+  --vote-action-active-shadow: 0 16px 32px rgba(252, 146, 199, 0.34);
+  --vote-action-active-icon-filter: brightness(0) invert(1);
+  --vote-action-dislike-hover-shadow: 0 16px 30px rgba(120, 174, 255, 0.26);
+  --vote-action-dislike-hover-icon-filter: invert(60%) sepia(80%)
+    saturate(1812%) hue-rotate(194deg) brightness(101%) contrast(101%);
+  --vote-action-dislike-active-bg: linear-gradient(
+    180deg,
+    #9bc7ff 0%,
+    #76b9ff 100%
+  );
+  --vote-action-dislike-active-shadow: 0 16px 32px
+    rgba(120, 174, 255, 0.38);
   width: min(1180px, calc(100% - 24px));
   margin: 0 auto;
   height: calc(100dvh - var(--vote-header-offset));
@@ -10,6 +30,150 @@
 
 .vote-page.has-comment-modal {
   overflow: visible;
+}
+
+.vote-filter-panel {
+  --filter-close-text: #111111;
+  --filter-close-hover-text: #FC92C7;
+  --filter-chip-bg: #ffffff;
+  --filter-chip-text: #8d8d8d;
+  --filter-chip-border: rgba(17, 17, 17, 0.42);
+  --filter-chip-shadow: none;
+  --filter-chip-hover-bg: #ffffff;
+  --filter-chip-hover-text: #FC92C7;
+  --filter-chip-hover-border: #FC92C7;
+  --filter-chip-hover-shadow: 0 8px 18px rgba(252, 146, 199, 0.16);
+  --filter-chip-active-bg: #FC92C7;
+  --filter-chip-active-text: #fff;
+  --filter-chip-active-border: #FC92C7;
+  --filter-chip-active-shadow: 0 8px 18px rgba(252, 146, 199, 0.24);
+  position: fixed;
+  top: var(--vote-filter-panel-top, calc(var(--vote-header-offset) + 22px));
+  left: var(--vote-filter-panel-left, 70px);
+  z-index: 70;
+  display: flex;
+  flex-direction: column;
+  width: var(--vote-filter-panel-width, 150px);
+  height: var(
+    --vote-filter-panel-height,
+    calc(100dvh - var(--vote-header-offset) - 44px)
+  );
+  max-height: calc(100dvh - var(--vote-header-offset) - 22px);
+  padding: 11px 10px 14px;
+  overflow: hidden;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.98);
+  box-shadow: 0 22px 60px rgba(17, 17, 17, 0.08);
+  animation: filterPanelEnter 180ms ease both;
+}
+
+.vote-filter-header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  flex: 0 0 auto;
+  min-height: 26px;
+  margin-bottom: 16px;
+  padding-left: 15px;
+}
+
+.vote-filter-header h2 {
+  margin: 0;
+  color: #111111;
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 1;
+}
+
+.vote-filter-close {
+  position: absolute;
+  top: 50%;
+  right: 15px;
+  flex: 0 0 auto;
+  width: 26px !important;
+  height: 26px !important;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--filter-close-text);
+  font-size: 21px;
+  line-height: 26px;
+  transform: translateY(-50%);
+  cursor: pointer;
+}
+
+.vote-filter-close:hover {
+  background: transparent;
+  box-shadow: none;
+  border-color: transparent;
+  color: var(--filter-close-hover-text);
+}
+
+.vote-filter-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 0 0 2px;
+  scrollbar-width: none;
+}
+
+.vote-filter-list::-webkit-scrollbar {
+  display: none;
+}
+
+.vote-filter-chip {
+  flex: 0 0 auto;
+  width: 100%;
+  min-height: 43px;
+  padding: 0 18px;
+  border: 1px solid var(--filter-chip-border);
+  border-radius: 999px;
+  background: var(--filter-chip-bg);
+  color: var(--filter-chip-text);
+  box-shadow: var(--filter-chip-shadow);
+  font-size: 17px;
+  font-weight: 500;
+  line-height: 1.2;
+  cursor: pointer;
+  transition:
+    transform 180ms ease,
+    color 180ms ease,
+    border-color 180ms ease,
+    background-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.vote-filter-chip:hover {
+  transform: translateY(-1px);
+  border-color: var(--filter-chip-hover-border);
+  background: var(--filter-chip-hover-bg);
+  color: var(--filter-chip-hover-text);
+  box-shadow: var(--filter-chip-hover-shadow);
+}
+
+.vote-filter-chip.is-active {
+  border-color: var(--filter-chip-active-border);
+  background: var(--filter-chip-active-bg);
+  color: var(--filter-chip-active-text);
+  box-shadow: var(--filter-chip-active-shadow);
+}
+
+@keyframes filterPanelEnter {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* 검색 토글 버튼 */
@@ -98,7 +262,7 @@
   font-size: 1rem;
   font-weight: 700;
   margin-bottom: 16px;
-  color: #d94588;
+  color: #fc92c7;
 }
 
 .search-input-wrapper input {
@@ -113,7 +277,7 @@
 }
 
 .search-input-wrapper input:focus {
-  border-color: #d94588;
+  border-color: #fc92c7;
   background: rgba(255, 255, 255, 0.08);
 }
 
@@ -141,8 +305,8 @@
 }
 
 .filter-chips button.active {
-  background: #d94588;
-  border-color: #d94588;
+  background: #fc92c7;
+  border-color: #fc92c7;
   color: white;
   box-shadow: 0 4px 12px rgba(217, 69, 136, 0.4);
 }
@@ -572,8 +736,8 @@
   height: var(--vote-action-button-size);
   border: 0;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.95);
-  box-shadow: 0 14px 28px rgba(17, 17, 17, 0.08);
+  background: var(--vote-action-bg);
+  box-shadow: var(--vote-action-shadow);
   cursor: pointer;
   transition:
     transform 180ms ease,
@@ -584,7 +748,7 @@
 .vote-action-button img {
   width: 40px;
   height: 40px;
-  opacity: 0.56;
+  opacity: var(--vote-action-icon-opacity);
   transition:
     opacity 180ms ease,
     filter 180ms ease;
@@ -604,7 +768,7 @@
 
 .vote-action-button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 16px 30px rgba(252, 146, 199, 0.22);
+  box-shadow: var(--vote-action-hover-shadow);
 }
 
 .vote-action-button:disabled {
@@ -614,46 +778,71 @@
 
 .vote-action-button:disabled:hover {
   transform: none;
-  box-shadow: 0 14px 28px rgba(17, 17, 17, 0.08);
+  box-shadow: var(--vote-action-shadow);
 }
 
 .vote-action-button:disabled:hover img {
-  opacity: 0.56;
+  opacity: var(--vote-action-icon-opacity);
   filter: none;
 }
 
 .vote-action-button:hover img {
-  opacity: 1;
-  filter: invert(72%) sepia(20%) saturate(1351%) hue-rotate(290deg)
-    brightness(104%) contrast(99%);
+  opacity: var(--vote-action-hover-icon-opacity);
+  filter: var(--vote-action-hover-icon-filter);
 }
 
 .vote-action-button.action-dislike:hover {
-  box-shadow: 0 16px 30px rgba(120, 174, 255, 0.26);
+  box-shadow: var(--vote-action-dislike-hover-shadow);
 }
 
 .vote-action-button.action-dislike:hover img {
-  filter: invert(60%) sepia(80%) saturate(1812%) hue-rotate(194deg)
-    brightness(101%) contrast(101%);
+  filter: var(--vote-action-dislike-hover-icon-filter);
 }
 
 .vote-action-button.is-active {
-  background: linear-gradient(180deg, #ffb6db 0%, #fc92c7 100%);
-  box-shadow: 0 16px 32px rgba(252, 146, 199, 0.34);
+  background: var(--vote-action-active-bg);
+  box-shadow: var(--vote-action-active-shadow);
 }
 
 .vote-action-button.action-dislike.is-active {
-  background: linear-gradient(180deg, #9bc7ff 0%, #76b9ff 100%);
-  box-shadow: 0 16px 32px rgba(120, 174, 255, 0.38);
+  background: var(--vote-action-dislike-active-bg);
+  box-shadow: var(--vote-action-dislike-active-shadow);
 }
 
 .vote-action-button.is-active img {
   opacity: 1;
-  filter: brightness(0) invert(1);
+  filter: var(--vote-action-active-icon-filter);
 }
 
 .vote-action-button.action-dislike.is-active img {
-  filter: brightness(0) invert(1);
+  filter: var(--vote-action-active-icon-filter);
+}
+
+.vote-action-button.vote-filter-toggle {
+  position: fixed;
+  top: var(--vote-filter-button-top, calc(var(--vote-header-offset) + 22px));
+  left: var(--vote-filter-button-left, 72px);
+  z-index: 90;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  padding: 0;
+  line-height: 0;
+  transform: none;
+}
+
+.vote-action-button.vote-filter-toggle:hover {
+  transform: translateY(-2px);
+}
+
+.vote-action-button.vote-filter-toggle img {
+  width: 42px;
+  height: 42px;
+  display: block;
+  flex: 0 0 auto;
+  object-fit: contain;
 }
 
 .vote-feed-loader {
