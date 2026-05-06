@@ -4,11 +4,13 @@ import Menu from "../../components/menu";
 import styles from "./MyPage.module.css";
 import { useAuth } from "../../contexts/AuthContext";
 import instance from "../../api/instance";
+import { useRouteAnimation } from "../../hooks/useRouteAnimation";
 
 const MyPage = () => {
   const navigate = useNavigate();
   const { user: currentUser, token, logout } = useAuth();
   const [confirmModal, setConfirmModal] = useState(null); // 'logout', 'delete', or null
+  const { displayOutlet, transitionStage, onTransitionEnd, activePath } = useRouteAnimation();
 
   useEffect(() => {
     if (!token) {
@@ -49,7 +51,7 @@ const MyPage = () => {
   };
 
   return (
-    <div className={styles.wrapper} key={currentUser?.id}>
+    <div className={styles.wrapper}>
       <nav className={styles.sidebar}>
         <div className={styles.navLinks}>
           <Menu />
@@ -57,7 +59,14 @@ const MyPage = () => {
       </nav>
 
       <main className={styles.mainContent}>
-        <Outlet />
+        <div
+          key={activePath}
+          className={transitionStage === "enter" ? styles.animateEnter : styles.animateExit}
+          onAnimationEnd={onTransitionEnd}
+          style={{ width: "100%" }}
+        >
+          {displayOutlet}
+        </div>
       </main>
 
       {confirmModal && (

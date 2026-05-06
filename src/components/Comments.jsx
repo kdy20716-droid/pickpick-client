@@ -41,7 +41,15 @@ function CommentItem({
 }) {
   return (
     <article className={`comment-item ${isReply ? 'comment-reply' : ''}`}>
-      <div className="comment-avatar" aria-hidden="true" />
+      <div className="comment-avatar" aria-hidden="true">
+        {comment.author_image ? (
+          <img 
+            src={`http://localhost:4000/uploads/${comment.author_image}`} 
+            alt="" 
+            style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }}
+          />
+        ) : null}
+      </div>
       <div className="comment-body" style={{ width: '100%' }}>
         <div className="comment-top">
           <div>
@@ -88,7 +96,15 @@ function CommentItem({
         {!isReply && isOpen && (
           <div className="comment-replies" style={{ width: '100%', marginTop: '12px' }}>
             <div className="youtube-reply-container">
-              <div className="comment-avatar comment-avatar-small" aria-hidden="true" />
+              <div className="comment-avatar comment-avatar-small" aria-hidden="true">
+                {currentUser?.profile_image ? (
+                  <img 
+                    src={`http://localhost:4000/uploads/${currentUser.profile_image}`} 
+                    alt="" 
+                    style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }}
+                  />
+                ) : null}
+              </div>
               <div className="youtube-reply-content">
                 <input
                   type="text"
@@ -465,7 +481,15 @@ export default function Comments({ title, targetCardId, onClose, postDbId }) {
         </div>
 
         <footer className="comment-input">
-          <div className="comment-avatar is-small" aria-hidden="true" />
+          <div className="comment-avatar is-small" aria-hidden="true">
+            {currentUser?.profile_image ? (
+              <img 
+                src={`http://localhost:4000/uploads/${currentUser.profile_image}`} 
+                alt="" 
+                style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }}
+              />
+            ) : null}
+          </div>
           <input
             type="text"
             value={newComment}
