@@ -1,7 +1,7 @@
 import "./Signin.css";
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { signin } from "../api/users";
+import { signin, sendEmailCode } from "../api/users";
 
 export default function Signin() {
   const navigate = useNavigate();
@@ -63,7 +63,7 @@ export default function Signin() {
   };
 
   // 이메일 코드 전송
-  const handleSendEmailCode = () => {
+  const handleSendEmailCode = async () => {
     if (!form.email) {
       setErrorMsg("이메일 주소를 먼저 입력해주세요.");
       setShowModal(true);
@@ -78,14 +78,20 @@ export default function Signin() {
       return;
     }
 
-    // 6자리 랜덤 코드 생성 (Mocking)
-    const code = Math.floor(100000 + Math.random() * 900000).toString();
-    setServerCode(code);
-    setEmailCodeSent(true);
-    
-    // 유저가 확인할 수 있도록 알림 (실제로는 서버가 이메일을 발송함)
-    alert(`인증 코드가 발송되었습니다: ${code}`);
-    console.log(`Email Verification Code: ${code}`);
+    try {
+      // 백엔드 API 호출하여 이메일 전송
+      const data = await sendEmailCode(form.email);
+      
+      // 서버에서 전달받은 코드를 프론트엔드 상태로 저장 (프론트에서 검증하기 위함)
+      setServerCode(data.code);
+      setEmailCodeSent(true);
+
+      alert(`인증 코드가 발송되었습니다`);
+    } catch (error) {
+      setErrorMsg("이메일 발송 중 오류가 발생했습니다.");
+      setShowModal(true);
+      console.error(error);
+    }
   };
 
   // 이메일 코드 확인
@@ -121,6 +127,12 @@ export default function Signin() {
       return;
     }
 
+    if (!form.name || form.name.length > 5) {
+      setErrorMsg("이름은 1자 이상 5자 이하로 입력해주세요.");
+      setShowModal(true);
+      return;
+    }
+
     if (!form.email) {
       setErrorMsg("이메일 주소를 입력해주세요.");
       setShowModal(true);
@@ -140,7 +152,12 @@ export default function Signin() {
     }
 
     try {
-      await signin(form);
+      const formData = {
+        ...form,
+        gender,
+        nationality
+      };
+      await signin(formData);
       alert("회원가입이 완료되었습니다!");
       navigate("/login");
     } catch (error) {
@@ -198,9 +215,9 @@ export default function Signin() {
               disabled={isEmailVerified}
             />
           </div>
-          <button 
-            type="button" 
-            className="verify-btn" 
+          <button
+            type="button"
+            className="verify-btn"
             onClick={handleSendEmailCode}
             disabled={isEmailVerified}
           >
@@ -220,9 +237,9 @@ export default function Signin() {
                 maxLength={6}
               />
             </div>
-            <button 
-              type="button" 
-              className="verify-confirm-btn" 
+            <button
+              type="button"
+              className="verify-confirm-btn"
               onClick={handleVerifyEmailCode}
             >
               확인
@@ -241,9 +258,10 @@ export default function Signin() {
           <input
             type="text"
             name="name"
-            placeholder="이름"
+            placeholder="이름 (최대 5글자)"
             value={form.name}
             onChange={handleChange}
+            maxLength={5}
           />
         </div>
 

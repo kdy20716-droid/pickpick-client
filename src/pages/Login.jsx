@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { login } from "../api/users";
+import { login as apiLogin } from "../api/users";
+import { useAuth } from "../contexts/AuthContext";
 import "./Login.css";
 
 export default function Login() {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [form, setForm] = useState({ username: "", password: "" });
   const [showModal, setShowModal] = useState(false);
   const [msg, setMsg] = useState("");
@@ -12,10 +14,9 @@ export default function Login() {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const data = await login(form);
-      // 로그인 성공 시 토큰과 유저 정보를 저장
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("user", JSON.stringify(data.user));
+      const data = await apiLogin(form);
+      // 로그인 성공 시 Context의 login 함수 호출
+      login(data.user, data.token);
 
       setMsg("로그인 성공!");
 

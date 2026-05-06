@@ -1,13 +1,27 @@
 import instance from "./instance";
 
+const VOTE_LIST_PATH = "/votelist";
+
 // 1. 투표 게시글 목록 조회 API
-export const getVote = async (keyword = null, category = null, sort = null) => {
-  let url = "/recipes";
+export const getVote = async (
+  keyword = null,
+  category = null,
+  sort = null,
+  user_id = null,
+  only_voted = null,
+  only_liked = null,
+  author_id = null,
+) => {
+  let url = "/votelist";
   const params = new URLSearchParams();
   if (keyword) params.append("keyword", keyword);
   if (category) params.append("category", category);
   if (sort) params.append("sort", sort);
-  
+  if (user_id) params.append("user_id", user_id);
+  if (only_voted) params.append("only_voted", only_voted);
+  if (only_liked) params.append("only_liked", only_liked);
+  if (author_id) params.append("author_id", author_id);
+
   const queryString = params.toString();
   if (queryString) url += `?${queryString}`;
 
@@ -35,7 +49,7 @@ export const addVote = async (
   formData.append("candidate_b_name", candidate_b_name);
   formData.append("candidate_b_image", candidate_b_image); // 파일 객체
 
-  const response = await instance.post("/recipes", formData);
+  const response = await instance.post(VOTE_LIST_PATH, formData);
   return response.data;
 };
 
@@ -63,38 +77,50 @@ export const getComments = async (postId) => {
 };
 
 // 6. 댓글 추가 API
-export const addComment = async (postId, user_id, content) => {
+export const addComment = async (
+  postId,
+  user_id,
+  content,
+  parent_id = null,
+) => {
   const response = await instance.post(`/api/votes/${postId}/comments`, {
     user_id,
     content,
+    parent_id,
   });
   return response.data;
 };
 
 // 7. 댓글 삭제 API
 export const deleteComment = async (postId, commentId, user_id) => {
-  const response = await instance.delete(`/api/votes/${postId}/comments/${commentId}`, {
-    data: { user_id },
-  });
+  const response = await instance.delete(
+    `/api/votes/${postId}/comments/${commentId}`,
+    {
+      data: { user_id },
+    },
+  );
   return response.data;
 };
 
 // 8. 댓글 좋아요 토글 API
 export const toggleCommentLike = async (postId, commentId, user_id) => {
-  const response = await instance.post(`/api/votes/${postId}/comments/${commentId}/like`, {
-    user_id,
-  });
+  const response = await instance.post(
+    `/api/votes/${postId}/comments/${commentId}/like`,
+    {
+      user_id,
+    },
+  );
   return response.data;
 };
 
 // 9. 랭킹 데이터 조회 API
 export const getRanking = async () => {
-  const response = await instance.get("/recipes/ranking");
+  const response = await instance.get(`${VOTE_LIST_PATH}/ranking`);
   return response.data;
 };
 
 // 10. 조회수 증가 API
 export const incrementView = async (postId) => {
-  const response = await instance.post(`/recipes/${postId}/view`);
+  const response = await instance.post(`${VOTE_LIST_PATH}/${postId}/view`);
   return response.data;
 };

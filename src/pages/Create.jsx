@@ -1,13 +1,24 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { addVote } from "../api/posts";
+import { useAuth } from "../contexts/AuthContext";
 import { Pencil, Trash2, Maximize, Minus, Plus } from "lucide-react";
 import "./Create.css";
 
 const Create = () => {
   const navigate = useNavigate();
+  const { user: currentUser, token } = useAuth();
+  const authorId = currentUser?.id || null;
+
+  useEffect(() => {
+    if (!token) {
+      alert("로그인이 필요한 페이지입니다.");
+      navigate("/login");
+    }
+  }, [token, navigate]);
+
   const [title, setTitle] = useState("");
-  const [authorId, setAuthorId] = useState("1"); // 임시 작성자 ID
+
   const [selectedTag, setSelectedTag] = useState("영화 / 드라마");
   const [candidate1, setCandidate1] = useState("");
   const [candidate2, setCandidate2] = useState("");

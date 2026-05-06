@@ -5,7 +5,7 @@ import vsLogo from "../assets/vs-logo.svg";
 import { useMainPageAnimations } from "../hooks/useMainPageAnimations.js";
 import { useScrollToVote } from "./animations/useScrollToVote.js";
 import { mainRouteTransitions } from "./animations/routeTransitions.js";
-import { getVote } from "../api/posts.js";
+import { getMainFeaturedVote } from "../api/main.js";
 
 const voteLinkState = { transition: mainRouteTransitions.link };
 
@@ -24,6 +24,7 @@ const copy = {
 export default function MainPage() {
   const pageRef = useRef(null);
   const [featuredVote, setFeaturedVote] = useState(null);
+  const [isFeaturedVoteLoading, setIsFeaturedVoteLoading] = useState(true);
 
   useMainPageAnimations(pageRef);
   const isLeavingForVote = useScrollToVote();
@@ -31,16 +32,8 @@ export default function MainPage() {
   useEffect(() => {
     const fetchPopularVote = async () => {
       try {
-        const data = await getVote();
-        if (data && data.length > 0) {
-          // 조회수 또는 투표수가 가장 높은 게시물을 인기 투표로 선정 (여기서는 총 투표수로 정렬)
-          const sortedData = data.sort((a, b) => {
-            const totalA = (a.candidate_a_count || 0) + (a.candidate_b_count || 0);
-            const totalB = (b.candidate_a_count || 0) + (b.candidate_b_count || 0);
-            return totalB - totalA;
-          });
-          
-          const item = sortedData[0];
+        const item = await getMainFeaturedVote();
+        if (item) {
           setFeaturedVote({
             title: item.title,
             leftCandidate: {
@@ -55,6 +48,8 @@ export default function MainPage() {
         }
       } catch (error) {
         console.error("인기 투표를 불러오는데 실패했습니다.", error);
+      } finally {
+        setIsFeaturedVoteLoading(false);
       }
     };
     fetchPopularVote();
@@ -79,7 +74,13 @@ export default function MainPage() {
           </div>
 
           <article className="vote-card">
-            <h2>{featuredVote ? featuredVote.title : "로딩 중..."}</h2>
+            <h2>
+              {featuredVote
+                ? featuredVote.title
+                : isFeaturedVoteLoading
+                  ? "로딩 중..."
+                  : "등록된 투표가 없습니다."}
+            </h2>
 
             <div className="vote-match">
               {featuredVote && (

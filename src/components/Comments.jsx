@@ -2,6 +2,7 @@
 import { ThumbsUp, ThumbsDown } from "lucide-react";
 import "../pages/comments.css";
 import { getComments, addComment, deleteComment, toggleCommentLike } from "../api/posts.js";
+import { useAuth } from "../contexts/AuthContext";
 
 const COMMENT_OVERLAY_BREAKPOINT = 1320;
 
@@ -35,11 +36,13 @@ function CommentItem({
   onReplyDraftChange,
   onAddReply,
   onDelete,
+  replies = [],
+  isReply = false
 }) {
   return (
-    <article className="comment-item">
+    <article className={`comment-item ${isReply ? 'comment-reply' : ''}`}>
       <div className="comment-avatar" aria-hidden="true" />
-      <div className="comment-body">
+      <div className="comment-body" style={{ width: '100%' }}>
         <div className="comment-top">
           <div>
             <strong className="comment-name">{comment.author}</strong>
@@ -75,7 +78,47 @@ function CommentItem({
           >
             <ThumbsDown /> 싫어요
           </button>
+          {!isReply && (
+            <button type="button" className="comment-action action-reply" onClick={() => onToggleReplies && onToggleReplies(comment.id)} style={{ marginLeft: '10px' }}>
+              답글 {replies.length > 0 ? replies.length : ""}
+            </button>
+          )}
         </div>
+
+        {!isReply && isOpen && (
+          <div className="comment-replies" style={{ width: '100%', marginTop: '12px' }}>
+            <div className="youtube-reply-container">
+              <div className="comment-avatar comment-avatar-small" aria-hidden="true" />
+              <div className="youtube-reply-content">
+                <input
+                  type="text"
+                  value={replyDraft}
+                  placeholder="답글 추가..."
+                  className="youtube-reply-input"
+                  onChange={(e) => onReplyDraftChange && onReplyDraftChange(comment.id, e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && replyDraft.trim()) onAddReply && onAddReply(comment.id);
+                  }}
+                />
+                <div className="youtube-reply-actions">
+                  <button type="button" className="btn-cancel" onClick={() => onToggleReplies && onToggleReplies(comment.id)}>취소</button>
+                  <button type="button" className="btn-submit" onClick={() => onAddReply && onAddReply(comment.id)} disabled={!replyDraft.trim()}>답글</button>
+                </div>
+              </div>
+            </div>
+            {replies.map(reply => (
+               <CommentItem
+                 key={reply.id}
+                 comment={reply}
+                 currentUser={currentUser}
+                 onLike={onLike}
+                 onDislike={onDislike}
+                 onDelete={onDelete}
+                 isReply={true}
+               />
+            ))}
+          </div>
+        )}
       </div>
     </article>
   );
@@ -88,17 +131,17 @@ export default function Comments({ title, targetCardId, onClose, postDbId }) {
   const [replyDrafts, setReplyDrafts] = useState({});
   const modalRef = useRef(null);
 
-  const userStr = localStorage.getItem("user");
-  const currentUser = userStr ? JSON.parse(userStr) : null;
+  const { user: currentUser } = useAuth();
+  const userId = currentUser?.id || 'guest';
 
   const [commentReactions, setCommentReactions] = useState(() => {
-    const saved = localStorage.getItem("commentReactions");
+    const saved = localStorage.getItem(`commentReactions_${userId}`);
     return saved ? JSON.parse(saved) : {};
   });
 
   useEffect(() => {
-    localStorage.setItem("commentReactions", JSON.stringify(commentReactions));
-  }, [commentReactions]);
+    localStorage.setItem(`commentReactions_${userId}`, JSON.stringify(commentReactions));
+  }, [commentReactions, userId]);
 
   useEffect(() => {
     if (postDbId) {
@@ -114,7 +157,7 @@ export default function Comments({ title, targetCardId, onClose, postDbId }) {
         })
         .catch(console.error);
     }
-  }, [postDbId]);
+  }, [postDbId, commentReactions]);
 
   useLayoutEffect(() => {
     const modal = modalRef.current;
@@ -346,8 +389,37 @@ export default function Comments({ title, targetCardId, onClose, postDbId }) {
     );
   };
 
+  const handleToggleReplies = (commentId) => {
+    setOpenReplies(prev => ({ ...prev, [commentId]: !prev[commentId] }));
+  };
+
+  const handleReplyDraftChange = (commentId, value) => {
+    setReplyDrafts(prev => ({ ...prev, [commentId]: value }));
+  };
+
+  const handleAddReply = async (parentId) => {
+    const text = replyDrafts[parentId]?.trim();
+    if (!text || !postDbId || !currentUser) return;
+
+    try {
+      const res = await addComment(postDbId, currentUser.id, text, parentId);
+      if (res.success) {
+        // 백엔드에서 반환된 새 답글 추가
+        setComments((prev) => [...prev, { ...res.comment, reaction: null }]);
+        setReplyDrafts(prev => ({ ...prev, [parentId]: "" }));
+        setOpenReplies(prev => ({ ...prev, [parentId]: true }));
+      }
+    } catch (err) {
+      console.error(err);
+      alert("답글 작성에 실패했습니다.");
+    }
+  };
+
+  const parentComments = comments.filter(c => !c.parent_id);
+  const getReplies = (parentId) => comments.filter(c => c.parent_id === parentId);
+
   return (
-    <div className="comment-modal-layer">
+    <div className="comment-modal-layer" key={userId}>
       <button
         type="button"
         className="comment-modal-backdrop"
@@ -374,7 +446,7 @@ export default function Comments({ title, targetCardId, onClose, postDbId }) {
         </header>
 
         <div className="comment-list">
-          {comments.map((comment) => (
+          {parentComments.map((comment) => (
             <CommentItem
               key={comment.id}
               comment={comment}
@@ -383,10 +455,11 @@ export default function Comments({ title, targetCardId, onClose, postDbId }) {
               replyDraft={replyDrafts[comment.id] ?? ""}
               onLike={handleLike}
               onDislike={handleDislike}
-              onToggleReplies={(commentId) => {}}
-              onReplyDraftChange={(commentId, value) => {}}
-              onAddReply={() => {}}
+              onToggleReplies={handleToggleReplies}
+              onReplyDraftChange={handleReplyDraftChange}
+              onAddReply={handleAddReply}
               onDelete={handleDeleteComment}
+              replies={getReplies(comment.id)}
             />
           ))}
         </div>

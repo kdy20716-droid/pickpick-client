@@ -342,3 +342,83 @@
     padding-inline: 12px;
   }
 }
+
+.comment-reply {
+  margin-top: 16px;
+}
+
+.comment-reply .comment-avatar {
+  width: 28px;
+  height: 28px;
+}
+
+.youtube-reply-container {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.youtube-reply-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.youtube-reply-input {
+  border: none !important;
+  border-bottom: 1px solid #e0e0e0 !important;
+  border-radius: 0 !important;
+  outline: none;
+  padding: 4px 0 !important;
+  font-size: 0.9rem !important;
+  background: transparent !important;
+  color: #111 !important;
+  height: auto !important;
+  transition: border-bottom-color 0.2s;
+}
+
+.youtube-reply-input:focus {
+  border-bottom: 2px solid #111 !important;
+  padding-bottom: 3px !important;
+}
+
+.youtube-reply-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.youtube-reply-actions button {
+  padding: 8px 16px;
+  border-radius: 18px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: background 0.2s;
+}
+
+.youtube-reply-actions .btn-cancel {
+  background: transparent;
+  color: #111;
+}
+
+.youtube-reply-actions .btn-cancel:hover {
+  background: #e5e5e5;
+}
+
+.youtube-reply-actions .btn-submit {
+  background: #065fd4;
+  color: #fff;
+}
+
+.youtube-reply-actions .btn-submit:hover:not(:disabled) {
+  background: #0056b3;
+}
+
+.youtube-reply-actions .btn-submit:disabled {
+  background: #f2f2f2;
+  color: #909090;
+  cursor: default;
+}

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import instance from "../api/instance";
 import "./Findpass.css";
 
 export default function FindPassword() {
@@ -43,24 +44,15 @@ export default function FindPassword() {
     }
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!isValid) return;
 
-    // 🔥 백엔드 연결 부분 (여기 중요)
-    fetch("/api/send-temp-password", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ email }),
-    })
-      .then((res) => res.json())
-      .then(() => {
-        alert("임시 비밀번호가 발송되었습니다!");
-      })
-      .catch(() => {
-        alert("서버 오류 발생");
-      });
+    try {
+      await instance.post("/users/send-temp-password", { email });
+      alert("인증 코드가 발송되었습니다!");
+    } catch (error) {
+      alert("서버 오류 발생: " + (error.response?.data?.message || "발송 실패"));
+    }
   };
 
   return (
