@@ -10,6 +10,7 @@ import Create from "./pages/Create";
 import VotePage from "./pages/VotePage";
 import MyPage from "./pages/MyPage";
 import Profile from "./pages/Profile";
+import Admin from "./pages/Admin";
 
 const router = createBrowserRouter([
   {
@@ -44,6 +45,10 @@ const router = createBrowserRouter([
       {
         path: "/vote",
         element: <VotePage />,
+      },
+      {
+        path: "/admin/manage",
+        element: <Admin />,
       },
       {
         path: "/mypage",
