@@ -132,18 +132,25 @@ export default function Comments({ title, targetCardId, onClose, postDbId }) {
 
   const userStr = localStorage.getItem("user");
   const currentUser = userStr ? JSON.parse(userStr) : null;
+  const userId = currentUser?.id || 'guest';
 
-  const [commentReactions, setCommentReactions] = useState(() => {
-    const saved = localStorage.getItem("commentReactions");
-    return saved ? JSON.parse(saved) : {};
-  });
-
-  useEffect(() => {
-    localStorage.setItem("commentReactions", JSON.stringify(commentReactions));
-  }, [commentReactions]);
+  const [commentReactions, setCommentReactions] = useState({});
+  const [isDataLoaded, setIsDataLoaded] = useState(false);
 
   useEffect(() => {
-    if (postDbId) {
+    const saved = localStorage.getItem(`commentReactions_${userId}`);
+    setCommentReactions(saved ? JSON.parse(saved) : {});
+    setIsDataLoaded(true);
+  }, [userId]);
+
+  useEffect(() => {
+    if (isDataLoaded) {
+      localStorage.setItem(`commentReactions_${userId}`, JSON.stringify(commentReactions));
+    }
+  }, [commentReactions, userId, isDataLoaded]);
+
+  useEffect(() => {
+    if (postDbId && isDataLoaded) {
       getComments(postDbId)
         .then(res => {
           if (res.success) {
@@ -156,7 +163,7 @@ export default function Comments({ title, targetCardId, onClose, postDbId }) {
         })
         .catch(console.error);
     }
-  }, [postDbId]);
+  }, [postDbId, isDataLoaded, commentReactions]);
 
   useLayoutEffect(() => {
     const modal = modalRef.current;

@@ -288,33 +288,33 @@ export default function VotePage() {
   const userId = currentUser.id;
 
   // 상태를 초기화할 때 유저별 키를 사용하여 localStorage에서 값을 가져옵니다.
-  const [selectedVotes, setSelectedVotes] = useState(() => {
-    const saved = localStorage.getItem(`selectedVotes_${userId}`);
-    return saved ? JSON.parse(saved) : {};
-  });
-  
-  const [cardActions, setCardActions] = useState(() => {
-    const saved = localStorage.getItem(`cardActions_${userId}`);
-    return saved ? JSON.parse(saved) : {};
-  });
+  const [selectedVotes, setSelectedVotes] = useState({});
+  const [cardActions, setCardActions] = useState({});
+  const [isDataLoaded, setIsDataLoaded] = useState(false);
 
   // 유저가 바뀌면(로그인/로그아웃) 기록을 다시 로드합니다.
   useEffect(() => {
     const savedVotes = localStorage.getItem(`selectedVotes_${userId}`);
-    setSelectedVotes(savedVotes ? JSON.parse(savedVotes) : {});
-    
     const savedActions = localStorage.getItem(`cardActions_${userId}`);
+    
+    setSelectedVotes(savedVotes ? JSON.parse(savedVotes) : {});
     setCardActions(savedActions ? JSON.parse(savedActions) : {});
+    setIsDataLoaded(true);
   }, [userId]);
 
   // 상태가 변경될 때마다 유저별 키로 localStorage에 저장합니다.
+  // 단, 데이터가 로드된 이후에만 저장하도록 하여 초기화 방지
   useEffect(() => {
-    localStorage.setItem(`selectedVotes_${userId}`, JSON.stringify(selectedVotes));
-  }, [selectedVotes, userId]);
+    if (isDataLoaded) {
+      localStorage.setItem(`selectedVotes_${userId}`, JSON.stringify(selectedVotes));
+    }
+  }, [selectedVotes, userId, isDataLoaded]);
 
   useEffect(() => {
-    localStorage.setItem(`cardActions_${userId}`, JSON.stringify(cardActions));
-  }, [cardActions, userId]);
+    if (isDataLoaded) {
+      localStorage.setItem(`cardActions_${userId}`, JSON.stringify(cardActions));
+    }
+  }, [cardActions, userId, isDataLoaded]);
 
   const [copiedCardId, setCopiedCardId] = useState("");
   const [commentCardId, setCommentCardId] = useState("");
@@ -330,7 +330,7 @@ export default function VotePage() {
   // 조회수 증가 로직
   useEffect(() => {
     if (activeCardId) {
-      const card = cards.find(c => c.feedId === activeCardId);
+      const card = cards.find(c => c.id === activeCardId);
       if (card) {
         incrementView(card.id).catch(console.error);
       }
@@ -344,20 +344,20 @@ export default function VotePage() {
         const data = await getVote(searchKeyword, selectedTag, sortBy, passedUserId);
         
         const serverVotes = {};
-        const formattedCards = data.map((item, index) => {
+        const formattedCards = data.map((item) => {
           const totalVotes = (item.candidate_a_count || 0) + (item.candidate_b_count || 0);
           const leftShare = totalVotes === 0 ? 50 : Math.round(((item.candidate_a_count || 0) / totalVotes) * 100);
           const rightShare = totalVotes === 0 ? 50 : Math.round(((item.candidate_b_count || 0) / totalVotes) * 100);
 
-          const feedId = `${item.id}-${index + 1}`;
+          const cardId = item.id.toString();
           
           if (item.user_voted_side) {
-            serverVotes[feedId] = item.user_voted_side.toLowerCase();
+            serverVotes[cardId] = item.user_voted_side.toLowerCase();
           }
 
           return {
-            id: item.id.toString(),
-            feedId,
+            id: cardId,
+            feedId: cardId, // feedId도 이제 item.id와 동일하게 사용
             title: item.title,
             leftCandidate: {
               id: "a",
@@ -376,14 +376,17 @@ export default function VotePage() {
         });
         
         // Merge server votes into local state (server has priority)
-        setSelectedVotes(prev => ({ ...prev, ...serverVotes }));
+        if (isDataLoaded) {
+          setSelectedVotes(prev => ({ ...prev, ...serverVotes }));
+        }
         setCards(formattedCards);
       } catch (error) {
         console.error("투표 목록을 불러오는데 실패했습니다.", error);
       }
     };
     fetchVotes();
-  }, [selectedTag, searchKeyword, sortBy, userId]);
+  }, [selectedTag, searchKeyword, sortBy, userId, isDataLoaded]);
+
 
   useEffect(() => {
     return () => {

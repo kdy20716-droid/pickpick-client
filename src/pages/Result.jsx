@@ -27,10 +27,15 @@ const Result = () => {
         const currentUser = userStr ? JSON.parse(userStr) : null;
 
         if (isMyPageSub) {
-          userId = currentUser?.id;
+          if (!currentUser) {
+            setVoteResults([]);
+            setLoading(false);
+            return;
+          }
+          userId = currentUser.id;
           if (isHistory) onlyVoted = true;
           if (isLike) onlyLiked = true;
-          if (isMyPoll) authorId = currentUser?.id;
+          if (isMyPoll) authorId = currentUser.id;
         }
 
         const data = await getVote(searchKeyword, null, null, userId, onlyVoted, onlyLiked, authorId);
