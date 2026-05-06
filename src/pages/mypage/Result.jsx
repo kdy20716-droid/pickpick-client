@@ -1,54 +1,54 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useLocation } from "react-router-dom";
 import "./Result.css";
 import styles from "./MyPage.module.css";
-import { getVote } from "../api/posts";
+import { useAuth } from "../../contexts/AuthContext";
+import { getVote } from "../../api/posts";
 
 const Result = () => {
   const [voteResults, setVoteResults] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchKeyword, setSearchKeyword] = useState("");
   const location = useLocation();
+  const { user: currentUser } = useAuth();
   
   const isHistory = location.pathname.includes("/mypage/history");
   const isLike = location.pathname.includes("/mypage/like");
   const isMyPoll = location.pathname.includes("/mypage/mypoll");
   const isMyPageSub = isHistory || isLike || isMyPoll;
 
-  useEffect(() => {
-    const fetchResults = async () => {
-      try {
-        let userId = null;
-        let onlyVoted = null;
-        let onlyLiked = null;
-        let authorId = null;
+  const fetchResults = useCallback(async () => {
+    try {
+      let userId = null;
+      let onlyVoted = null;
+      let onlyLiked = null;
+      let authorId = null;
 
-        const userStr = localStorage.getItem("user");
-        const currentUser = userStr ? JSON.parse(userStr) : null;
-
-        if (isMyPageSub) {
-          if (!currentUser) {
-            setVoteResults([]);
-            setLoading(false);
-            return;
-          }
-          userId = currentUser.id;
-          if (isHistory) onlyVoted = true;
-          if (isLike) onlyLiked = true;
-          if (isMyPoll) authorId = currentUser.id;
+      // Use the stable currentUser from context
+      if (isMyPageSub) {
+        if (!currentUser) {
+          setVoteResults([]);
+          setLoading(false);
+          return;
         }
-
-        const data = await getVote(searchKeyword, null, null, userId, onlyVoted, onlyLiked, authorId);
-        setVoteResults(data);
-      } catch (error) {
-        console.error("결과를 불러오는데 실패했습니다.", error);
-      } finally {
-        setLoading(false);
+        userId = currentUser.id;
+        if (isHistory) onlyVoted = true;
+        if (isLike) onlyLiked = true;
+        if (isMyPoll) authorId = currentUser.id;
       }
-    };
 
+      const data = await getVote(searchKeyword, null, null, userId, onlyVoted, onlyLiked, authorId);
+      setVoteResults(data);
+    } catch (error) {
+      console.error("결과를 불러오는데 실패했습니다.", error);
+    } finally {
+      setLoading(false);
+    }
+  }, [isMyPageSub, isHistory, isLike, isMyPoll, searchKeyword, currentUser]);
+
+  useEffect(() => {
     fetchResults();
-  }, [searchKeyword, location.pathname]);
+  }, [fetchResults, location.pathname]);
 
   if (loading) {
     return <div className="result-container" style={{ color: "white", textAlign: "center", padding: "50px" }}>로딩 중...</div>;

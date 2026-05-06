@@ -1,21 +1,16 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import "./Like.css";
 import styles from "./MyPage.module.css";
-import { getVote, toggleLike } from "../api/posts";
+import { useAuth } from "../../contexts/AuthContext";
+import { getVote, toggleLike } from "../../api/posts";
 
 const Like = () => {
   const [likedVotes, setLikedVotes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchKeyword, setSearchKeyword] = useState("");
+  const { user: currentUser } = useAuth();
 
-  const userStr = localStorage.getItem("user");
-  const currentUser = userStr ? JSON.parse(userStr) : null;
-
-  useEffect(() => {
-    fetchLikedVotes();
-  }, [searchKeyword, currentUser?.id]);
-
-  const fetchLikedVotes = async () => {
+  const fetchLikedVotes = useCallback(async () => {
     if (!currentUser) return;
     
     try {
@@ -27,7 +22,11 @@ const Like = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentUser, searchKeyword]);
+
+  useEffect(() => {
+    fetchLikedVotes();
+  }, [fetchLikedVotes]);
 
   const handleUnlike = async (postId) => {
     if (!currentUser) return;

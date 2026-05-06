@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import { Link, useLocation } from "react-router-dom";
 import "./VotePage.css";
 import vsLogo from "../assets/vs-logo.svg";
@@ -282,39 +282,27 @@ export default function VotePage() {
   const entersFromMain = isMainRouteTransition(location.state?.transition);
   const [cards, setCards] = useState([]);
   
-  // 현재 접속 중인 유저 가져오기
-  const userStr = localStorage.getItem("user");
-  const currentUser = userStr ? JSON.parse(userStr) : { id: 'guest' };
-  const userId = currentUser.id;
+  const { user: currentUser, isLoggedIn } = useAuth();
+  const userId = currentUser?.id || 'guest';
 
   // 상태를 초기화할 때 유저별 키를 사용하여 localStorage에서 값을 가져옵니다.
-  const [selectedVotes, setSelectedVotes] = useState({});
-  const [cardActions, setCardActions] = useState({});
-  const [isDataLoaded, setIsDataLoaded] = useState(false);
-
-  // 유저가 바뀌면(로그인/로그아웃) 기록을 다시 로드합니다.
-  useEffect(() => {
-    const savedVotes = localStorage.getItem(`selectedVotes_${userId}`);
-    const savedActions = localStorage.getItem(`cardActions_${userId}`);
-    
-    setSelectedVotes(savedVotes ? JSON.parse(savedVotes) : {});
-    setCardActions(savedActions ? JSON.parse(savedActions) : {});
-    setIsDataLoaded(true);
-  }, [userId]);
+  const [selectedVotes, setSelectedVotes] = useState(() => {
+    const saved = localStorage.getItem(`selectedVotes_${userId}`);
+    return saved ? JSON.parse(saved) : {};
+  });
+  const [cardActions, setCardActions] = useState(() => {
+    const saved = localStorage.getItem(`cardActions_${userId}`);
+    return saved ? JSON.parse(saved) : {};
+  });
 
   // 상태가 변경될 때마다 유저별 키로 localStorage에 저장합니다.
-  // 단, 데이터가 로드된 이후에만 저장하도록 하여 초기화 방지
   useEffect(() => {
-    if (isDataLoaded) {
-      localStorage.setItem(`selectedVotes_${userId}`, JSON.stringify(selectedVotes));
-    }
-  }, [selectedVotes, userId, isDataLoaded]);
+    localStorage.setItem(`selectedVotes_${userId}`, JSON.stringify(selectedVotes));
+  }, [selectedVotes, userId]);
 
   useEffect(() => {
-    if (isDataLoaded) {
-      localStorage.setItem(`cardActions_${userId}`, JSON.stringify(cardActions));
-    }
-  }, [cardActions, userId, isDataLoaded]);
+    localStorage.setItem(`cardActions_${userId}`, JSON.stringify(cardActions));
+  }, [cardActions, userId]);
 
   const [copiedCardId, setCopiedCardId] = useState("");
   const [commentCardId, setCommentCardId] = useState("");
@@ -337,55 +325,57 @@ export default function VotePage() {
     }
   }, [activeCardId, cards]);
 
-  useEffect(() => {
-    const fetchVotes = async () => {
-      try {
-        const passedUserId = userId === 'guest' ? null : userId;
-        const data = await getVote(searchKeyword, selectedTag, sortBy, passedUserId);
-        
-        const serverVotes = {};
-        const formattedCards = data.map((item) => {
-          const totalVotes = (item.candidate_a_count || 0) + (item.candidate_b_count || 0);
-          const leftShare = totalVotes === 0 ? 50 : Math.round(((item.candidate_a_count || 0) / totalVotes) * 100);
-          const rightShare = totalVotes === 0 ? 50 : Math.round(((item.candidate_b_count || 0) / totalVotes) * 100);
+  const fetchVotes = useCallback(async () => {
+    try {
+      const passedUserId = !isLoggedIn ? null : currentUser?.id;
+      const data = await getVote(searchKeyword, selectedTag, sortBy, passedUserId);
+      
+      const serverVotes = {};
+      const formattedCards = data.map((item) => {
+        const totalVotes = (item.candidate_a_count || 0) + (item.candidate_b_count || 0);
+        const leftShare = totalVotes === 0 ? 50 : Math.round(((item.candidate_a_count || 0) / totalVotes) * 100);
+        const rightShare = totalVotes === 0 ? 50 : Math.round(((item.candidate_b_count || 0) / totalVotes) * 100);
 
-          const cardId = item.id.toString();
-          
-          if (item.user_voted_side) {
-            serverVotes[cardId] = item.user_voted_side.toLowerCase();
-          }
-
-          return {
-            id: cardId,
-            feedId: cardId, // feedId도 이제 item.id와 동일하게 사용
-            title: item.title,
-            leftCandidate: {
-              id: "a",
-              name: item.candidate_a_name,
-              image: item.candidate_a_image ? `http://localhost:4000/uploads/${item.candidate_a_image}` : null,
-              tone: "light",
-            },
-            rightCandidate: {
-              id: "b",
-              name: item.candidate_b_name,
-              image: item.candidate_b_image ? `http://localhost:4000/uploads/${item.candidate_b_image}` : null,
-              tone: "dark",
-            },
-            shares: { left: leftShare, right: rightShare },
-          };
-        });
+        const cardId = item.id.toString();
         
-        // Merge server votes into local state (server has priority)
-        if (isDataLoaded) {
-          setSelectedVotes(prev => ({ ...prev, ...serverVotes }));
+        if (item.user_voted_side) {
+          serverVotes[cardId] = item.user_voted_side.toLowerCase();
         }
-        setCards(formattedCards);
-      } catch (error) {
-        console.error("투표 목록을 불러오는데 실패했습니다.", error);
-      }
-    };
-    fetchVotes();
-  }, [selectedTag, searchKeyword, sortBy, userId, isDataLoaded]);
+
+        return {
+          id: cardId,
+          feedId: cardId,
+          title: item.title,
+          leftCandidate: {
+            id: "a",
+            name: item.candidate_a_name,
+            image: item.candidate_a_image ? `http://localhost:4000/uploads/${item.candidate_a_image}` : null,
+            tone: "light",
+          },
+          rightCandidate: {
+            id: "b",
+            name: item.candidate_b_name,
+            image: item.candidate_b_image ? `http://localhost:4000/uploads/${item.candidate_b_image}` : null,
+            tone: "dark",
+          },
+          shares: { left: leftShare, right: rightShare },
+        };
+      });
+      
+      // Merge server votes into local state (server has priority)
+      setSelectedVotes(prev => ({ ...prev, ...serverVotes }));
+      setCards(formattedCards);
+    } catch (error) {
+      console.error("투표 목록을 불러오는데 실패했습니다.", error);
+    }
+  }, [selectedTag, searchKeyword, sortBy, userId, isLoggedIn, currentUser]);
+
+  useEffect(() => {
+    const t = setTimeout(() => {
+      fetchVotes();
+    }, 0);
+    return () => clearTimeout(t);
+  }, [fetchVotes]);
 
 
   useEffect(() => {
@@ -555,6 +545,7 @@ export default function VotePage() {
 
   return (
     <div
+      key={userId}
       ref={pageRef}
       className={`vote-page${entersFromMain ? " is-entering-from-main" : ""}${
         commentCardId ? " has-comment-modal" : ""

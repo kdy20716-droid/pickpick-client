@@ -2,6 +2,7 @@
 import { ThumbsUp, ThumbsDown } from "lucide-react";
 import "../pages/comments.css";
 import { getComments, addComment, deleteComment, toggleCommentLike } from "../api/posts.js";
+import { useAuth } from "../contexts/AuthContext";
 
 const COMMENT_OVERLAY_BREAKPOINT = 1320;
 
@@ -130,27 +131,20 @@ export default function Comments({ title, targetCardId, onClose, postDbId }) {
   const [replyDrafts, setReplyDrafts] = useState({});
   const modalRef = useRef(null);
 
-  const userStr = localStorage.getItem("user");
-  const currentUser = userStr ? JSON.parse(userStr) : null;
+  const { user: currentUser } = useAuth();
   const userId = currentUser?.id || 'guest';
 
-  const [commentReactions, setCommentReactions] = useState({});
-  const [isDataLoaded, setIsDataLoaded] = useState(false);
-
-  useEffect(() => {
+  const [commentReactions, setCommentReactions] = useState(() => {
     const saved = localStorage.getItem(`commentReactions_${userId}`);
-    setCommentReactions(saved ? JSON.parse(saved) : {});
-    setIsDataLoaded(true);
-  }, [userId]);
+    return saved ? JSON.parse(saved) : {};
+  });
 
   useEffect(() => {
-    if (isDataLoaded) {
-      localStorage.setItem(`commentReactions_${userId}`, JSON.stringify(commentReactions));
-    }
-  }, [commentReactions, userId, isDataLoaded]);
+    localStorage.setItem(`commentReactions_${userId}`, JSON.stringify(commentReactions));
+  }, [commentReactions, userId]);
 
   useEffect(() => {
-    if (postDbId && isDataLoaded) {
+    if (postDbId) {
       getComments(postDbId)
         .then(res => {
           if (res.success) {
@@ -163,7 +157,7 @@ export default function Comments({ title, targetCardId, onClose, postDbId }) {
         })
         .catch(console.error);
     }
-  }, [postDbId, isDataLoaded, commentReactions]);
+  }, [postDbId, commentReactions]);
 
   useLayoutEffect(() => {
     const modal = modalRef.current;
@@ -425,7 +419,7 @@ export default function Comments({ title, targetCardId, onClose, postDbId }) {
   const getReplies = (parentId) => comments.filter(c => c.parent_id === parentId);
 
   return (
-    <div className="comment-modal-layer">
+    <div className="comment-modal-layer" key={userId}>
       <button
         type="button"
         className="comment-modal-backdrop"

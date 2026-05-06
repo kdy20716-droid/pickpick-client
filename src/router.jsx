@@ -5,12 +5,13 @@ import Login from "./pages/Login";
 import Signin from "./pages/Signin";
 import Findpass from "./pages/Findpass";
 import Ranking from "./pages/Ranking";
-import Result from "./pages/Result";
+import Result from "./pages/mypage/Result";
 import Create from "./pages/Create";
 import VotePage from "./pages/VotePage";
-import MyPage from "./pages/MyPage";
-import Profile from "./pages/Profile";
-import Like from "./pages/Like";
+import MyPage from "./pages/mypage/MyPage";
+import Profile from "./pages/mypage/Profile";
+import Like from "./pages/mypage/Like";
+import MyCreate from "./pages/mypage/MyCreate";
 
 const router = createBrowserRouter([
   {
@@ -61,7 +62,7 @@ const router = createBrowserRouter([
           },
           {
             path: "mypoll",
-            element: <Result />,
+            element: <MyCreate />,
           },
           {
             path: "contact",

@@ -1,17 +1,23 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { addVote } from "../api/posts";
+import { useAuth } from "../contexts/AuthContext";
 import { Pencil, Trash2, Maximize, Minus, Plus } from "lucide-react";
 import "./Create.css";
 
 const Create = () => {
   const navigate = useNavigate();
+  const { user: currentUser, token } = useAuth();
+  const authorId = currentUser?.id || null;
+
+  useEffect(() => {
+    if (!token) {
+      alert("로그인이 필요한 페이지입니다.");
+      navigate("/login");
+    }
+  }, [token, navigate]);
+
   const [title, setTitle] = useState("");
-  
-  // localStorage에서 실제 로그인된 유저 정보 가져오기
-  const userStr = localStorage.getItem("user");
-  const currentUser = userStr ? JSON.parse(userStr) : null;
-  const authorId = currentUser ? currentUser.id : null;
 
   const [selectedTag, setSelectedTag] = useState("영화 / 드라마");
   const [candidate1, setCandidate1] = useState("");

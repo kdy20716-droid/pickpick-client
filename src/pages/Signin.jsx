@@ -1,7 +1,7 @@
 import "./Signin.css";
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { signin } from "../api/users";
+import { signin, sendEmailCode } from "../api/users";
 
 export default function Signin() {
   const navigate = useNavigate();
@@ -80,17 +80,7 @@ export default function Signin() {
 
     try {
       // 백엔드 API 호출하여 이메일 전송
-      const response = await fetch("http://localhost:4000/users/send-email-code", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: form.email }),
-      });
-
-      if (!response.ok) {
-        throw new Error("서버에서 이메일을 발송하지 못했습니다.");
-      }
-
-      const data = await response.json();
+      const data = await sendEmailCode(form.email);
       
       // 서버에서 전달받은 코드를 프론트엔드 상태로 저장 (프론트에서 검증하기 위함)
       setServerCode(data.code);
