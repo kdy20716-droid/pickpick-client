@@ -2,11 +2,12 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import CommentItem from "./CommentItem.jsx";
 import "../pages/comments.css";
 import {
+  getComments,
   addComment,
   deleteComment,
-  getComments,
   toggleCommentLike,
 } from "../api/posts.js";
+import { useAuth } from "../contexts/AuthContext";
 
 const COMMENT_OVERLAY_BREAKPOINT = 1320;
 
@@ -101,15 +102,20 @@ export default function Comments({ title, targetCardId, onClose, postDbId }) {
   const [openMenuId, setOpenMenuId] = useState(null);
   const modalRef = useRef(null);
 
-  const currentUser = getCurrentUser();
+  const { user: currentUser } = useAuth();
+  const userId = currentUser?.id || "guest";
 
-  const [commentReactions, setCommentReactions] = useState(
-    getSavedCommentReactions,
-  );
+  const [commentReactions, setCommentReactions] = useState(() => {
+    const saved = localStorage.getItem(`commentReactions_${userId}`);
+    return saved ? JSON.parse(saved) : {};
+  });
 
   useEffect(() => {
-    localStorage.setItem("commentReactions", JSON.stringify(commentReactions));
-  }, [commentReactions]);
+    localStorage.setItem(
+      `commentReactions_${userId}`,
+      JSON.stringify(commentReactions),
+    );
+  }, [commentReactions, userId]);
 
   useEffect(() => {
     let ignore = false;
@@ -119,21 +125,7 @@ export default function Comments({ title, targetCardId, onClose, postDbId }) {
         ignore = true;
       };
     }
-
-    getComments(postDbId)
-      .then((res) => {
-        if (ignore || !res.success) {
-          return;
-        }
-
-        setComments(buildCommentTree(res.comments, commentReactions));
-      })
-      .catch(console.error);
-
-    return () => {
-      ignore = true;
-    };
-  }, [commentReactions, postDbId]);
+  }, [postDbId, commentReactions]);
 
   useLayoutEffect(() => {
     const modal = modalRef.current;
@@ -462,7 +454,7 @@ export default function Comments({ title, targetCardId, onClose, postDbId }) {
   };
 
   return (
-    <div className="comment-modal-layer">
+    <div className="comment-modal-layer" key={userId}>
       <button
         type="button"
         className="comment-modal-backdrop"

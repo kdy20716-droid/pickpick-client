@@ -1,26 +1,18 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import styles from "./MyPage.module.css";
-import candLeft from "../assets/candidate-left.jpg";
-import candRight from "../assets/candidate-right.jpg";
+import { useAuth } from "../../contexts/AuthContext";
 import {
   getNotifications,
   markNotificationRead,
   markAllNotificationsRead,
-} from "../api/users";
+} from "../../api/users";
 
 const Profile = () => {
   const [notifications, setNotifications] = useState([]);
+  const { user: currentUser } = useAuth();
 
-  const userStr = localStorage.getItem("user");
-  const currentUser = userStr ? JSON.parse(userStr) : null;
-
-  useEffect(() => {
-    if (currentUser) {
-      fetchNotifications();
-    }
-  }, []);
-
-  const fetchNotifications = async () => {
+  const fetchNotifications = useCallback(async () => {
+    if (!currentUser) return;
     try {
       const res = await getNotifications(currentUser.id);
       if (res.success) {
@@ -29,7 +21,14 @@ const Profile = () => {
     } catch (error) {
       console.error("알림 조회 실패:", error);
     }
-  };
+  }, [currentUser]);
+
+  useEffect(() => {
+    const t = setTimeout(() => {
+      fetchNotifications();
+    }, 0);
+    return () => clearTimeout(t);
+  }, [fetchNotifications]);
 
   const handleReadNotification = async (notifId) => {
     try {

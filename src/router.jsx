@@ -5,11 +5,14 @@ import Login from "./pages/Login";
 import Signin from "./pages/Signin";
 import Findpass from "./pages/Findpass";
 import Ranking from "./pages/Ranking";
-import Result from "./pages/Result";
+import Result from "./pages/mypage/Result";
 import Create from "./pages/Create";
 import VotePage from "./pages/VotePage";
-import MyPage from "./pages/MyPage";
-import Profile from "./pages/Profile";
+import MyPage from "./pages/mypage/MyPage";
+import Profile from "./pages/mypage/Profile";
+import Like from "./pages/mypage/Like";
+import MyCreate from "./pages/mypage/MyCreate";
+import Admin from "./pages/Admin";
 
 const router = createBrowserRouter([
   {
@@ -46,6 +49,10 @@ const router = createBrowserRouter([
         element: <VotePage />,
       },
       {
+        path: "/admin/manage",
+        element: <Admin />,
+      },
+      {
         path: "/mypage",
         element: <MyPage />,
         children: [
@@ -56,15 +63,11 @@ const router = createBrowserRouter([
           },
           {
             path: "like",
-            element: (
-              <div style={{ padding: "40px" }}>LIKE PAGE (COMING SOON)</div>
-            ),
+            element: <Like />,
           },
           {
             path: "mypoll",
-            element: (
-              <div style={{ padding: "40px" }}>MY POLL PAGE (COMING SOON)</div>
-            ),
+            element: <MyCreate />,
           },
           {
             path: "contact",

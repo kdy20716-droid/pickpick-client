@@ -1,8 +1,11 @@
 import { Link } from "react-router-dom";
 import "./Header.css";
 import accountIcon from "../assets/account-icon.svg";
+import { useAuth } from "../contexts/AuthContext";
 
 const Header = () => {
+  const { isLoggedIn } = useAuth();
+
   return (
     <header className="site-header">
       <div className="header-inner">
@@ -12,10 +15,13 @@ const Header = () => {
         <nav className="site-nav" aria-label="주요 메뉴">
           <Link to="/create">+ CREATE</Link>
           <Link to="/ranking">RANKING</Link>
-          <Link to="/login">LOG IN</Link>
-          <Link to="/mypage" className="account-link" aria-label="계정">
-            <img src={accountIcon} alt="" />
-          </Link>
+          {!isLoggedIn ? (
+            <Link to="/login">LOG IN</Link>
+          ) : (
+            <Link to="/mypage" className="account-link" aria-label="계정">
+              <img src={accountIcon} alt="" />
+            </Link>
+          )}
         </nav>
       </div>
       <div className="header-glow" aria-hidden="true" />

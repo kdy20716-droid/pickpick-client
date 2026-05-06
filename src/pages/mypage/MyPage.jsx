@@ -1,35 +1,38 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
-import Menu from "../components/menu";
+import Menu from "../../components/menu";
 import styles from "./MyPage.module.css";
-import instance from "../api/instance";
+import { useAuth } from "../../contexts/AuthContext";
+import instance from "../../api/instance";
 
 const MyPage = () => {
   const navigate = useNavigate();
+  const { user: currentUser, token, logout } = useAuth();
   const [confirmModal, setConfirmModal] = useState(null); // 'logout', 'delete', or null
 
-  const userStr = localStorage.getItem("user");
-  const currentUser = userStr ? JSON.parse(userStr) : null;
+  useEffect(() => {
+    if (!token) {
+      alert("로그인이 필요한 페이지입니다.");
+      navigate("/login");
+    }
+  }, [token, navigate]);
 
   const executeLogout = async () => {
     setConfirmModal(null);
     try {
-      await instance.post("/users/logout");
+      await logout();
+      navigate("/login");
     } catch (error) {
       console.error("서버 로그아웃 처리 중 에러:", error);
-    } finally {
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
-      navigate("/login");
     }
   };
 
   const executeDeleteAccount = async () => {
+    if (!currentUser) return;
     setConfirmModal(null);
     try {
       await instance.delete(`/users/account/${currentUser.id}`);
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
+      await logout();
       navigate("/login");
     } catch (error) {
       console.error("회원 탈퇴 에러:", error);
@@ -45,20 +48,8 @@ const MyPage = () => {
     }
   };
 
-  const handleLogoutClick = () => {
-    setConfirmModal("logout");
-  };
-
-  const handleDeleteClick = () => {
-    if (!currentUser) {
-      alert("로그인 정보가 없습니다.");
-      return;
-    }
-    setConfirmModal("delete");
-  };
-
   return (
-    <div className={styles.wrapper}>
+    <div className={styles.wrapper} key={currentUser?.id}>
       <nav className={styles.sidebar}>
         <div className={styles.navLinks}>
           <Menu />

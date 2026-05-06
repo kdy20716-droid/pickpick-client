@@ -1,13 +1,14 @@
 import { useEffect, useEffectEvent, useRef, useState } from "react";
 
 export function useActiveVoteCard(cards) {
-  const [scrolledCardId, setScrolledCardId] = useState("");
-  const activeCardId =
-    cards.some((card) => card.feedId === scrolledCardId)
-      ? scrolledCardId
-      : cards[0]?.feedId ?? "";
+  const [activeCardId, setActiveCardId] = useState("");
   const feedRef = useRef(null);
   const cardRefs = useRef(new Map());
+
+  // Derive initial activeCardId if not set
+  if (!activeCardId && cards.length > 0) {
+    setActiveCardId(cards[0].feedId);
+  }
 
   const registerCardRef = (cardId) => (node) => {
     if (node) {
