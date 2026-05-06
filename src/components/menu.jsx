@@ -9,6 +9,9 @@ const Menu = () => {
       <Link to="/mypage" className="active">
         MY PAGE
       </Link>
+      <Link to="/mypage" className="active">
+        LOGOUT
+      </Link>
     </nav>
   );
 };
