@@ -3,7 +3,7 @@ import { useAuth } from "../contexts/AuthContext";
 
 const Menu = () => {
   const navigate = useNavigate();
-  const { logout } = useAuth();
+  const { logout, isAdmin } = useAuth();
 
   const handleLogout = async () => {
     try {

@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useState, useEffect, useMemo } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useMemo,
+} from "react";
 import { logout as apiLogout } from "../api/users";
 
 const AuthContext = createContext(null);
@@ -12,6 +18,7 @@ export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(() => localStorage.getItem("token"));
 
   const isLoggedIn = Boolean(token && user);
+  const isAdmin = user?.role === "admin";
 
   // Sync state with localStorage if it changes elsewhere (optional but good for consistency)
   useEffect(() => {
@@ -25,6 +32,18 @@ export const AuthProvider = ({ children }) => {
     window.addEventListener("storage", handleStorageChange);
     return () => window.removeEventListener("storage", handleStorageChange);
   }, []);
+
+  // Monitor user changes and verify admin role
+  useEffect(() => {
+    if (user) {
+      console.log("✅ 사용자 정보 업데이트:", {
+        id: user.id,
+        name: user.name,
+        role: user.role,
+        isAdmin: user.role === "admin",
+      });
+    }
+  }, [user]);
 
   const login = (userData, userToken) => {
     localStorage.setItem("user", JSON.stringify(userData));
@@ -46,19 +65,19 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const value = useMemo(() => ({
-    user,
-    token,
-    isLoggedIn,
-    login,
-    logout
-  }), [user, token, isLoggedIn]);
-
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
+  const value = useMemo(
+    () => ({
+      user,
+      token,
+      isLoggedIn,
+      isAdmin,
+      login,
+      logout,
+    }),
+    [user, token, isLoggedIn, isAdmin],
   );
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
 export const useAuth = () => {
