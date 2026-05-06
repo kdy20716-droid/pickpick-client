@@ -22,6 +22,20 @@ const Menu = () => {
       <Link to="/mypage/mypoll">MY CREATE</Link>
       <Link to="/mypage/contact">CONTACT</Link>
       <Link to="/mypage">MY PAGE</Link>
+      {isAdmin && (
+        <Link
+          to="/admin/manage"
+          style={{
+            color: "#ffa500",
+            fontWeight: "bold",
+            transition: "color 0.3s",
+          }}
+          onMouseOver={(e) => (e.target.style.color = "#ff8c00")}
+          onMouseOut={(e) => (e.target.style.color = "#ffa500")}
+        >
+          MANAGE
+        </Link>
+      )}
       <a
         onClick={(e) => {
           e.preventDefault();

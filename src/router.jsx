@@ -48,6 +48,10 @@ const router = createBrowserRouter([
         element: <VotePage />,
       },
       {
+        path: "/admin/manage",
+        element: <Admin />,
+      },
+      {
         path: "/mypage",
         element: <MyPage />,
         children: [
