@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useCallback, useMemo } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { Link, useLocation } from "react-router-dom";
 import "./VotePage.css";
 import vsLogo from "../assets/vs-logo.svg";
@@ -6,13 +6,13 @@ import favoriteIcon from "../assets/favorite.svg";
 import dislikeIcon from "../assets/thumb_down.svg";
 import commentIcon from "../assets/comment.svg";
 import shareIcon from "../assets/share.svg";
+import filterIcon from "../assets/filter.svg";
 import Comments from "../components/Comments.jsx";
 import { isMainRouteTransition } from "./animations/routeTransitions.js";
 import { useActiveVoteCard } from "./vote/useActiveVoteCard.js";
 import { useActiveVoteHash } from "./vote/useActiveVoteHash.js";
 import { useVotePageScrollSnap } from "./vote/useVotePageScrollSnap.js";
 import { getVoteFeedIdFromHash, getVoteHash } from "./vote/voteCards.js";
-import { Search, X } from "lucide-react";
 import {
   getVote,
   submitVote,
@@ -37,15 +37,6 @@ const tags = [
   "밸런스 게임",
   "밈",
   "기타",
-];
-
-const sortOptions = [
-  { id: "random", label: "랜덤순" },
-  { id: "latest", label: "최신순" },
-  { id: "popular", label: "인기순" },
-  { id: "comments", label: "댓글 많은순" },
-  { id: "name_asc", label: "이름(ㄱ~ㅎ)순" },
-  { id: "name_desc", label: "이름(ㅎ~ㄱ)순" },
 ];
 
 const actionButtons = [
@@ -316,9 +307,9 @@ export default function VotePage() {
   const [copiedCardId, setCopiedCardId] = useState("");
   const [commentCardId, setCommentCardId] = useState("");
   const [selectedTag, setSelectedTag] = useState("전체");
-  const [sortBy, setSortBy] = useState("random");
-  const [searchKeyword, setSearchKeyword] = useState("");
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [sortBy] = useState("random");
+  const [searchKeyword] = useState("");
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
   const pageRef = useRef(null);
   const copyTimeoutRef = useRef(null);
   const { activeCardId, cardRefs, feedRef, registerCardRef } =
@@ -582,6 +573,7 @@ export default function VotePage() {
   };
 
   const handleOpenComments = (cardId) => {
+    setIsFilterOpen(false);
     setCommentCardId(cardId);
   };
 
@@ -599,83 +591,47 @@ export default function VotePage() {
         commentCardId ? " has-comment-modal" : ""
       }`}
     >
-      <button
-        type="button"
-        className="search-toggle-btn"
-        onClick={() => setIsSearchOpen(true)}
-        aria-label="검색 및 필터"
-      >
-        <Search size={24} />
-      </button>
+      {!isFilterOpen && !commentCardId ? (
+        <button
+          type="button"
+          className="vote-action-button vote-filter-toggle action-filter"
+          onClick={() => setIsFilterOpen(true)}
+          aria-label="카테고리 필터 열기"
+        >
+          <img src={filterIcon} alt="" aria-hidden="true" />
+        </button>
+      ) : null}
 
-      {isSearchOpen && (
-        <div className="search-overlay">
-          <div className="search-content">
-            <header className="search-header">
-              <h2>검색 및 필터</h2>
+      {isFilterOpen && !commentCardId ? (
+        <aside className="vote-filter-panel" aria-label="카테고리 필터">
+          <header className="vote-filter-header">
+            <h2>카테고리</h2>
+            <button
+              type="button"
+              className="vote-filter-close"
+              onClick={() => setIsFilterOpen(false)}
+              aria-label="카테고리 필터 닫기"
+            >
+              X
+            </button>
+          </header>
+
+          <div className="vote-filter-list">
+            {tags.map((tag) => (
               <button
-                onClick={() => setIsSearchOpen(false)}
-                className="close-btn"
+                key={tag}
+                type="button"
+                className={`vote-filter-chip${
+                  selectedTag === tag ? " is-active" : ""
+                }`}
+                onClick={() => setSelectedTag(tag)}
               >
-                <X size={24} />
+                {tag}
               </button>
-            </header>
-
-            <div className="search-body">
-              <section className="filter-section">
-                <h3>제목 검색</h3>
-                <div className="search-input-wrapper">
-                  <input
-                    type="text"
-                    placeholder="투표 제목을 입력하세요..."
-                    value={searchKeyword}
-                    onChange={(e) => setSearchKeyword(e.target.value)}
-                  />
-                </div>
-              </section>
-
-              <section className="filter-section">
-                <h3>정렬 기준</h3>
-                <div className="filter-chips">
-                  {sortOptions.map((opt) => (
-                    <button
-                      key={opt.id}
-                      className={sortBy === opt.id ? "active" : ""}
-                      onClick={() => setSortBy(opt.id)}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
-              </section>
-
-              <section className="filter-section">
-                <h3>카테고리</h3>
-                <div className="filter-chips">
-                  {tags.map((tag) => (
-                    <button
-                      key={tag}
-                      className={selectedTag === tag ? "active" : ""}
-                      onClick={() => setSelectedTag(tag)}
-                    >
-                      {tag}
-                    </button>
-                  ))}
-                </div>
-              </section>
-            </div>
-
-            <footer className="search-footer">
-              <button
-                className="apply-btn"
-                onClick={() => setIsSearchOpen(false)}
-              >
-                검색 결과 보기
-              </button>
-            </footer>
+            ))}
           </div>
-        </div>
-      )}
+        </aside>
+      ) : null}
 
       <div className="vote-layout">
         <div ref={feedRef} className="vote-feed">
