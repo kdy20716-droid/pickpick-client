@@ -49,7 +49,7 @@ export default function FindPassword() {
 
     try {
       await instance.post("/users/send-temp-password", { email });
-      alert("인증 코드가 발송되었습니다!");
+      alert("임시 비밀번호가 발송되었습니다!");
     } catch (error) {
       alert("서버 오류 발생: " + (error.response?.data?.message || "발송 실패"));
     }

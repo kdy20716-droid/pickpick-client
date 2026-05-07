@@ -217,7 +217,7 @@ const AccountSettings = () => {
                 <div className="account-info-item">
                   <div>
                     <strong>{text.nickname}</strong>
-                    <span>{currentUser?.name || "-"}</span>
+                    <span>{currentUser?.nickname || "-"}</span>
                   </div>
                 </div>
 
