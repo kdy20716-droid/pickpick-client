@@ -84,7 +84,10 @@ function updateCardActionState(currentActions, cardId, actionId) {
         ...previousState,
         like: nextLike,
         dislike: false,
-        likeCount: Math.max(0, previousState.likeCount + (nextLike ? 1 : -1)),
+        likeCount: Math.max(
+          0,
+          previousState.likeCount + (nextLike ? 1 : -1),
+        ),
       },
     };
   }
@@ -211,10 +214,7 @@ function VoteCard({
                 {candidate.image ? (
                   <img src={candidate.image} alt={candidate.name} />
                 ) : (
-                  <span
-                    className="vote-choice-image-fallback"
-                    aria-hidden="true"
-                  >
+                  <span className="vote-choice-image-fallback" aria-hidden="true">
                     {candidate.name?.slice(0, 1) || "?"}
                   </span>
                 )}
@@ -278,7 +278,6 @@ export default function VotePage() {
   const location = useLocation();
   const entersFromMain = isMainRouteTransition(location.state?.transition);
   const [cards, setCards] = useState([]);
-
   const { user: currentUser, isLoggedIn } = useAuth();
   const userId = currentUser?.id || "guest";
 
@@ -287,10 +286,20 @@ export default function VotePage() {
     const saved = localStorage.getItem(`selectedVotes_${userId}`);
     return saved ? JSON.parse(saved) : {};
   });
+
   const [cardActions, setCardActions] = useState(() => {
     const saved = localStorage.getItem(`cardActions_${userId}`);
     return saved ? JSON.parse(saved) : {};
   });
+
+  // 유저가 바뀌면(로그인/로그아웃) 기록을 다시 로드합니다.
+  useEffect(() => {
+    const savedVotes = localStorage.getItem(`selectedVotes_${userId}`);
+    setSelectedVotes(savedVotes ? JSON.parse(savedVotes) : {});
+
+    const savedActions = localStorage.getItem(`cardActions_${userId}`);
+    setCardActions(savedActions ? JSON.parse(savedActions) : {});
+  }, [userId]);
 
   // 상태가 변경될 때마다 유저별 키로 localStorage에 저장합니다.
   useEffect(() => {
@@ -318,7 +327,7 @@ export default function VotePage() {
   // 조회수 증가 로직
   useEffect(() => {
     if (activeCardId) {
-      const card = cards.find((c) => c.id === activeCardId);
+      const card = cards.find((c) => c.feedId === activeCardId);
       if (card) {
         incrementView(card.id).catch(console.error);
       }
@@ -635,29 +644,27 @@ export default function VotePage() {
 
       <div className="vote-layout">
         <div ref={feedRef} className="vote-feed">
-          {cards.length > 0 ? (
-            cards.map((card) => {
-              const actionState = cardActions[card.feedId];
+          {cards.length > 0 ? cards.map((card) => {
+            const actionState = cardActions[card.feedId];
 
-              return (
-                <VoteCard
-                  key={card.feedId}
-                  card={card}
-                  selectedCandidateId={selectedVotes[card.feedId]}
-                  onSelect={handleVote}
-                  actionState={actionState}
-                  likeCount={actionState?.likeCount ?? 0}
-                  copied={copiedCardId === card.feedId}
-                  onToggleAction={handleToggleAction}
-                  onShare={handleShare}
-                  onOpenComments={handleOpenComments}
-                  isCommentsOpen={commentCardId === card.feedId}
-                  isActive={activeCardId === card.feedId}
-                  registerCardRef={registerCardRef}
-                />
-              );
-            })
-          ) : (
+            return (
+              <VoteCard
+                key={card.feedId}
+                card={card}
+                selectedCandidateId={selectedVotes[card.feedId]}
+                onSelect={handleVote}
+                actionState={actionState}
+                likeCount={actionState?.likeCount ?? 0}
+                copied={copiedCardId === card.feedId}
+                onToggleAction={handleToggleAction}
+                onShare={handleShare}
+                onOpenComments={handleOpenComments}
+                isCommentsOpen={commentCardId === card.feedId}
+                isActive={activeCardId === card.feedId}
+                registerCardRef={registerCardRef}
+              />
+            );
+          }) : (
             <div className="empty-state">검색 결과가 없습니다.</div>
           )}
         </div>
