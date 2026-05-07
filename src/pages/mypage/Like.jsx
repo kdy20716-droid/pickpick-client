@@ -45,18 +45,21 @@ const Like = () => {
 
   return (
     <div className="like-page-container">
-      {/* 상단 검색바 영역 */}
-      <div className={styles.topSearchRow}>
+      {/* 상단 브레드크럼 */}
+      <div className={styles.topSearchRow} style={{ marginBottom: "20px" }}>
         <p className={styles.breadcrumb}>마이페이지 〉 좋아요한 투표</p>
-        <div className={styles.searchBar}>
+      </div>
+
+      {/* 검색바 영역 - Result 페이지와 구조 통일 */}
+      <div className="like-search-section">
+        <div className="like-search-bar">
           <input 
             type="text" 
             placeholder="좋아요한 투표 검색" 
-            className="like-search-input"
             value={searchKeyword}
             onChange={(e) => setSearchKeyword(e.target.value)}
           />
-          <span className={styles.searchIcon}>🔍</span>
+          <span className="like-search-icon">🔍</span>
         </div>
       </div>
 

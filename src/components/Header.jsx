@@ -4,7 +4,7 @@ import accountIcon from "../assets/account-icon.svg";
 import { useAuth } from "../contexts/AuthContext";
 
 const Header = () => {
-  const { isLoggedIn } = useAuth();
+  const { isLoggedIn, user } = useAuth();
 
   return (
     <header className="site-header">
@@ -19,7 +19,15 @@ const Header = () => {
             <Link to="/login">LOG IN</Link>
           ) : (
             <Link to="/mypage" className="account-link" aria-label="계정">
-              <img src={accountIcon} alt="" />
+              {user?.profile_image ? (
+                <img 
+                  src={`http://localhost:4000/uploads/${user.profile_image}`} 
+                  alt="" 
+                  className="profile-img-small" 
+                />
+              ) : (
+                <img src={accountIcon} alt="" />
+              )}
             </Link>
           )}
         </nav>

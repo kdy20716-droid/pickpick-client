@@ -48,6 +48,11 @@
   height: clamp(40px, 6vw, 54px);
 }
 
+.profile-img-small {
+  border-radius: 50%;
+  object-fit: cover;
+}
+
 .header-glow {
   position: absolute;
   top: 100%;

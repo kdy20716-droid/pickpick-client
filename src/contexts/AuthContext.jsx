@@ -52,6 +52,12 @@ export const AuthProvider = ({ children }) => {
     setToken(userToken);
   };
 
+  const updateUser = (userData) => {
+    const updatedUser = { ...user, ...userData };
+    localStorage.setItem("user", JSON.stringify(updatedUser));
+    setUser(updatedUser);
+  };
+
   const logout = async () => {
     try {
       await apiLogout();
@@ -72,6 +78,7 @@ export const AuthProvider = ({ children }) => {
       isLoggedIn,
       isAdmin,
       login,
+      updateUser,
       logout,
     }),
     [user, token, isLoggedIn, isAdmin],

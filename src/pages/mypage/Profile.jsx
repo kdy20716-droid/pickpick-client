@@ -1,17 +1,32 @@
+<<<<<<< HEAD
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
+=======
+import { useState, useEffect, useCallback, useRef } from "react";
+>>>>>>> main
 import styles from "./MyPage.module.css";
 import { useAuth } from "../../contexts/AuthContext";
 import {
   getNotifications,
   markNotificationRead,
   markAllNotificationsRead,
+  updateProfile,
 } from "../../api/users";
+import ImageCropper from "../../components/ImageCropper";
 
 const Profile = () => {
   const [notifications, setNotifications] = useState([]);
+<<<<<<< HEAD
   const { user: currentUser } = useAuth();
   const navigate = useNavigate();
+=======
+  const { user: currentUser, updateUser } = useAuth();
+  
+  // 프로필 이미지 관련 상태
+  const fileInputRef = useRef(null);
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [isCropping, setIsCropping] = useState(false);
+>>>>>>> main
 
   const fetchNotifications = useCallback(async () => {
     if (!currentUser) return;
@@ -52,6 +67,47 @@ const Profile = () => {
     }
   };
 
+  // 이미지 선택 핸들러
+  const handleImageClick = () => {
+    fileInputRef.current.click();
+  };
+
+  const onSelectFile = (e) => {
+    if (e.target.files && e.target.files.length > 0) {
+      const reader = new FileReader();
+      reader.addEventListener("load", () => {
+        setSelectedImage(reader.result);
+        setIsCropping(true);
+      });
+      reader.readAsDataURL(e.target.files[0]);
+    }
+  };
+
+  // 크롭 완료 핸들러
+  const handleCropComplete = async (croppedBlob) => {
+    setIsCropping(false);
+    setSelectedImage(null);
+    
+    try {
+      const formData = new FormData();
+      formData.append("profile_image", croppedBlob, "profile.jpg");
+      
+      const res = await updateProfile(currentUser.id, formData);
+      if (res.success) {
+        updateUser(res.user);
+        alert("프로필 사진이 변경되었습니다.");
+      }
+    } catch (error) {
+      console.error("프로필 이미지 업로드 실패:", error);
+      alert("프로필 사진 변경에 실패했습니다.");
+    }
+  };
+
+  const handleCropCancel = () => {
+    setIsCropping(false);
+    setSelectedImage(null);
+  };
+
   return (
     <>
       <div className={styles.topSearchRow}>
@@ -65,13 +121,32 @@ const Profile = () => {
       <section className={styles.contentBody}>
         <div className={styles.leftPanel}>
           <div className={styles.profileHeader}>
-            <div className={`${styles.card} ${styles.profileImgCard}`}>
+            <div 
+              className={`${styles.card} ${styles.profileImgCard}`}
+              onClick={handleImageClick}
+              style={{ cursor: "pointer" }}
+            >
               <div className={styles.circleBig}>
-                <div className={styles.silhouette}></div>
+                {currentUser?.profile_image ? (
+                  <img 
+                    src={`http://localhost:4000/uploads/${currentUser.profile_image}`} 
+                    alt="Profile" 
+                    style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                  />
+                ) : (
+                  <div className={styles.silhouette}></div>
+                )}
               </div>
               <div className={styles.camIconWrapper}>
                 <div className={styles.camIcon}>📷</div>
               </div>
+              <input 
+                type="file" 
+                ref={fileInputRef} 
+                onChange={onSelectFile} 
+                accept="image/*" 
+                style={{ display: "none" }}
+              />
             </div>
             <div className={`${styles.card} ${styles.nicknameCard}`}>
               <div className={styles.lvBadge}>
@@ -136,6 +211,14 @@ const Profile = () => {
           </div>
         </div>
       </section>
+
+      {isCropping && (
+        <ImageCropper 
+          image={selectedImage} 
+          onCropComplete={handleCropComplete} 
+          onCancel={handleCropCancel}
+        />
+      )}
     </>
   );
 };
