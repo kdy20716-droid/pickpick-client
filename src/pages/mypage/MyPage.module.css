@@ -31,7 +31,8 @@
   overflow: hidden;
 }
 
-.navLinks a {
+.navLinks a,
+.navLinks button {
   display: block;
   color: #bbb;
   font-weight: bold;
@@ -43,6 +44,15 @@
 
 .navLinks a.active {
   color: #777;
+}
+
+.navLinks button {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
 }
 
 .sidebarUserWrapper {
