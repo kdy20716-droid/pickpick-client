@@ -84,10 +84,7 @@ function updateCardActionState(currentActions, cardId, actionId) {
         ...previousState,
         like: nextLike,
         dislike: false,
-        likeCount: Math.max(
-          0,
-          previousState.likeCount + (nextLike ? 1 : -1),
-        ),
+        likeCount: Math.max(0, previousState.likeCount + (nextLike ? 1 : -1)),
       },
     };
   }
@@ -214,7 +211,10 @@ function VoteCard({
                 {candidate.image ? (
                   <img src={candidate.image} alt={candidate.name} />
                 ) : (
-                  <span className="vote-choice-image-fallback" aria-hidden="true">
+                  <span
+                    className="vote-choice-image-fallback"
+                    aria-hidden="true"
+                  >
                     {candidate.name?.slice(0, 1) || "?"}
                   </span>
                 )}
@@ -286,7 +286,6 @@ export default function VotePage() {
     const saved = localStorage.getItem(`selectedVotes_${userId}`);
     return saved ? JSON.parse(saved) : {};
   });
-
   const [cardActions, setCardActions] = useState(() => {
     const saved = localStorage.getItem(`cardActions_${userId}`);
     return saved ? JSON.parse(saved) : {};
@@ -644,27 +643,29 @@ export default function VotePage() {
 
       <div className="vote-layout">
         <div ref={feedRef} className="vote-feed">
-          {cards.length > 0 ? cards.map((card) => {
-            const actionState = cardActions[card.feedId];
+          {cards.length > 0 ? (
+            cards.map((card) => {
+              const actionState = cardActions[card.feedId];
 
-            return (
-              <VoteCard
-                key={card.feedId}
-                card={card}
-                selectedCandidateId={selectedVotes[card.feedId]}
-                onSelect={handleVote}
-                actionState={actionState}
-                likeCount={actionState?.likeCount ?? 0}
-                copied={copiedCardId === card.feedId}
-                onToggleAction={handleToggleAction}
-                onShare={handleShare}
-                onOpenComments={handleOpenComments}
-                isCommentsOpen={commentCardId === card.feedId}
-                isActive={activeCardId === card.feedId}
-                registerCardRef={registerCardRef}
-              />
-            );
-          }) : (
+              return (
+                <VoteCard
+                  key={card.feedId}
+                  card={card}
+                  selectedCandidateId={selectedVotes[card.feedId]}
+                  onSelect={handleVote}
+                  actionState={actionState}
+                  likeCount={actionState?.likeCount ?? 0}
+                  copied={copiedCardId === card.feedId}
+                  onToggleAction={handleToggleAction}
+                  onShare={handleShare}
+                  onOpenComments={handleOpenComments}
+                  isCommentsOpen={commentCardId === card.feedId}
+                  isActive={activeCardId === card.feedId}
+                  registerCardRef={registerCardRef}
+                />
+              );
+            })
+          ) : (
             <div className="empty-state">검색 결과가 없습니다.</div>
           )}
         </div>
