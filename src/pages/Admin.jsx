@@ -26,6 +26,18 @@ const Admin = () => {
     }
   }, [currentUser, navigate]);
 
+  // 401 에러 공통 처리 함수
+  const handleAuthError = (error) => {
+    if (error.response && error.response.status === 401) {
+      alert("세션이 만료되었거나 권한이 없습니다. 다시 로그인해주세요.");
+      localStorage.removeItem("user");
+      localStorage.removeItem("token");
+      navigate("/login");
+      return true;
+    }
+    return false;
+  };
+
   // 투표 검색
   const handleSearchVotes = async (e) => {
     e.preventDefault();
@@ -45,7 +57,9 @@ const Admin = () => {
       setSelectedVoteId(null);
     } catch (error) {
       console.error("검색 에러:", error);
-      alert(error.response?.data?.message || "검색 중 에러가 발생했습니다.");
+      if (!handleAuthError(error)) {
+        alert(error.response?.data?.message || "검색 중 에러가 발생했습니다.");
+      }
     } finally {
       setLoading(false);
     }
@@ -63,7 +77,9 @@ const Admin = () => {
       setSelectedVoteId(null);
     } catch (error) {
       console.error("투표 조회 에러:", error);
-      alert("투표 조회 중 에러가 발생했습니다.");
+      if (!handleAuthError(error)) {
+        alert("투표 조회 중 에러가 발생했습니다.");
+      }
     } finally {
       setLoading(false);
     }
@@ -83,7 +99,9 @@ const Admin = () => {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (error) {
       console.error("댓글 조회 에러:", error);
-      alert("댓글 조회 중 에러가 발생했습니다.");
+      if (!handleAuthError(error)) {
+        alert("댓글 조회 중 에러가 발생했습니다.");
+      }
     } finally {
       setLoading(false);
     }

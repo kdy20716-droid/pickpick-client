@@ -382,6 +382,7 @@
 .delete-comment-btn {
   display: block;
   margin-left: auto;
+  width: fit-content;
   background: transparent;
   color: #ff6b5b;
   border: 2px solid #ff6b5b;
