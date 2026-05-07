@@ -21,6 +21,7 @@ const Menu = () => {
       <Link to="/mypage/like">LIKE</Link>
       <Link to="/mypage/mypoll">MY CREATE</Link>
       <Link to="/mypage/contact">CONTACT</Link>
+<<<<<<< HEAD
       <Link to="/mypage">MY PAGE</Link>
       {isAdmin && (
         <Link
@@ -51,6 +52,14 @@ const Menu = () => {
       >
         LOGOUT
       </a>
+=======
+      <Link to="/mypage" className="active">
+        MY PAGE
+      </Link>
+      <Link to="/mypage" className="active">
+        LOGOUT
+      </Link>
+>>>>>>> origin/seoyoun
     </nav>
   );
 };
