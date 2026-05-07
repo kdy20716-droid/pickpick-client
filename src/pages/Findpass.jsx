@@ -10,7 +10,7 @@ export default function FindPassword() {
   const [code, setCode] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  
+
   const [isValid, setIsValid] = useState(false);
   const [msg, setMsg] = useState("");
   const [isSuccessMsg, setIsSuccessMsg] = useState(false);
@@ -54,7 +54,9 @@ export default function FindPassword() {
     if (!isValid) return;
 
     try {
-      const response = await instance.post("/users/send-temp-password", { email });
+      const response = await instance.post("/users/send-temp-password", {
+        email,
+      });
       setServerCode(response.data.code);
       setPhase(2);
       setIsSuccessMsg(true);
@@ -91,8 +93,10 @@ export default function FindPassword() {
     try {
       await instance.post("/users/reset-password", { email, newPassword });
       setIsSuccessMsg(true);
-      setMsg("비밀번호가 성공적으로 변경되었습니다! 잠시 후 로그인 페이지로 이동합니다.");
-      
+      setMsg(
+        "비밀번호가 성공적으로 변경되었습니다! 잠시 후 로그인 페이지로 이동합니다.",
+      );
+
       // 사용자가 메시지를 볼 수 있도록 2초 후 이동
       setTimeout(() => {
         navigate("/login");
@@ -108,10 +112,14 @@ export default function FindPassword() {
       <div className="findpass-container">
         <div className="findpass-card">
           <h2>비밀번호 찾기</h2>
-          
+
           {phase === 1 && (
             <>
-              <p>가입하신 이메일 주소를 입력해 주세요.<br/>인증 코드를 발송해 드립니다.</p>
+              <p>
+                가입하신 이메일 주소를 입력해 주세요.
+                <br />
+                인증 코드를 발송해 드립니다.
+              </p>
               <input
                 type="text"
                 placeholder="이메일 주소 입력"
@@ -119,7 +127,9 @@ export default function FindPassword() {
                 onChange={handleEmailChange}
               />
               <div className="findpass-buttons">
-                <button className="back" onClick={() => navigate(-1)}>뒤로 가기</button>
+                <button className="back" onClick={() => navigate(-1)}>
+                  뒤로 가기
+                </button>
                 <button
                   className={`submit ${isValid ? "active" : ""}`}
                   disabled={!isValid}
@@ -142,7 +152,9 @@ export default function FindPassword() {
                 maxLength={6}
               />
               <div className="findpass-buttons">
-                <button className="back" onClick={() => setPhase(1)}>이메일 재입력</button>
+                <button className="back" onClick={() => setPhase(1)}>
+                  이메일 재입력
+                </button>
                 <button
                   className={`submit ${code.length === 6 ? "active" : ""}`}
                   disabled={code.length !== 6}
@@ -170,7 +182,9 @@ export default function FindPassword() {
                 onChange={(e) => setConfirmPassword(e.target.value)}
               />
               <div className="findpass-buttons">
-                <button className="back" onClick={() => navigate(-1)}>취소</button>
+                <button className="back" onClick={() => navigate(-1)}>
+                  취소
+                </button>
                 <button
                   className={`submit ${newPassword && confirmPassword ? "active" : ""}`}
                   disabled={!newPassword || !confirmPassword}
@@ -182,7 +196,9 @@ export default function FindPassword() {
             </>
           )}
 
-          <small className={isSuccessMsg ? "findpass-success" : "findpass-error"}>
+          <small
+            className={isSuccessMsg ? "findpass-success" : "findpass-error"}
+          >
             {msg}
           </small>
         </div>
