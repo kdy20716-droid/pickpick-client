@@ -1,6 +1,6 @@
 .like-page-container {
   width: 100%;
-  padding: 0 20px 40px 0;
+  padding: 0 0 40px 0;
   font-family: "Pretendard", sans-serif;
 }
 
@@ -12,6 +12,56 @@
   font-weight: 500;
 }
 
+/* 상단 검색바 영역 - Result 페이지와 동일하게 중앙 정렬 */
+.like-search-section {
+  margin-bottom: 30px;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.like-search-bar {
+  position: relative;
+  width: 100%;
+  max-width: 700px;
+}
+
+.like-search-bar input {
+  width: 100%;
+  padding: 14px 25px;
+  border-radius: 40px;
+  border: none;
+  background: #fff;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.04);
+  outline: none;
+}
+
+.like-search-icon {
+  position: absolute;
+  right: 25px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #f1a0c0;
+  font-size: 20px;
+}
+
+.like-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* 내부 요소들 중앙 정렬 */
+  width: 100%;
+}
+
+/* 본문 안내 텍스트 */
+.description-text {
+  color: #bbb;
+  font-size: 14px;
+  margin-bottom: 25px;
+  font-weight: 500;
+  text-align: center;
+  width: 100%;
+}
+
 /* 리스트 스타일 */
 .like-list {
   display: flex;
@@ -21,6 +71,9 @@
   border-radius: 35px;
   padding: 40px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+  max-width: 1100px; /* Result 카드와 동일한 너비 */
+  width: 100%;
+  margin: 0 auto;
 }
 
 .like-item-row {
