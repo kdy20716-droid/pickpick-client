@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useState } from "react";
 import "./Default.css";
 import { Eye, EyeOff } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -8,10 +8,6 @@ import instance from "../../api/instance";
 const TEXT = {
   한국어: {
     breadcrumb: "마이페이지 > 내 프로필 > 계정 설정",
-    profileAlt: "프로필",
-    editPhoto: "프로필 편집",
-    selectLibrary: "라이브러리에서 선택",
-    resetImage: "기본 이미지로 변경",
     nickname: "닉네임",
     currentEmail: "현재 이메일",
     currentPassword: "현재 비밀번호",
@@ -27,10 +23,6 @@ const TEXT = {
     likeNotifications: "좋아요 알림",
     likeNotificationsDesc: "내 게시글이나 댓글에 반응이 있을 때",
     save: "저장",
-    profileVisibility: "프로필 공개 범위",
-    profileVisibilityDesc: "내 활동과 프로필 표시 방식 설정",
-    public: "공개",
-    private: "비공개",
     security: "보안",
     securityDesc: "로그인 기록과 계정 보호 설정",
     check: "확인",
@@ -66,18 +58,32 @@ const TEXT = {
     faq: "FAQ",
     faqDesc: "자주 묻는 질문 확인",
     faqItems: [
-      ["비밀번호를 잊어버렸어요.", "로그인 화면의 비밀번호 찾기에서 임시 비밀번호를 받을 수 있습니다."],
-      ["프로필 사진은 저장되나요?", "현재 화면에서는 미리보기만 제공되며, 저장 기능은 추후 연결 예정입니다."],
-      ["알림 설정은 어디서 바꾸나요?", "알림 설정의 관리 버튼을 눌러 댓글, 답글, 좋아요 알림을 조정할 수 있습니다."],
+      [
+        "비밀번호를 잊어버렸어요.",
+        "로그인 화면의 비밀번호 찾기에서 임시 비밀번호를 받을 수 있습니다.",
+      ],
+      [
+        "알림 설정은 어디서 바꾸나요?",
+        "알림 설정의 관리 버튼을 눌러 댓글, 답글, 좋아요 알림을 조정할 수 있습니다.",
+      ],
     ],
     versionInfo: "버전 정보",
     versionInfoDesc: "PickPick v1.0.0",
     termsPrivacy: "이용약관/개인정보처리방침",
     termsPrivacyDesc: "서비스 약관과 개인정보 처리 기준",
     termsPrivacyItems: [
-      ["이용약관", "PickPick은 원활한 서비스 이용을 위해 기본적인 계정 정보와 이용 기록을 관리합니다."],
-      ["개인정보처리방침", "이메일, 닉네임 등 필요한 정보만 서비스 제공 목적으로 사용합니다."],
-      ["보관 및 삭제", "회원 탈퇴 시 관련 법령에 따라 필요한 정보를 제외하고 계정 정보가 삭제됩니다."],
+      [
+        "이용약관",
+        "PickPick은 원활한 서비스 이용을 위해 기본적인 계정 정보와 이용 기록을 관리합니다.",
+      ],
+      [
+        "개인정보처리방침",
+        "이메일, 닉네임 등 필요한 정보만 서비스 제공 목적으로 사용합니다.",
+      ],
+      [
+        "보관 및 삭제",
+        "회원 탈퇴 시 관련 법령에 따라 필요한 정보를 제외하고 계정 정보가 삭제됩니다.",
+      ],
     ],
     open: "보기",
     logout: "로그아웃",
@@ -93,10 +99,6 @@ const TEXT = {
   },
   English: {
     breadcrumb: "My Page > Profile > Account Settings",
-    profileAlt: "Profile",
-    editPhoto: "Edit Profile",
-    selectLibrary: "Choose from Library",
-    resetImage: "Use Default Image",
     nickname: "Nickname",
     currentEmail: "Current Email",
     currentPassword: "Current Password",
@@ -112,10 +114,6 @@ const TEXT = {
     likeNotifications: "Like Alerts",
     likeNotificationsDesc: "When someone reacts to my post or comment",
     save: "Save",
-    profileVisibility: "Profile Visibility",
-    profileVisibilityDesc: "Control how your profile and activity appear",
-    public: "Public",
-    private: "Private",
     security: "Security",
     securityDesc: "Review login history and account protection",
     check: "Check",
@@ -151,18 +149,32 @@ const TEXT = {
     faq: "FAQ",
     faqDesc: "View frequently asked questions",
     faqItems: [
-      ["I forgot my password.", "Use Find Password on the login page to receive a temporary password."],
-      ["Is my profile photo saved?", "This page currently provides preview only. Saving will be connected later."],
-      ["Where can I change notifications?", "Open Manage under Notifications to adjust comment, reply, and like alerts."],
+      [
+        "I forgot my password.",
+        "Use Find Password on the login page to receive a temporary password.",
+      ],
+      [
+        "Where can I change notifications?",
+        "Open Manage under Notifications to adjust comment, reply, and like alerts.",
+      ],
     ],
     versionInfo: "Version Info",
     versionInfoDesc: "PickPick v1.0.0",
     termsPrivacy: "Terms / Privacy Policy",
     termsPrivacyDesc: "Service terms and privacy standards",
     termsPrivacyItems: [
-      ["Terms of Use", "PickPick manages basic account information and usage records for stable service use."],
-      ["Privacy Policy", "Only required information such as email and nickname is used to provide the service."],
-      ["Retention and Deletion", "When you delete your account, account data is removed except where legally required."],
+      [
+        "Terms of Use",
+        "PickPick manages basic account information and usage records for stable service use.",
+      ],
+      [
+        "Privacy Policy",
+        "Only required information such as email and nickname is used to provide the service.",
+      ],
+      [
+        "Retention and Deletion",
+        "When you delete your account, account data is removed except where legally required.",
+      ],
     ],
     open: "Open",
     logout: "Log Out",
@@ -178,10 +190,6 @@ const TEXT = {
   },
   일본어: {
     breadcrumb: "マイページ > プロフィール > アカウント設定",
-    profileAlt: "プロフィール",
-    editPhoto: "プロフィール編集",
-    selectLibrary: "ライブラリから選択",
-    resetImage: "基本画像に変更",
     nickname: "ニックネーム",
     currentEmail: "現在のメール",
     currentPassword: "現在のパスワード",
@@ -197,10 +205,6 @@ const TEXT = {
     likeNotifications: "いいね通知",
     likeNotificationsDesc: "投稿やコメントに反応があったとき",
     save: "保存",
-    profileVisibility: "プロフィール公開範囲",
-    profileVisibilityDesc: "活動とプロフィールの表示方法を設定",
-    public: "公開",
-    private: "非公開",
     security: "セキュリティ",
     securityDesc: "ログイン履歴とアカウント保護設定",
     check: "確認",
@@ -236,18 +240,32 @@ const TEXT = {
     faq: "FAQ",
     faqDesc: "よくある質問を確認",
     faqItems: [
-      ["パスワードを忘れました。", "ログイン画面のパスワード検索から一時パスワードを受け取れます。"],
-      ["プロフィール写真は保存されますか？", "現在はプレビューのみ提供され、保存機能は今後接続予定です。"],
-      ["通知設定はどこで変更できますか？", "通知設定の管理ボタンからコメント、返信、いいね通知を調整できます。"],
+      [
+        "パスワードを忘れました。",
+        "ログイン画面のパスワード検索から一時パスワードを受け取れます。",
+      ],
+      [
+        "通知設定はどこで変更できますか？",
+        "通知設定の管理ボタンからコメント、返信、いいね通知を調整できます。",
+      ],
     ],
     versionInfo: "バージョン情報",
     versionInfoDesc: "PickPick v1.0.0",
     termsPrivacy: "利用規約/個人情報処理方針",
     termsPrivacyDesc: "サービス規約と個人情報の基準",
     termsPrivacyItems: [
-      ["利用規約", "PickPickは円滑なサービス利用のため、基本的なアカウント情報と利用記録を管理します。"],
-      ["個人情報処理方針", "メール、ニックネームなど必要な情報のみサービス提供目的で使用します。"],
-      ["保管および削除", "退会時、法令上必要な情報を除きアカウント情報は削除されます。"],
+      [
+        "利用規約",
+        "PickPickは円滑なサービス利用のため、基本的なアカウント情報と利用記録を管理します。",
+      ],
+      [
+        "個人情報処理方針",
+        "メール、ニックネームなど必要な情報のみサービス提供目的で使用します。",
+      ],
+      [
+        "保管および削除",
+        "退会時、法令上必要な情報を除きアカウント情報は削除されます。",
+      ],
     ],
     open: "見る",
     logout: "ログアウト",
@@ -266,9 +284,6 @@ const TEXT = {
 const AccountSettings = () => {
   const navigate = useNavigate();
   const { user: currentUser, logout } = useAuth();
-  const fileInputRef = useRef(null);
-  const [isPhotoMenuOpen, setIsPhotoMenuOpen] = useState(false);
-  const [profileImage, setProfileImage] = useState(null);
   const [isCurrentPasswordVisible, setIsCurrentPasswordVisible] =
     useState(false);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
@@ -277,7 +292,6 @@ const AccountSettings = () => {
     replies: true,
     likes: true,
   });
-  const [isProfilePublic, setIsProfilePublic] = useState(true);
   const [isSecurityOpen, setIsSecurityOpen] = useState(false);
   const [passwordForm, setPasswordForm] = useState({
     currentPassword: "",
@@ -325,23 +339,6 @@ const AccountSettings = () => {
       console.error("회원 탈퇴 중 오류:", error);
       alert(error.response?.data?.message || text.deleteFail);
     }
-  };
-
-  const handleSelectFromLibrary = () => {
-    fileInputRef.current?.click();
-  };
-
-  const handleProfileImageChange = (event) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    setProfileImage(URL.createObjectURL(file));
-    setIsPhotoMenuOpen(false);
-  };
-
-  const handleResetProfileImage = () => {
-    setProfileImage(null);
-    setIsPhotoMenuOpen(false);
   };
 
   const handleToggleNotification = (key) => {
@@ -413,47 +410,6 @@ const AccountSettings = () => {
 
       <div className={`profile-card font-${displaySettings.fontSize}`}>
         <div className="card-content">
-          {/* 왼쪽: 프로필 사진 영역 */}
-          <div className="profile-image-section">
-            <div className="image-circle">
-              {profileImage ? (
-                <img
-                  src={profileImage}
-                  alt={text.profileAlt}
-                  className="profile-preview"
-                />
-              ) : (
-                <div className="avatar-placeholder"></div>
-              )}
-            </div>
-            <div className="image-buttons">
-              <button
-                type="button"
-                className="btn-sub"
-                onClick={() => setIsPhotoMenuOpen((prev) => !prev)}
-              >
-                {text.editPhoto}
-              </button>
-            </div>
-            {isPhotoMenuOpen && (
-              <div className="photo-menu">
-                <button type="button" onClick={handleSelectFromLibrary}>
-                  {text.selectLibrary}
-                </button>
-                <button type="button" onClick={handleResetProfileImage}>
-                  {text.resetImage}
-                </button>
-              </div>
-            )}
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              className="photo-file-input"
-              onChange={handleProfileImageChange}
-            />
-          </div>
-
           <div className="profile-form">
             <div className="form-grid">
               <div className="account-info-list">
@@ -483,9 +439,7 @@ const AccountSettings = () => {
                   <button
                     type="button"
                     className="password-eye-btn"
-                    onClick={() =>
-                      setIsCurrentPasswordVisible((prev) => !prev)
-                    }
+                    onClick={() => setIsCurrentPasswordVisible((prev) => !prev)}
                     aria-label={text.currentPassword}
                   >
                     {isCurrentPasswordVisible ? (
@@ -558,19 +512,6 @@ const AccountSettings = () => {
                     </button>
                   </div>
                 )}
-
-                <div className="settings-menu-item">
-                  <div>
-                    <strong>{text.profileVisibility}</strong>
-                    <span>{text.profileVisibilityDesc}</span>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => setIsProfilePublic((prev) => !prev)}
-                  >
-                    {isProfilePublic ? text.public : text.private}
-                  </button>
-                </div>
 
                 <div className="settings-menu-item">
                   <div>
