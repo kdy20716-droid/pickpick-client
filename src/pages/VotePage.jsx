@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import "./VotePage.css";
 import vsLogo from "../assets/vs-logo.svg";
@@ -327,78 +327,6 @@ export default function VotePage() {
   const { activeCardId, cardRefs, feedRef, registerCardRef } =
     useActiveVoteCard(cards);
 
-  useLayoutEffect(() => {
-    const page = pageRef.current;
-    const feed = feedRef.current;
-    if (!page) {
-      return undefined;
-    }
-
-    let frameId = 0;
-
-    const getActiveVoteSheet = () => {
-      const targetCard = activeCardId
-        ? document.getElementById(activeCardId)
-        : null;
-
-      return (
-        targetCard?.querySelector(".vote-sheet") ??
-        document.querySelector(".vote-feed-item.is-active .vote-sheet") ??
-        document.querySelector(".vote-sheet")
-      );
-    };
-
-    const syncFilterPosition = () => {
-      const voteSheet = getActiveVoteSheet();
-      if (!voteSheet) {
-        return;
-      }
-
-      const sheetRect = voteSheet.getBoundingClientRect();
-      const filterTop = sheetRect.top;
-      const panelGap = 25;
-      const buttonSize = 64;
-      const brandRect = document
-        .querySelector(".brand")
-        ?.getBoundingClientRect();
-      const panelRight = sheetRect.left - panelGap;
-      const panelLeft = Math.max(12, Math.round(brandRect?.left ?? 70));
-      const panelWidth = Math.max(150, panelRight - panelLeft);
-      const buttonLeft = Math.max(12, sheetRect.left - panelGap - buttonSize - 4);
-
-      page.style.setProperty("--vote-filter-panel-left", `${panelLeft}px`);
-      page.style.setProperty("--vote-filter-panel-width", `${panelWidth}px`);
-      page.style.setProperty("--vote-filter-panel-top", `${filterTop}px`);
-      page.style.setProperty(
-        "--vote-filter-panel-height",
-        `${sheetRect.height}px`,
-      );
-      page.style.setProperty("--vote-filter-button-left", `${buttonLeft}px`);
-      page.style.setProperty("--vote-filter-button-top", `${filterTop}px`);
-    };
-
-    const scheduleSync = () => {
-      if (frameId) {
-        cancelAnimationFrame(frameId);
-      }
-
-      frameId = requestAnimationFrame(syncFilterPosition);
-    };
-
-    syncFilterPosition();
-    window.addEventListener("resize", scheduleSync);
-    feed?.addEventListener("scroll", scheduleSync, { passive: true });
-
-    return () => {
-      if (frameId) {
-        cancelAnimationFrame(frameId);
-      }
-
-      window.removeEventListener("resize", scheduleSync);
-      feed?.removeEventListener("scroll", scheduleSync);
-    };
-  }, [activeCardId, cards.length, feedRef]);
-
   // 조회수 증가 로직
   useEffect(() => {
     if (activeCardId) {
@@ -613,7 +541,7 @@ export default function VotePage() {
         commentCardId ? " has-comment-modal" : ""
       }`}
     >
-      {!isFilterOpen ? (
+      {!isFilterOpen && !commentCardId ? (
         <button
           type="button"
           className="vote-action-button vote-filter-toggle action-filter"
@@ -624,7 +552,7 @@ export default function VotePage() {
         </button>
       ) : null}
 
-      {isFilterOpen ? (
+      {isFilterOpen && !commentCardId ? (
         <aside className="vote-filter-panel" aria-label="카테고리 필터">
           <header className="vote-filter-header">
             <h2>카테고리</h2>
