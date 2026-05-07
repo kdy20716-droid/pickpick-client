@@ -380,14 +380,16 @@
 }
 
 .delete-comment-btn {
+  display: block;
+  margin-left: auto;
   background: transparent;
   color: #ff6b5b;
   border: 2px solid #ff6b5b;
-  padding: 8px 14px;
-  border-radius: 8px;
+  padding: 6px 12px;
+  border-radius: 6px;
   cursor: pointer;
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   transition: all 0.2s;
 }
 

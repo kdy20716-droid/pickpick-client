@@ -79,6 +79,8 @@ const Admin = () => {
         headers: { Authorization: `Bearer ${token}` }
       });
       setComments(response.data.comments);
+      setActiveTab('comments');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (error) {
       console.error("댓글 조회 에러:", error);
       alert("댓글 조회 중 에러가 발생했습니다.");
