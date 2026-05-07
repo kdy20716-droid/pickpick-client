@@ -1,9 +1,5 @@
-<<<<<<< HEAD
-import { useState, useEffect, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
-=======
 import { useState, useEffect, useCallback, useRef } from "react";
->>>>>>> main
+import { useNavigate } from "react-router-dom";
 import styles from "./MyPage.module.css";
 import { useAuth } from "../../contexts/AuthContext";
 import {
@@ -16,17 +12,13 @@ import ImageCropper from "../../components/ImageCropper";
 
 const Profile = () => {
   const [notifications, setNotifications] = useState([]);
-<<<<<<< HEAD
-  const { user: currentUser } = useAuth();
-  const navigate = useNavigate();
-=======
   const { user: currentUser, updateUser } = useAuth();
+  const navigate = useNavigate();
   
   // 프로필 이미지 관련 상태
   const fileInputRef = useRef(null);
   const [selectedImage, setSelectedImage] = useState(null);
   const [isCropping, setIsCropping] = useState(false);
->>>>>>> main
 
   const fetchNotifications = useCallback(async () => {
     if (!currentUser) return;
