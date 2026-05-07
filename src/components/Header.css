@@ -1,7 +1,7 @@
 .site-header {
   position: sticky;
   top: 0;
-  z-index: 10;
+  z-index: 120;
   height: clamp(68px, 8vw, 80px);
   background: var(--bg);
 }
