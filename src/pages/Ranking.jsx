@@ -15,22 +15,59 @@ function Ranking() {
     const fetchRanking = async () => {
       try {
         const data = await getRanking();
-        
+
         // 데이터 포맷팅
         const formatted = data.map((item) => ({
           id: item.id,
           title: item.title,
-          topImage: item.candidate_a_image ? `http://localhost:4000/uploads/${item.candidate_a_image}` : null,
-          bottomImage: item.candidate_b_image ? `http://localhost:4000/uploads/${item.candidate_b_image}` : null,
-          leftImage: item.candidate_a_image ? `http://localhost:4000/uploads/${item.candidate_a_image}` : null,
-          rightImage: item.candidate_b_image ? `http://localhost:4000/uploads/${item.candidate_b_image}` : null,
+          topImage: item.candidate_a_image
+            ? item.candidate_a_image?.startsWith("http")
+              ? item.candidate_a_image
+              : `http://localhost:4000/uploads/${item.candidate_a_image}`
+            : null,
+          bottomImage: item.candidate_b_image
+            ? item.candidate_b_image?.startsWith("http")
+              ? item.candidate_b_image
+              : `http://localhost:4000/uploads/${item.candidate_b_image}`
+            : null,
+          leftImage: item.candidate_a_image
+            ? item.candidate_a_image?.startsWith("http")
+              ? item.candidate_a_image
+              : `http://localhost:4000/uploads/${item.candidate_a_image}`
+            : null,
+          rightImage: item.candidate_b_image
+            ? item.candidate_b_image?.startsWith("http")
+              ? item.candidate_b_image
+              : `http://localhost:4000/uploads/${item.candidate_b_image}`
+            : null,
         }));
 
         // 1, 2, 3위 분리 (순서: 2위, 1위, 3위로 화면에 배치됨)
         const top3 = [];
-        if (formatted.length >= 2) top3.push({ ...formatted[1], rankClass: "second", medal: silverMedal, medalAlt: "silver medal", isBig: false });
-        if (formatted.length >= 1) top3.push({ ...formatted[0], rankClass: "first", medal: goldMedal, medalAlt: "gold medal", isBig: true });
-        if (formatted.length >= 3) top3.push({ ...formatted[2], rankClass: "third", medal: bronzeMedal, medalAlt: "bronze medal", isBig: false });
+        if (formatted.length >= 2)
+          top3.push({
+            ...formatted[1],
+            rankClass: "second",
+            medal: silverMedal,
+            medalAlt: "silver medal",
+            isBig: false,
+          });
+        if (formatted.length >= 1)
+          top3.push({
+            ...formatted[0],
+            rankClass: "first",
+            medal: goldMedal,
+            medalAlt: "gold medal",
+            isBig: true,
+          });
+        if (formatted.length >= 3)
+          top3.push({
+            ...formatted[2],
+            rankClass: "third",
+            medal: bronzeMedal,
+            medalAlt: "bronze medal",
+            isBig: false,
+          });
 
         setTopRankings(top3);
         setRankingItems(formatted.slice(3));
@@ -44,7 +81,12 @@ function Ranking() {
     fetchRanking();
   }, []);
 
-  if (loading) return <div style={{ textAlign: "center", padding: "100px", color: "white" }}>랭킹 로딩 중...</div>;
+  if (loading)
+    return (
+      <div style={{ textAlign: "center", padding: "100px", color: "white" }}>
+        랭킹 로딩 중...
+      </div>
+    );
 
   return (
     <>
@@ -86,9 +128,13 @@ function Ranking() {
               <div className="num">{index + 4}</div>
 
               <div className="vs-row">
-                {item.leftImage && <img src={item.leftImage} alt="candidate A" />}
+                {item.leftImage && (
+                  <img src={item.leftImage} alt="candidate A" />
+                )}
                 <img src={vsImage} className="vs-small" alt="vs" />
-                {item.rightImage && <img src={item.rightImage} alt="candidate B" />}
+                {item.rightImage && (
+                  <img src={item.rightImage} alt="candidate B" />
+                )}
               </div>
 
               <div className="title">{item.title}</div>

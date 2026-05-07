@@ -44,7 +44,7 @@ function CommentItem({
       <div className="comment-avatar" aria-hidden="true">
         {comment.author_image ? (
           <img 
-            src={`http://localhost:4000/uploads/${comment.author_image}`} 
+            src={(comment.author_image?.startsWith('http') ? comment.author_image : `http://localhost:4000/uploads/${comment.author_image}`)} 
             alt="" 
             style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }}
           />
@@ -99,7 +99,7 @@ function CommentItem({
               <div className="comment-avatar comment-avatar-small" aria-hidden="true">
                 {currentUser?.profile_image ? (
                   <img 
-                    src={`http://localhost:4000/uploads/${currentUser.profile_image}`} 
+                    src={(currentUser.profile_image?.startsWith('http') ? currentUser.profile_image : `http://localhost:4000/uploads/${currentUser.profile_image}`)} 
                     alt="" 
                     style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }}
                   />
@@ -484,7 +484,7 @@ export default function Comments({ title, targetCardId, onClose, postDbId }) {
           <div className="comment-avatar is-small" aria-hidden="true">
             {currentUser?.profile_image ? (
               <img 
-                src={`http://localhost:4000/uploads/${currentUser.profile_image}`} 
+                src={(currentUser.profile_image?.startsWith('http') ? currentUser.profile_image : `http://localhost:4000/uploads/${currentUser.profile_image}`)} 
                 alt="" 
                 style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }}
               />

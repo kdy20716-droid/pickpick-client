@@ -1,7 +1,8 @@
 import axios from "axios";
 
 const instance = axios.create({
-  baseURL: "http://localhost:4000",
+  // 배포된 서버 URL이 환경변수에 있으면 사용, 없으면 로컬호스트 사용
+  baseURL: import.meta.env.VITE_API_URL || "http://localhost:4000",
 });
 
 // 인터셉터 (interceptor) : 요청 / 응답시 중간에 가로채는 함수

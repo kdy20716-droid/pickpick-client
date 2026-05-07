@@ -21,7 +21,7 @@ const Header = () => {
             <Link to="/mypage" className="account-link" aria-label="계정">
               {user?.profile_image ? (
                 <img 
-                  src={`http://localhost:4000/uploads/${user.profile_image}`} 
+                  src={(user.profile_image?.startsWith('http') ? user.profile_image : `http://localhost:4000/uploads/${user.profile_image}`)} 
                   alt="" 
                   className="profile-img-small" 
                 />
