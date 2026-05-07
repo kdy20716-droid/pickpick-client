@@ -26,8 +26,8 @@ export default function MainPage() {
   const [featuredVote, setFeaturedVote] = useState(null);
   const [isFeaturedVoteLoading, setIsFeaturedVoteLoading] = useState(true);
 
-  useMainPageAnimations(pageRef);
   const isLeavingForVote = useScrollToVote();
+  useMainPageAnimations(pageRef, isLeavingForVote, featuredVote);
 
   useEffect(() => {
     const fetchPopularVote = async () => {

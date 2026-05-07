@@ -6,6 +6,7 @@ const NAV_ACTIVE_COLOR = "rgba(17, 17, 17, 0.98)";
 const NEXT_IDLE_COLOR = "rgb(85, 85, 85)";
 const NEXT_ACTIVE_COLOR = "rgb(252, 146, 199)";
 const ENTRANCE_BOUNCE_DELAY = 3000;
+const SCROLL_EXIT_DURATION = 520;
 
 function animate(element, keyframes, options) {
   if (!element?.animate) {
@@ -26,7 +27,11 @@ function getCssNumber(name, fallback) {
   return Number.isFinite(parsed) ? parsed : fallback;
 }
 
-export function useMainPageAnimations(pageRef) {
+export function useMainPageAnimations(
+  pageRef,
+  isLeavingForVote = false,
+  animationKey = null,
+) {
   useEffect(() => {
     const page = pageRef.current;
     if (!page) {
@@ -156,13 +161,15 @@ export function useMainPageAnimations(pageRef) {
           ),
         );
 
-        imageAnimation = track(
-          animate(
-            image,
-            [{ transform: "scale(1)" }, { transform: "scale(1.04)" }],
-            { duration: 280, easing: "ease" },
-          ),
-        );
+        if (image) {
+          imageAnimation = track(
+            animate(
+              image,
+              [{ transform: "scale(1)" }, { transform: "scale(1.04)" }],
+              { duration: 280, easing: "ease" },
+            ),
+          );
+        }
       };
 
       const leave = () => {
@@ -180,13 +187,18 @@ export function useMainPageAnimations(pageRef) {
           ),
         );
 
-        imageAnimation = track(
-          animate(
-            image,
-            [{ transform: getComputedStyle(image).transform }, { transform: "scale(1)" }],
-            { duration: 280, easing: "ease" },
-          ),
-        );
+        if (image) {
+          imageAnimation = track(
+            animate(
+              image,
+              [
+                { transform: getComputedStyle(image).transform },
+                { transform: "scale(1)" },
+              ],
+              { duration: 280, easing: "ease" },
+            ),
+          );
+        }
       };
 
       card.addEventListener("mouseenter", enter);
@@ -266,5 +278,67 @@ export function useMainPageAnimations(pageRef) {
       runningAnimations.forEach((animation) => animation.cancel());
       runningAnimations.clear();
     };
-  }, [pageRef]);
+  }, [pageRef, animationKey]);
+
+  useEffect(() => {
+    if (!isLeavingForVote) {
+      return undefined;
+    }
+
+    const page = pageRef.current;
+    if (!page) {
+      return undefined;
+    }
+
+    const mediaQuery = window.matchMedia(MOTION_QUERY);
+    if (mediaQuery.matches) {
+      return undefined;
+    }
+
+    const voteSection = page.querySelector(".vote-section");
+    const rankBadge = page.querySelector(".rank-badge");
+    const voteCard = page.querySelector(".vote-card");
+    const nextVote = page.querySelector(".next-vote");
+    const animations = [
+      animate(
+        voteSection,
+        [{ opacity: 1 }, { opacity: 0 }],
+        { duration: SCROLL_EXIT_DURATION, easing: "ease" },
+      ),
+      animate(
+        rankBadge,
+        [
+          { transform: "translateY(0) scale(1)" },
+          { transform: "translateY(-86px) scale(0.98)" },
+        ],
+        {
+          duration: SCROLL_EXIT_DURATION,
+          easing: "cubic-bezier(0.22, 1, 0.36, 1)",
+        },
+      ),
+      animate(
+        voteCard,
+        [
+          { transform: "translateY(0) scale(1)" },
+          { transform: "translateY(-86px) scale(0.98)" },
+        ],
+        {
+          duration: SCROLL_EXIT_DURATION,
+          easing: "cubic-bezier(0.22, 1, 0.36, 1)",
+        },
+      ),
+      animate(
+        nextVote,
+        [
+          { opacity: 1, transform: "translateY(0)" },
+          { opacity: 0, transform: "translateY(-28px)" },
+        ],
+        { duration: 360, easing: "ease" },
+      ),
+    ].filter(Boolean);
+
+    return () => {
+      animations.forEach((animation) => animation.cancel());
+    };
+  }, [pageRef, isLeavingForVote]);
 }
