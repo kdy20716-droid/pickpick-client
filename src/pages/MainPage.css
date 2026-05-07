@@ -113,13 +113,22 @@ img {
   line-height: 1;
 }
 
-.vote-card {
+.main-page .vote-card {
   position: relative;
   z-index: 1;
   padding: var(--space);
+  border: 0 !important;
   border-radius: 20px;
+  overflow: visible !important;
   background: var(--surface);
-  box-shadow: var(--shadow);
+  box-shadow: var(--shadow) !important;
+  transform: none !important;
+}
+
+.main-page .vote-section > .vote-card:hover {
+  transform: none !important;
+  border-color: transparent !important;
+  box-shadow: var(--shadow) !important;
 }
 
 .vote-card h2 {
@@ -137,7 +146,7 @@ img {
   padding-top: var(--space);
 }
 
-.candidate-card {
+.main-page .candidate-card {
   position: relative;
   overflow: hidden;
   border-radius: 20px;
@@ -145,13 +154,23 @@ img {
   aspect-ratio: 1 / 1.18;
   transform-origin: center;
   will-change: transform;
+  transition: transform 280ms ease;
 }
 
-.candidate-card img {
+.main-page .candidate-card img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   will-change: transform;
+  transition: transform 280ms ease;
+}
+
+.main-page .candidate-card:hover {
+  transform: scale(1.03);
+}
+
+.main-page .candidate-card:hover img {
+  transform: scale(1.04);
 }
 
 .candidate-name {
