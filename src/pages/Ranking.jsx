@@ -32,6 +32,7 @@ function Ranking() {
           id: item.id,
           title: item.title,
           topImage: item.candidate_a_image
+<<<<<<< HEAD
             ? `http://localhost:4000/uploads/${item.candidate_a_image}`
             : null,
           bottomImage: item.candidate_b_image
@@ -42,6 +43,26 @@ function Ranking() {
             : null,
           rightImage: item.candidate_b_image
             ? `http://localhost:4000/uploads/${item.candidate_b_image}`
+=======
+            ? item.candidate_a_image?.startsWith("http")
+              ? item.candidate_a_image
+              : `http://localhost:4000/uploads/${item.candidate_a_image}`
+            : null,
+          bottomImage: item.candidate_b_image
+            ? item.candidate_b_image?.startsWith("http")
+              ? item.candidate_b_image
+              : `http://localhost:4000/uploads/${item.candidate_b_image}`
+            : null,
+          leftImage: item.candidate_a_image
+            ? item.candidate_a_image?.startsWith("http")
+              ? item.candidate_a_image
+              : `http://localhost:4000/uploads/${item.candidate_a_image}`
+            : null,
+          rightImage: item.candidate_b_image
+            ? item.candidate_b_image?.startsWith("http")
+              ? item.candidate_b_image
+              : `http://localhost:4000/uploads/${item.candidate_b_image}`
+>>>>>>> main
             : null,
         }));
 
@@ -84,13 +105,20 @@ function Ranking() {
     fetchRanking();
   }, []);
 
+<<<<<<< HEAD
   if (loading) {
+=======
+  if (loading)
+>>>>>>> main
     return (
       <div style={{ textAlign: "center", padding: "100px", color: "white" }}>
         랭킹 로딩 중...
       </div>
     );
+<<<<<<< HEAD
   }
+=======
+>>>>>>> main
 
   return (
     <>
@@ -139,6 +167,7 @@ function Ranking() {
           {rankingRows.map((item, index) => {
             const usePlaceholderImages = item.isPlaceholder || index === 1;
 
+<<<<<<< HEAD
             return (
               <div
                 key={item.id}
@@ -191,6 +220,15 @@ function Ranking() {
                       {item.title}
                     </Link>
                   </>
+=======
+              <div className="vs-row">
+                {item.leftImage && (
+                  <img src={item.leftImage} alt="candidate A" />
+                )}
+                <img src={vsImage} className="vs-small" alt="vs" />
+                {item.rightImage && (
+                  <img src={item.rightImage} alt="candidate B" />
+>>>>>>> main
                 )}
               </div>
             );

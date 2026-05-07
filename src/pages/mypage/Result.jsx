@@ -100,7 +100,7 @@ const Result = () => {
                     {isLeftWinner && <div className="crown">👑</div>}
                     <div className="img-wrapper">
                       {vote.candidate_a_image ? (
-                        <img src={`http://localhost:4000/uploads/${vote.candidate_a_image}`} alt="left" />
+                        <img src={(vote.candidate_a_image?.startsWith('http') ? vote.candidate_a_image : `http://localhost:4000/uploads/${vote.candidate_a_image}`)} alt="left" />
                       ) : (
                         <div className="img-placeholder">{vote.candidate_a_name?.slice(0, 1)}</div>
                       )}
@@ -129,7 +129,7 @@ const Result = () => {
                     {isRightWinner && <div className="crown">👑</div>}
                     <div className="img-wrapper">
                       {vote.candidate_b_image ? (
-                        <img src={`http://localhost:4000/uploads/${vote.candidate_b_image}`} alt="right" />
+                        <img src={(vote.candidate_b_image?.startsWith('http') ? vote.candidate_b_image : `http://localhost:4000/uploads/${vote.candidate_b_image}`)} alt="right" />
                       ) : (
                         <div className="img-placeholder">{vote.candidate_b_name?.slice(0, 1)}</div>
                       )}

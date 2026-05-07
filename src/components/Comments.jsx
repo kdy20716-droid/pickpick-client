@@ -20,6 +20,7 @@ function toTimestamp(value) {
   return Number.isNaN(timestamp) ? Date.now() : timestamp;
 }
 
+<<<<<<< HEAD
 function normalizeReply(reply) {
   return {
     ...reply,
@@ -30,6 +31,51 @@ function normalizeReply(reply) {
     likes: reply.likes ?? 0,
   };
 }
+=======
+function CommentItem({
+  comment,
+  currentUser,
+  isOpen,
+  replyDraft,
+  onLike,
+  onDislike,
+  onToggleReplies,
+  onReplyDraftChange,
+  onAddReply,
+  onDelete,
+  replies = [],
+  isReply = false
+}) {
+  return (
+    <article className={`comment-item ${isReply ? 'comment-reply' : ''}`}>
+      <div className="comment-avatar" aria-hidden="true">
+        {comment.author_image ? (
+          <img 
+            src={(comment.author_image?.startsWith('http') ? comment.author_image : `http://localhost:4000/uploads/${comment.author_image}`)} 
+            alt="" 
+            style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }}
+          />
+        ) : null}
+      </div>
+      <div className="comment-body" style={{ width: '100%' }}>
+        <div className="comment-top">
+          <div>
+            <strong className="comment-name">{comment.author}</strong>
+            <span className="comment-time">
+              {formatRelativeTime(comment.created_at)}
+            </span>
+          </div>
+          {currentUser && currentUser.id === comment.user_id && (
+            <button
+              type="button"
+              className="comment-delete"
+              onClick={() => onDelete(comment.id)}
+            >
+              삭제
+            </button>
+          )}
+        </div>
+>>>>>>> main
 
 function normalizeComment(comment, reaction = null) {
   return {
@@ -54,6 +100,7 @@ function buildCommentTree(comments, reactions) {
   const parentById = new Map();
   const replies = [];
 
+<<<<<<< HEAD
   comments.forEach((comment) => {
     const normalized = normalizeComment(comment, reactions[comment.id] ?? null);
 
@@ -74,6 +121,53 @@ function buildCommentTree(comments, reactions) {
   });
 
   return parents;
+=======
+        {!isReply && isOpen && (
+          <div className="comment-replies" style={{ width: '100%', marginTop: '12px' }}>
+            <div className="youtube-reply-container">
+              <div className="comment-avatar comment-avatar-small" aria-hidden="true">
+                {currentUser?.profile_image ? (
+                  <img 
+                    src={(currentUser.profile_image?.startsWith('http') ? currentUser.profile_image : `http://localhost:4000/uploads/${currentUser.profile_image}`)} 
+                    alt="" 
+                    style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }}
+                  />
+                ) : null}
+              </div>
+              <div className="youtube-reply-content">
+                <input
+                  type="text"
+                  value={replyDraft}
+                  placeholder="답글 추가..."
+                  className="youtube-reply-input"
+                  onChange={(e) => onReplyDraftChange && onReplyDraftChange(comment.id, e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && replyDraft.trim()) onAddReply && onAddReply(comment.id);
+                  }}
+                />
+                <div className="youtube-reply-actions">
+                  <button type="button" className="btn-cancel" onClick={() => onToggleReplies && onToggleReplies(comment.id)}>취소</button>
+                  <button type="button" className="btn-submit" onClick={() => onAddReply && onAddReply(comment.id)} disabled={!replyDraft.trim()}>답글</button>
+                </div>
+              </div>
+            </div>
+            {replies.map(reply => (
+               <CommentItem
+                 key={reply.id}
+                 comment={reply}
+                 currentUser={currentUser}
+                 onLike={onLike}
+                 onDislike={onDislike}
+                 onDelete={onDelete}
+                 isReply={true}
+               />
+            ))}
+          </div>
+        )}
+      </div>
+    </article>
+  );
+>>>>>>> main
 }
 
 export default function Comments({ title, targetCardId, onClose, postDbId }) {
@@ -485,7 +579,7 @@ export default function Comments({ title, targetCardId, onClose, postDbId }) {
           <div className="comment-avatar is-small" aria-hidden="true">
             {currentUser?.profile_image ? (
               <img 
-                src={`http://localhost:4000/uploads/${currentUser.profile_image}`} 
+                src={(currentUser.profile_image?.startsWith('http') ? currentUser.profile_image : `http://localhost:4000/uploads/${currentUser.profile_image}`)} 
                 alt="" 
                 style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }}
               />
