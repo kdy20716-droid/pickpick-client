@@ -284,9 +284,30 @@
   position: absolute;
   top: 40px;
   right: 40px;
+  width: auto;
+  height: auto;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
   color: #f8bbd0;
   font-size: 32px;
+  line-height: 1;
   cursor: pointer;
+  display: inline-flex;
+  outline: none;
+  box-shadow: none;
+  -webkit-appearance: none;
+}
+
+.gearIcon:focus,
+.gearIcon:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
+
+.gearIcon:hover {
+  background: transparent;
 }
 
 .menuList {

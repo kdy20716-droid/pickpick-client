@@ -1,0 +1,770 @@
+.profile-container {
+  padding: 0;
+  background-color: transparent;
+  min-height: 100vh;
+  font-family: "Pretendard", sans-serif;
+}
+
+.breadcrumb {
+  color: #bbb;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 30px;
+}
+
+/* 메인 카드 박스 */
+.profile-card {
+  background: #ffffff;
+  border: 1px solid #eee;
+  border-radius: 40px;
+  padding: 40px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.profile-card.font-작게 {
+  font-size: 13px;
+}
+
+.profile-card.font-보통 {
+  font-size: 14px;
+}
+
+.profile-card.font-크게 {
+  font-size: 16px;
+}
+
+/* 상단 버튼 */
+.card-header {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 30px;
+}
+
+.button-group button {
+  padding: 10px 40px;
+  border-radius: 20px;
+  border: 1px solid #ddd;
+  background: white;
+  margin-left: 10px;
+  cursor: pointer;
+  color: #666;
+}
+
+.button-group .btn-save {
+  background-color: #f5f5f5;
+  border: 1px solid #eee;
+}
+
+/* 카드 내부 레이아웃 */
+.card-content {
+  display: flex;
+  gap: 60px;
+  align-items: flex-start;
+}
+
+/* 프로필 사진 섹션 */
+.profile-image-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: sticky;
+  top: 100px;
+  padding-top: 60px;
+}
+
+.image-circle {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  background: #fde8f0;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+
+.avatar-placeholder {
+  width: 90px;
+  height: 90px;
+  background: #f8bbd0;
+  border-radius: 50% 50% 0 0;
+  position: relative;
+}
+
+.avatar-placeholder::before {
+  content: "";
+  position: absolute;
+  top: -50px;
+  left: 17px;
+  width: 56px;
+  height: 56px;
+  background: #f8bbd0;
+  border-radius: 50%;
+}
+
+.profile-preview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.image-buttons {
+  display: flex;
+  border: 1px solid #eee;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.btn-sub {
+  min-width: 92px;
+  padding: 12px 26px;
+  background: white;
+  border: none;
+  font-size: 1em;
+  cursor: pointer;
+  color: #666;
+  white-space: nowrap;
+}
+
+.btn-sub:first-child {
+  border-right: 1px solid #eee;
+}
+
+.photo-menu {
+  width: 190px;
+  margin-top: 10px;
+  padding: 8px;
+  border: 1px solid #eee;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.photo-menu button {
+  width: 100%;
+  padding: 10px 12px;
+  border: none;
+  border-radius: 8px;
+  background: #fff;
+  color: #666;
+  font-size: 13px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.photo-menu button:hover {
+  background: #f8f8f8;
+}
+
+.photo-file-input {
+  display: none;
+}
+
+/* 폼 섹션 */
+.profile-form {
+  flex: 2;
+}
+
+.form-group {
+  margin-bottom: 25px;
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  font-size: 1.05em;
+  color: #444;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.input-field {
+  padding: 15px 25px;
+  border-radius: 30px;
+  border: 1px solid #eee;
+  background-color: #fcfcfc;
+  outline: none;
+  font-size: 1em;
+}
+
+.account-info-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.account-info-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 18px;
+  border: 1px solid #eee;
+  border-radius: 16px;
+  background: #fcfcfc;
+}
+
+.account-info-item div {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.account-info-item strong {
+  color: #555;
+  font-size: 1.05em;
+}
+
+.account-info-item span {
+  color: #999;
+  font-size: 0.9em;
+  word-break: break-all;
+}
+
+.password-eye-btn {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 1px solid #eee;
+  border-radius: 50%;
+  background: #fff;
+  color: #999;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.password-eye-btn:hover {
+  background: #f5f5f5;
+  color: #777;
+}
+
+/* 성별 선택 */
+.gender-options {
+  display: flex;
+  border: 1px solid #eee;
+  border-radius: 25px;
+  overflow: hidden;
+  width: fit-content;
+}
+
+.gender-btn {
+  padding: 15px 30px;
+  background: white;
+  border: none;
+  cursor: pointer;
+  color: #666;
+  border-right: 1px solid #eee;
+}
+
+.gender-btn.active {
+  background-color: #fff;
+  color: #333;
+  font-weight: bold;
+}
+
+.gender-btn:last-child {
+  border-right: none;
+}
+
+/* 상태 메시지 (체크 아이콘) */
+.input-with-status {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.status-msg {
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  color: #888;
+}
+
+.status-msg.success i {
+  color: #f8b4cc;
+  margin-right: 5px;
+  border: 2px solid #f8b4cc;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-style: normal;
+  font-weight: bold;
+}
+
+/* 생년월일 / 이메일 그리드 */
+.birth-inputs,
+.email-inputs {
+  display: flex;
+  gap: 15px;
+}
+
+.birth-inputs input,
+.email-inputs input {
+  flex: 1;
+}
+
+.select-box {
+  padding: 0 20px;
+  border-radius: 30px;
+  border: 1px solid #eee;
+  background: #fcfcfc
+    url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="%23f8b4cc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>')
+    no-repeat right 20px center;
+  display: flex;
+  align-items: center;
+  min-width: 100px;
+  color: #888;
+  cursor: pointer;
+}
+
+.settings-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0 0 20px;
+}
+
+.settings-menu-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 16px 18px;
+  border: 1px solid #eee;
+  border-radius: 16px;
+  background: #fcfcfc;
+}
+
+.settings-menu-item div {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.settings-menu-item strong {
+  color: #555;
+  font-size: 1.05em;
+}
+
+.settings-menu-item span {
+  color: #999;
+  font-size: 0.9em;
+}
+
+.settings-menu-item button {
+  width: auto;
+  min-width: 72px;
+  padding: 9px 16px;
+  border: 1px solid #eee;
+  border-radius: 20px;
+  background: #fff;
+  color: #777;
+  font-size: 0.9em;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.settings-menu-item button:hover {
+  background: #f5f5f5;
+}
+
+.notification-panel {
+  padding: 16px;
+  border: 1px solid #eee;
+  border-radius: 16px;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.notification-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: #fcfcfc;
+}
+
+.notification-option span {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.notification-option strong {
+  color: #555;
+  font-size: 1em;
+}
+
+.notification-option em {
+  color: #999;
+  font-size: 0.85em;
+  font-style: normal;
+}
+
+.notification-option input {
+  width: 18px;
+  height: 18px;
+  accent-color: #f8bbd0;
+  flex-shrink: 0;
+}
+
+.notification-save-btn {
+  align-self: flex-end;
+  width: auto;
+  padding: 10px 22px;
+  border: 1px solid #eee;
+  border-radius: 20px;
+  background: #f8bbd0;
+  color: #fff;
+  font-size: 0.9em;
+  cursor: pointer;
+}
+
+.notification-save-btn:hover {
+  background: #f7a9c4;
+}
+
+.security-panel {
+  padding: 16px;
+  border: 1px solid #eee;
+  border-radius: 16px;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.security-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.security-section strong {
+  color: #555;
+  font-size: 1em;
+}
+
+.security-section input {
+  width: 100%;
+  padding: 13px 18px;
+  border: 1px solid #eee;
+  border-radius: 24px;
+  background: #fcfcfc;
+  color: #555;
+  font-size: 0.95em;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.security-section button {
+  align-self: flex-end;
+  width: auto;
+  padding: 10px 22px;
+  border: 1px solid #eee;
+  border-radius: 20px;
+  background: #f8bbd0;
+  color: #fff;
+  font-size: 0.9em;
+  cursor: pointer;
+}
+
+.security-section button:hover {
+  background: #f7a9c4;
+}
+
+.login-history-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: #fcfcfc;
+}
+
+.login-history-item span {
+  color: #555;
+  font-size: 0.95em;
+  font-weight: 600;
+}
+
+.login-history-item em {
+  color: #999;
+  font-size: 0.85em;
+  font-style: normal;
+  text-align: right;
+}
+
+.display-panel {
+  padding: 16px;
+  border: 1px solid #eee;
+  border-radius: 16px;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.display-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: #fcfcfc;
+  color: #555;
+  font-size: 1em;
+  font-weight: 600;
+}
+
+.display-option select {
+  width: 150px;
+  padding: 9px 12px;
+  border: 1px solid #eee;
+  border-radius: 18px;
+  background: #fff;
+  color: #777;
+  font-size: 0.95em;
+  outline: none;
+}
+
+.display-toggle input {
+  width: 18px;
+  height: 18px;
+  accent-color: #f8bbd0;
+}
+
+.display-save-btn {
+  align-self: flex-end;
+  width: auto;
+  padding: 10px 22px;
+  border: 1px solid #eee;
+  border-radius: 20px;
+  background: #f8bbd0;
+  color: #fff;
+  font-size: 0.9em;
+  cursor: pointer;
+}
+
+.display-save-btn:hover {
+  background: #f7a9c4;
+}
+
+.support-panel {
+  padding: 16px;
+  border: 1px solid #eee;
+  border-radius: 16px;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.support-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 13px 14px;
+  border-radius: 12px;
+  background: #fcfcfc;
+}
+
+.support-item div {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.support-item strong {
+  color: #555;
+  font-size: 1em;
+}
+
+.support-item span {
+  color: #999;
+  font-size: 0.85em;
+}
+
+.support-item button {
+  width: auto;
+  min-width: 64px;
+  padding: 9px 14px;
+  border: 1px solid #eee;
+  border-radius: 18px;
+  background: #fff;
+  color: #777;
+  font-size: 0.9em;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.support-item button:hover {
+  background: #f5f5f5;
+}
+
+.inquiry-form {
+  padding: 14px;
+  border: 1px solid #eee;
+  border-radius: 14px;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.inquiry-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.inquiry-form span {
+  color: #555;
+  font-size: 0.95em;
+  font-weight: 600;
+}
+
+.inquiry-form input,
+.inquiry-form textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #eee;
+  border-radius: 14px;
+  background: #fcfcfc;
+  color: #555;
+  font-size: 0.95em;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.inquiry-form textarea {
+  min-height: 110px;
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.inquiry-form button {
+  align-self: flex-end;
+  width: auto;
+  padding: 10px 22px;
+  border: 1px solid #eee;
+  border-radius: 20px;
+  background: #f8bbd0;
+  color: #fff;
+  font-size: 0.9em;
+  cursor: pointer;
+}
+
+.inquiry-form button:hover {
+  background: #f7a9c4;
+}
+
+.faq-panel {
+  padding: 14px;
+  border: 1px solid #eee;
+  border-radius: 14px;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.faq-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: #fcfcfc;
+}
+
+.faq-item strong {
+  color: #555;
+  font-size: 0.95em;
+}
+
+.faq-item span {
+  color: #999;
+  font-size: 0.85em;
+  line-height: 1.5;
+}
+
+.terms-panel {
+  padding: 14px;
+  border: 1px solid #eee;
+  border-radius: 14px;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.terms-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: #fcfcfc;
+}
+
+.terms-item strong {
+  color: #555;
+  font-size: 0.95em;
+}
+
+.terms-item span {
+  color: #999;
+  font-size: 0.85em;
+  line-height: 1.5;
+}
+
+.account-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.account-link-btn,
+.account-danger-btn {
+  width: auto;
+  padding: 12px 24px;
+  border-radius: 24px;
+  border: 1px solid #eee;
+  background: #fff;
+  color: #777;
+  font-size: 1em;
+  cursor: pointer;
+}
+
+.account-link-btn:hover {
+  background: #f5f5f5;
+}
+
+.account-danger-btn {
+  color: #ff868a;
+}
+
+.account-danger-btn:hover {
+  background: #fff1f2;
+}

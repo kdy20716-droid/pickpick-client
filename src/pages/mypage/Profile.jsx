@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import styles from "./MyPage.module.css";
 import { useAuth } from "../../contexts/AuthContext";
 import {
@@ -10,6 +11,7 @@ import {
 const Profile = () => {
   const [notifications, setNotifications] = useState([]);
   const { user: currentUser } = useAuth();
+  const navigate = useNavigate();
 
   const fetchNotifications = useCallback(async () => {
     if (!currentUser) return;
@@ -76,8 +78,17 @@ const Profile = () => {
                 LV.99 <span className={styles.qMark}>?</span>{" "}
                 <span className={styles.playBtn}>▶</span>
               </div>
-              <h2 className={styles.nickname}>{currentUser?.name || "게스트"} 님</h2>
-              <span className={styles.gearIcon}>⚙</span>
+              <h2 className={styles.nickname}>
+                {currentUser?.name || "게스트"} 님
+              </h2>
+              <button
+                type="button"
+                className={styles.gearIcon}
+                onClick={() => navigate("/mypage/profileedit")}
+                aria-label="프로필 설정"
+              >
+                ⚙
+              </button>
             </div>
           </div>
         </div>

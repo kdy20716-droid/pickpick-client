@@ -2,7 +2,7 @@
   padding: 40px;
   background-color: #f9f9f9;
   min-height: 100vh;
-  font-family: 'Pretendard', sans-serif;
+  font-family: "Pretendard", sans-serif;
 }
 
 .breadcrumb {
@@ -181,12 +181,14 @@
 }
 
 /* 생년월일 / 이메일 그리드 */
-.birth-inputs, .email-inputs {
+.birth-inputs,
+.email-inputs {
   display: flex;
   gap: 15px;
 }
 
-.birth-inputs input, .email-inputs input {
+.birth-inputs input,
+.email-inputs input {
   flex: 1;
 }
 
@@ -194,7 +196,9 @@
   padding: 0 20px;
   border-radius: 30px;
   border: 1px solid #eee;
-  background: #fcfcfc url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="%23f8b4cc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>') no-repeat right 20px center;
+  background: #fcfcfc
+    url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="%23f8b4cc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>')
+    no-repeat right 20px center;
   display: flex;
   align-items: center;
   min-width: 100px;
