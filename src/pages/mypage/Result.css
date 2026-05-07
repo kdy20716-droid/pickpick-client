@@ -2,6 +2,33 @@
 .result-container {
   width: 100%;
   padding: 0 20px 40px 0;
+  overflow-x: hidden;
+  min-height: calc(100vh - var(--vote-header-offset, 110px));
+  position: relative;
+}
+
+.result-container.has-comment-modal {
+  overflow: visible;
+}
+
+.result-layout {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: 
+    transform 350ms cubic-bezier(0.22, 1, 0.36, 1),
+    width 350ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.result-container.has-comment-modal .result-layout {
+  transform: translateX(var(--vote-comment-group-shift, 0px));
+  width: var(--vote-comment-sheet-width, 100%);
+  max-width: none;
+}
+
+.has-comment-modal .result-card {
+  width: 100%;
 }
 
 /* 검색바 - 너비 조정 및 정렬 수정 */
