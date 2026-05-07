@@ -39,11 +39,14 @@
 .result-card {
   background: white;
   border-radius: 35px;
-  padding: 40px;
+  padding: 32px 40px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
   display: flex;
   flex-direction: column;
-  gap: 30px;
+  gap: 25px;
+  max-width: 1100px; /* 너비 최적화 */
+  width: 100%;
+  margin: 0 auto; /* 카드 자체를 중앙 정렬 */
 }
 
 /* 각 투표 항목 */
@@ -51,8 +54,9 @@
   display: flex;
   flex-direction: column;
   gap: 15px;
-  padding-bottom: 30px;
+  padding-bottom: 25px;
   border-bottom: 1px solid #f8f8f8;
+  align-items: center; /* 내부 요소들 중앙 정렬 */
 }
 
 .result-item:last-child {
@@ -65,15 +69,18 @@
   font-weight: 700;
   color: #666;
   margin: 0;
-  text-align: left;
+  text-align: center; /* 제목 중앙 정렬 */
+  width: 100%;
+  display: block;
 }
 
 /* 각 결과 행 */
 .result-row {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 20px;
+  justify-content: center; /* 가로 중앙 정렬 */
+  gap: 15px; /* 간격을 좁혀 밀집도 향상 */
+  width: 100%;
 }
 
 /* 후보군 (이미지+퍼센트) */
@@ -82,13 +89,14 @@
   flex-direction: column;
   align-items: center;
   position: relative;
-  width: 85px;
+  width: 75px;
+  flex-shrink: 0;
 }
 
 .img-wrapper {
-  width: 85px;
-  height: 85px;
-  border-radius: 20px;
+  width: 75px;
+  height: 75px;
+  border-radius: 18px;
   overflow: hidden;
   background: #fdf2f6;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
@@ -108,14 +116,14 @@
   align-items: center;
   background: linear-gradient(135deg, #f1a0c0, #fde8f0);
   color: white;
-  font-size: 2rem;
+  font-size: 1.8rem;
   font-weight: bold;
 }
 
 .crown {
   position: absolute;
   top: -20px;
-  font-size: 24px;
+  font-size: 22px;
   z-index: 5;
 }
 
@@ -128,13 +136,15 @@
 
 /* 중앙 게이지 바 */
 .gauge-track {
-  flex: 1;
-  height: 40px;
+  width: 700px; /* 명시적으로 긴 너비 부여 */
+  max-width: 100%; /* 반응형 대응 */
+  height: 34px;
   background: #f5f5f5;
   border-radius: 10px;
   display: flex;
   overflow: hidden;
   position: relative;
+  flex: none; /* 크기 고정 */
 }
 
 .gauge-fill {
@@ -168,15 +178,16 @@
 .icon-btn {
   background: #fff;
   border: 1px solid #f8f8f8;
-  width: 45px;
-  height: 45px;
+  width: 44px;
+  height: 44px;
   border-radius: 12px;
   display: flex;
   justify-content: center;
   align-items: center;
   cursor: pointer;
   color: #ccc;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+  flex-shrink: 0;
 }
 .icon-btn:hover {
   background: #fdf2f6;
