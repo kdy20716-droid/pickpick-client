@@ -78,6 +78,24 @@ export default function Signin() {
       return;
     }
 
+    // 도메인 유효성 체크
+    const emailParts = form.email.split('@');
+    if (emailParts.length !== 2 || !emailParts[1] || emailParts[1].split('.').length < 2) {
+      setErrorMsg("존재하지 않는 이메일입니다.");
+      setShowModal(true);
+      return;
+    }
+
+    const domain = emailParts[1];
+    const domainParts = domain.split('.');
+    
+    // 도메인의 마지막 부분(TLD)이 2자 이상이어야 함 (예: .com, .co.kr)
+    if (domainParts[domainParts.length - 1].length < 2) {
+      setErrorMsg("존재하지 않는 이메일입니다.");
+      setShowModal(true);
+      return;
+    }
+
     try {
       // 백엔드 API 호출하여 이메일 전송
       const data = await sendEmailCode(form.email);
@@ -88,7 +106,9 @@ export default function Signin() {
 
       alert(`인증 코드가 발송되었습니다`);
     } catch (error) {
-      setErrorMsg("이메일 발송 중 오류가 발생했습니다.");
+      // 서버 에러 응답 메시지 우선 사용
+      const message = error.response?.data?.message || "이메일 발송 중 오류가 발생했습니다.";
+      setErrorMsg(message);
       setShowModal(true);
       console.error(error);
     }
