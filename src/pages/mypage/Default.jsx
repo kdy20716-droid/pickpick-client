@@ -331,7 +331,10 @@ const AccountSettings = () => {
       </div>
 
       {isProfileOpen && (
-        <div className="settings-modal-layer">
+        <div
+          className="settings-modal-layer"
+          onClick={() => setIsProfileOpen(false)}
+        >
           <button
             type="button"
             className="settings-modal-backdrop"
@@ -341,6 +344,7 @@ const AccountSettings = () => {
           <section
             className="settings-modal profile-settings-modal"
             aria-label={text.profileChange}
+            onClick={(e) => e.stopPropagation()}
           >
             <header className="settings-modal-header">
               <div>
@@ -380,7 +384,10 @@ const AccountSettings = () => {
       )}
 
       {isSecurityOpen && (
-        <div className="settings-modal-layer">
+        <div
+          className="settings-modal-layer"
+          onClick={() => setIsSecurityOpen(false)}
+        >
           <button
             type="button"
             className="settings-modal-backdrop"
@@ -390,6 +397,7 @@ const AccountSettings = () => {
           <section
             className="settings-modal security-settings-modal"
             aria-label={text.security}
+            onClick={(e) => e.stopPropagation()}
           >
             <header className="settings-modal-header">
               <div>
@@ -451,7 +459,10 @@ const AccountSettings = () => {
       )}
 
       {isDisplayOpen && (
-        <div className="settings-modal-layer">
+        <div
+          className="settings-modal-layer"
+          onClick={() => setIsDisplayOpen(false)}
+        >
           <button
             type="button"
             className="settings-modal-backdrop"
@@ -461,6 +472,7 @@ const AccountSettings = () => {
           <section
             className="settings-modal display-settings-modal"
             aria-label={text.display}
+            onClick={(e) => e.stopPropagation()}
           >
             <header className="settings-modal-header">
               <div>
