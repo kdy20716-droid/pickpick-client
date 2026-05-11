@@ -535,7 +535,7 @@
 
 /* 카드 상단의 얇은 핑크 띠 */
 .admin-verification-card::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
@@ -555,7 +555,7 @@
 
 /* 🔐 자물쇠 아이콘 대체 이모지 */
 .admin-verification-card h2::before {
-  content: '🔐 ';
+  content: "🔐 ";
   font-size: 24px;
 }
 
