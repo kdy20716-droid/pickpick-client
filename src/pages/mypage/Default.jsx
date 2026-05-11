@@ -226,55 +226,11 @@ const AccountSettings = () => {
                   </div>
                   <button
                     type="button"
-                    onClick={() => setIsSecurityOpen((prev) => !prev)}
+                    onClick={() => setIsSecurityOpen(true)}
                   >
-                    {isSecurityOpen ? text.close : text.check}
+                    {text.check}
                   </button>
                 </div>
-
-                {isSecurityOpen && (
-                  <div className="security-panel">
-                    <div className="security-section">
-                      <strong>{text.changePassword}</strong>
-                      <input
-                        type="password"
-                        name="currentPassword"
-                        placeholder={text.currentPassword}
-                        value={passwordForm.currentPassword}
-                        onChange={handlePasswordChange}
-                      />
-                      <input
-                        type="password"
-                        name="newPassword"
-                        placeholder={text.newPassword}
-                        value={passwordForm.newPassword}
-                        onChange={handlePasswordChange}
-                      />
-                      <input
-                        type="password"
-                        name="confirmPassword"
-                        placeholder={text.confirmPassword}
-                        value={passwordForm.confirmPassword}
-                        onChange={handlePasswordChange}
-                      />
-                      <button type="button" onClick={handleSavePassword}>
-                        {text.saveChange}
-                      </button>
-                    </div>
-
-                    <div className="security-section">
-                      <strong>{text.loginHistory}</strong>
-                      <div className="login-history-item">
-                        <span>{text.currentSession}</span>
-                        <em>{text.currentSessionDesc}</em>
-                      </div>
-                      <div className="login-history-item">
-                        <span>{text.recentLogin}</span>
-                        <em>{text.noHistory}</em>
-                      </div>
-                    </div>
-                  </div>
-                )}
 
                 <div className="settings-menu-item">
                   <div>
@@ -283,56 +239,11 @@ const AccountSettings = () => {
                   </div>
                   <button
                     type="button"
-                    onClick={() => setIsDisplayOpen((prev) => !prev)}
+                    onClick={() => setIsDisplayOpen(true)}
                   >
-                    {isDisplayOpen ? text.close : text.settings}
+                    {text.settings}
                   </button>
                 </div>
-
-                {isDisplayOpen && (
-                  <div className="display-panel">
-                    <label className="display-option">
-                      <span>{text.language}</span>
-                      <select
-                        value={displaySettings.language}
-                        onChange={(event) =>
-                          handleDisplaySettingChange(
-                            "language",
-                            event.target.value,
-                          )
-                        }
-                      >
-                        <option>한국어</option>
-                        <option>English</option>
-                      </select>
-                    </label>
-
-                    <label className="display-option">
-                      <span>{text.fontSize}</span>
-                      <select
-                        value={displaySettings.fontSize}
-                        onChange={(event) =>
-                          handleDisplaySettingChange(
-                            "fontSize",
-                            event.target.value,
-                          )
-                        }
-                      >
-                        <option value="작게">{text.small}</option>
-                        <option value="보통">{text.normal}</option>
-                        <option value="크게">{text.large}</option>
-                      </select>
-                    </label>
-
-                    <button
-                      type="button"
-                      className="display-save-btn"
-                      onClick={() => alert(text.displaySaved)}
-                    >
-                      {text.save}
-                    </button>
-                  </div>
-                )}
               </div>
 
               <div className="account-actions">
@@ -350,6 +261,138 @@ const AccountSettings = () => {
           </div>
         </div>
       </div>
+
+      {isSecurityOpen && (
+        <div className="settings-modal-layer">
+          <button
+            type="button"
+            className="settings-modal-backdrop"
+            aria-label={text.close}
+            onClick={() => setIsSecurityOpen(false)}
+          />
+          <section
+            className="settings-modal security-settings-modal"
+            aria-label={text.security}
+          >
+            <header className="settings-modal-header">
+              <div>
+                <span>{text.security}</span>
+                <h2>{text.securityDesc}</h2>
+              </div>
+              <button type="button" onClick={() => setIsSecurityOpen(false)}>
+                {text.close}
+              </button>
+            </header>
+
+            <div className="security-panel">
+              <div className="security-section">
+                <strong>{text.changePassword}</strong>
+                <input
+                  type="password"
+                  name="currentPassword"
+                  placeholder={text.currentPassword}
+                  value={passwordForm.currentPassword}
+                  onChange={handlePasswordChange}
+                />
+                <input
+                  type="password"
+                  name="newPassword"
+                  placeholder={text.newPassword}
+                  value={passwordForm.newPassword}
+                  onChange={handlePasswordChange}
+                />
+                <input
+                  type="password"
+                  name="confirmPassword"
+                  placeholder={text.confirmPassword}
+                  value={passwordForm.confirmPassword}
+                  onChange={handlePasswordChange}
+                />
+                <button type="button" onClick={handleSavePassword}>
+                  {text.saveChange}
+                </button>
+              </div>
+
+              <div className="security-section">
+                <strong>{text.loginHistory}</strong>
+                <div className="login-history-item">
+                  <span>{text.currentSession}</span>
+                  <em>{text.currentSessionDesc}</em>
+                </div>
+                <div className="login-history-item">
+                  <span>{text.recentLogin}</span>
+                  <em>{text.noHistory}</em>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      )}
+
+      {isDisplayOpen && (
+        <div className="settings-modal-layer">
+          <button
+            type="button"
+            className="settings-modal-backdrop"
+            aria-label={text.close}
+            onClick={() => setIsDisplayOpen(false)}
+          />
+          <section
+            className="settings-modal display-settings-modal"
+            aria-label={text.display}
+          >
+            <header className="settings-modal-header">
+              <div>
+                <span>{text.display}</span>
+                <h2>{text.displayDesc}</h2>
+              </div>
+              <button type="button" onClick={() => setIsDisplayOpen(false)}>
+                {text.close}
+              </button>
+            </header>
+
+            <div className="display-panel">
+              <label className="display-option">
+                <span>{text.language}</span>
+                <select
+                  value={displaySettings.language}
+                  onChange={(event) =>
+                    handleDisplaySettingChange("language", event.target.value)
+                  }
+                >
+                  <option>한국어</option>
+                  <option>English</option>
+                </select>
+              </label>
+
+              <label className="display-option">
+                <span>{text.fontSize}</span>
+                <select
+                  value={displaySettings.fontSize}
+                  onChange={(event) =>
+                    handleDisplaySettingChange("fontSize", event.target.value)
+                  }
+                >
+                  <option value="작게">{text.small}</option>
+                  <option value="보통">{text.normal}</option>
+                  <option value="크게">{text.large}</option>
+                </select>
+              </label>
+
+              <button
+                type="button"
+                className="display-save-btn"
+                onClick={() => {
+                  alert(text.displaySaved);
+                  setIsDisplayOpen(false);
+                }}
+              >
+                {text.save}
+              </button>
+            </div>
+          </section>
+        </div>
+      )}
     </div>
   );
 };
