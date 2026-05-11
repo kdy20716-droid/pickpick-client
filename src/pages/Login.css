@@ -159,7 +159,7 @@ button:hover {
 /* 상단 에러 모달 */
 .error-modal {
   position: fixed;
-  top: 20px;
+  top: 100px; /* 헤더(높이 80px) 아래로 내려오도록 수정 */
   left: 50%;
   transform: translateX(-50%);
   background-color: #ff4d4d;
@@ -173,11 +173,11 @@ button:hover {
 
 @keyframes slideDown {
   from {
-    top: -50px;
+    top: 50px; /* 애니메이션 시작 위치도 조정 */
     opacity: 0;
   }
   to {
-    top: 20px;
+    top: 100px;
     opacity: 1;
   }
 }

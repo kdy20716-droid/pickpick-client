@@ -3,7 +3,7 @@
   display: flex;
   justify-content: center;
   align-items: center; /* 중앙 정렬 */
-  background-color: #fcf6f8;
+  background: transparent; /* 배경 빛이 보이도록 투명하게 설정 */
   overflow: hidden; /* 스크롤 방지 */
 }
 
