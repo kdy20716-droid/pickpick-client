@@ -14,6 +14,12 @@ const Admin = () => {
   const [deleteModal, setDeleteModal] = useState(null); // null, 'vote', 'comment'
   const [itemToDelete, setItemToDelete] = useState(null);
 
+  // 2차 인증 상태
+  const [isVerified, setIsVerified] = useState(false);
+  const [serverCode, setServerCode] = useState("");
+  const [inputCode, setInputCode] = useState("");
+  const [isSendingCode, setIsSendingCode] = useState(false);
+
   const userStr = localStorage.getItem("user");
   const currentUser = userStr ? JSON.parse(userStr) : null;
   const token = localStorage.getItem("token");
@@ -25,6 +31,39 @@ const Admin = () => {
       navigate("/");
     }
   }, [currentUser, navigate]);
+
+  // 인증 코드 발송
+  const handleSendVerificationCode = async () => {
+    setIsSendingCode(true);
+    try {
+      const response = await instance.post("/admin/send-verification", {}, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setServerCode(response.data.code);
+      alert("관리자 이메일(kdy20716@gmail.com)로 인증 코드가 발송되었습니다.");
+    } catch (error) {
+      console.error("인증 코드 발송 에러:", error);
+      if (!handleAuthError(error)) {
+        alert("인증 코드 발송에 실패했습니다.");
+      }
+    } finally {
+      setIsSendingCode(false);
+    }
+  };
+
+  // 인증 코드 확인
+  const handleVerifyCode = () => {
+    if (!serverCode) {
+      alert("먼저 인증 코드를 발송해주세요.");
+      return;
+    }
+    if (inputCode === serverCode) {
+      setIsVerified(true);
+      alert("관리자 인증이 완료되었습니다.");
+    } else {
+      alert("인증 코드가 일치하지 않습니다.");
+    }
+  };
 
   // 401 에러 공통 처리 함수
   const handleAuthError = (error) => {
