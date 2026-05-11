@@ -316,6 +316,32 @@
   }
 }
 
+/* 중앙 정렬 모드 (Result.jsx 등에서 사용) */
+.comment-modal-layer.is-centered .comment-modal-backdrop {
+  display: block;
+  pointer-events: auto;
+}
+
+.comment-modal-layer.is-centered .comment-modal {
+  top: 50%;
+  left: 50%;
+  right: auto;
+  transform: translate(-50%, -50%);
+  height: min(700px, 80vh);
+  animation: commentCenteredEnter 300ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes commentCenteredEnter {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -40%);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+}
+
 @keyframes commentPanelDropIn {
   from {
     opacity: 0;
