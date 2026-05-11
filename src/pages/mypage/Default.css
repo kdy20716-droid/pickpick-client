@@ -66,6 +66,14 @@
 /* 폼 섹션 */
 .profile-form {
   flex: 2;
+  min-width: 0;
+}
+
+.form-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
 }
 
 .form-group {
@@ -112,6 +120,7 @@
   display: flex;
   flex-direction: column;
   gap: 5px;
+  min-width: 0;
 }
 
 .account-info-item strong {
@@ -249,6 +258,7 @@
   display: flex;
   flex-direction: column;
   gap: 5px;
+  min-width: 0;
 }
 
 .settings-menu-item strong {
@@ -259,6 +269,7 @@
 .settings-menu-item span {
   color: #999;
   font-size: 0.9em;
+  overflow-wrap: anywhere;
 }
 
 .settings-menu-item button {
@@ -363,6 +374,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
   gap: 20px;
   padding: 12px 14px;
   border-radius: 12px;
@@ -408,8 +420,40 @@
 .account-actions {
   display: flex;
   justify-content: flex-end;
+  flex-wrap: wrap;
   gap: 12px;
   margin-top: 8px;
+}
+
+@media (max-width: 640px) {
+  .profile-card {
+    border-radius: 24px;
+    padding: 24px 18px;
+  }
+
+  .account-info-item,
+  .settings-menu-item {
+    align-items: flex-start;
+  }
+
+  .settings-menu-item {
+    flex-direction: column;
+  }
+
+  .settings-menu-item button,
+  .display-option select,
+  .account-link-btn,
+  .account-danger-btn {
+    width: 100%;
+  }
+
+  .display-save-btn {
+    width: 100%;
+  }
+
+  .account-actions {
+    flex-direction: column;
+  }
 }
 
 .account-link-btn,
