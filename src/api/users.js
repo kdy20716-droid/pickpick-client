@@ -35,13 +35,17 @@ export const getNotifications = async (userId) => {
 
 // 알림 읽음 처리 API
 export const markNotificationRead = async (userId, notifId) => {
-  const response = await instance.put(`/users/${userId}/notifications/${notifId}/read`);
+  const response = await instance.put(
+    `/users/${userId}/notifications/${notifId}/read`,
+  );
   return response.data;
 };
 
 // 모든 알림 읽음 처리 API
 export const markAllNotificationsRead = async (userId) => {
-  const response = await instance.put(`/users/${userId}/notifications/read-all`);
+  const response = await instance.put(
+    `/users/${userId}/notifications/read-all`,
+  );
   return response.data;
 };
 
@@ -52,5 +56,11 @@ export const updateProfile = async (userId, data) => {
       "Content-Type": "multipart/form-data",
     },
   });
+  return response.data;
+};
+
+// 로그인 기록 조회 API
+export const getLoginHistory = async (userId) => {
+  const response = await instance.get(`/users/login-history/${userId}`);
   return response.data;
 };

@@ -4,7 +4,7 @@ import { Eye, EyeOff } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import instance from "../../api/instance";
-import { updateProfile } from "../../api/users";
+import { updateProfile, getLoginHistory } from "../../api/users";
 
 const TEXT = {
   한국어: {
@@ -119,6 +119,7 @@ const AccountSettings = () => {
     language: "한국어",
     fontSize: "보통",
   });
+  const [loginHistory, setLoginHistory] = useState(null);
   const text = TEXT[displaySettings.language] || TEXT.한국어;
   const displayNickname =
     currentUser?.name ||
@@ -285,7 +286,18 @@ const AccountSettings = () => {
                   </div>
                   <button
                     type="button"
-                    onClick={() => setIsSecurityOpen(true)}
+                    onClick={async () => {
+                      if (currentUser) {
+                        try {
+                          const res = await getLoginHistory(currentUser.id);
+                          setLoginHistory(res.lastLogin);
+                        } catch (error) {
+                          console.error("로그인 기록 조회 실패:", error);
+                          setLoginHistory(null);
+                        }
+                      }
+                      setIsSecurityOpen(true);
+                    }}
                   >
                     {text.check}
                   </button>
@@ -296,10 +308,7 @@ const AccountSettings = () => {
                     <strong>{text.display}</strong>
                     <span>{text.displayDesc}</span>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => setIsDisplayOpen(true)}
-                  >
+                  <button type="button" onClick={() => setIsDisplayOpen(true)}>
                     {text.settings}
                   </button>
                 </div>
@@ -429,7 +438,11 @@ const AccountSettings = () => {
                 </div>
                 <div className="login-history-item">
                   <span>{text.recentLogin}</span>
-                  <em>{text.noHistory}</em>
+                  <em>
+                    {loginHistory
+                      ? new Date(loginHistory).toLocaleString()
+                      : text.noHistory}
+                  </em>
                 </div>
               </div>
             </div>
