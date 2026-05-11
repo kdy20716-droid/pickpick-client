@@ -9,6 +9,7 @@ import {
   updateProfile,
 } from "../../api/users";
 import ImageCropper from "../../components/ImageCropper";
+import Grade from "./Grade";
 
 const Profile = () => {
   const [notifications, setNotifications] = useState([]);
@@ -203,6 +204,8 @@ const Profile = () => {
           </div>
         </div>
       </section>
+
+      <Grade />
 
       {isCropping && (
         <ImageCropper 
