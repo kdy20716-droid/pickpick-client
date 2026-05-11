@@ -84,45 +84,6 @@ const TEXT = {
     passwordSaved: "Password change request completed.",
     displaySaved: "Display settings saved.",
   },
-  일본어: {
-    breadcrumb: "マイページ > プロフィール > アカウント設定",
-    nickname: "ニックネーム",
-    currentEmail: "現在のメール",
-    currentPassword: "現在のパスワード",
-    passwordUnavailable: "セキュリティ上表示できません",
-    close: "閉じる",
-    manage: "管理",
-    save: "保存",
-    security: "セキュリティ",
-    securityDesc: "ログイン履歴とアカウント保護設定",
-    check: "確認",
-    changePassword: "パスワード変更",
-    newPassword: "新しいパスワード",
-    confirmPassword: "新しいパスワード確認",
-    saveChange: "変更を保存",
-    loginHistory: "ログイン履歴",
-    currentSession: "現在の接続",
-    currentSessionDesc: "今日 · このブラウザ",
-    recentLogin: "最近のログイン",
-    noHistory: "履歴なし",
-    display: "画面 & 使用環境",
-    displayDesc: "言語と文字サイズ設定",
-    settings: "設定",
-    language: "言語設定",
-    fontSize: "文字サイズ",
-    small: "小",
-    normal: "普通",
-    large: "大",
-    logout: "ログアウト",
-    deleteAccount: "退会",
-    logoutConfirm: "本当にログアウトしますか？",
-    deleteConfirm: "本当に退会しますか？",
-    deleteFail: "退会処理に失敗しました。",
-    passwordRequired: "現在のパスワードと新しいパスワードを入力してください。",
-    passwordMismatch: "新しいパスワードが一致しません。",
-    passwordSaved: "パスワード変更リクエストが完了しました。",
-    displaySaved: "画面設定を保存しました。",
-  },
 };
 
 const AccountSettings = () => {
@@ -343,7 +304,6 @@ const AccountSettings = () => {
                       >
                         <option>한국어</option>
                         <option>English</option>
-                        <option>일본어</option>
                       </select>
                     </label>
 
@@ -373,7 +333,6 @@ const AccountSettings = () => {
                     </button>
                   </div>
                 )}
-
               </div>
 
               <div className="account-actions">
