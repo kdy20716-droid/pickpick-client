@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import "./Default.css";
 import { Eye, EyeOff } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import instance from "../../api/instance";
+import { updateProfile } from "../../api/users";
 
 const TEXT = {
   한국어: {
@@ -18,6 +19,13 @@ const TEXT = {
     security: "보안",
     securityDesc: "로그인 기록과 계정 보호 설정",
     check: "확인",
+    profileChange: "프로필 변경",
+    profileChangeDesc: "프로필 사진 변경 옵션 선택",
+    change: "변경",
+    choosePhoto: "사진에서 찾기",
+    defaultImage: "기본이미지로 바꾸기",
+    profileUpdated: "프로필 사진이 변경되었습니다.",
+    profileUpdateFail: "프로필 사진 변경에 실패했습니다.",
     changePassword: "비밀번호 변경",
     newPassword: "새 비밀번호",
     confirmPassword: "새 비밀번호 확인",
@@ -57,6 +65,13 @@ const TEXT = {
     security: "Security",
     securityDesc: "Review login history and account protection",
     check: "Check",
+    profileChange: "Edit Profile",
+    profileChangeDesc: "Choose a profile photo option",
+    change: "Change",
+    choosePhoto: "Choose Photo",
+    defaultImage: "Use Default Image",
+    profileUpdated: "Profile photo has been updated.",
+    profileUpdateFail: "Failed to update profile photo.",
     changePassword: "Change Password",
     newPassword: "New Password",
     confirmPassword: "Confirm New Password",
@@ -88,9 +103,11 @@ const TEXT = {
 
 const AccountSettings = () => {
   const navigate = useNavigate();
-  const { user: currentUser, logout } = useAuth();
+  const { user: currentUser, updateUser, logout } = useAuth();
+  const profileFileInputRef = useRef(null);
   const [isCurrentPasswordVisible, setIsCurrentPasswordVisible] =
     useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isSecurityOpen, setIsSecurityOpen] = useState(false);
   const [passwordForm, setPasswordForm] = useState({
     currentPassword: "",
@@ -135,6 +152,38 @@ const AccountSettings = () => {
       console.error("회원 탈퇴 중 오류:", error);
       alert(error.response?.data?.message || text.deleteFail);
     }
+  };
+
+  const applyProfileUpdate = async (formData) => {
+    if (!currentUser) return;
+
+    try {
+      const res = await updateProfile(currentUser.id, formData);
+      if (res.success) {
+        updateUser(res.user);
+        alert(text.profileUpdated);
+        setIsProfileOpen(false);
+      }
+    } catch (error) {
+      console.error("프로필 이미지 변경 실패:", error);
+      alert(error.response?.data?.message || text.profileUpdateFail);
+    }
+  };
+
+  const handleProfileFileChange = async (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("profile_image", file);
+    await applyProfileUpdate(formData);
+    event.target.value = "";
+  };
+
+  const handleResetProfileImage = async () => {
+    const formData = new FormData();
+    formData.append("remove_profile_image", "true");
+    await applyProfileUpdate(formData);
   };
 
   const handlePasswordChange = (event) => {
@@ -221,6 +270,16 @@ const AccountSettings = () => {
               <div className="settings-menu">
                 <div className="settings-menu-item">
                   <div>
+                    <strong>{text.profileChange}</strong>
+                    <span>{text.profileChangeDesc}</span>
+                  </div>
+                  <button type="button" onClick={() => setIsProfileOpen(true)}>
+                    {text.change}
+                  </button>
+                </div>
+
+                <div className="settings-menu-item">
+                  <div>
                     <strong>{text.security}</strong>
                     <span>{text.securityDesc}</span>
                   </div>
@@ -261,6 +320,55 @@ const AccountSettings = () => {
           </div>
         </div>
       </div>
+
+      {isProfileOpen && (
+        <div className="settings-modal-layer">
+          <button
+            type="button"
+            className="settings-modal-backdrop"
+            aria-label={text.close}
+            onClick={() => setIsProfileOpen(false)}
+          />
+          <section
+            className="settings-modal profile-settings-modal"
+            aria-label={text.profileChange}
+          >
+            <header className="settings-modal-header">
+              <div>
+                <span>{text.profileChange}</span>
+                <h2>{text.profileChangeDesc}</h2>
+              </div>
+              <button type="button" onClick={() => setIsProfileOpen(false)}>
+                {text.close}
+              </button>
+            </header>
+
+            <div className="profile-image-panel">
+              <button
+                type="button"
+                className="profile-image-option"
+                onClick={() => profileFileInputRef.current?.click()}
+              >
+                {text.choosePhoto}
+              </button>
+              <button
+                type="button"
+                className="profile-image-option"
+                onClick={handleResetProfileImage}
+              >
+                {text.defaultImage}
+              </button>
+              <input
+                ref={profileFileInputRef}
+                type="file"
+                accept="image/*"
+                className="profile-image-file-input"
+                onChange={handleProfileFileChange}
+              />
+            </div>
+          </section>
+        </div>
+      )}
 
       {isSecurityOpen && (
         <div className="settings-modal-layer">

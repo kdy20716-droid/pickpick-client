@@ -386,8 +386,42 @@
   transform: translateX(24px);
 }
 
+.profile-settings-modal .settings-modal-header button {
+  transform: translateX(24px);
+}
+
 .settings-modal-header > div {
   transform: translate(-24px, -8px);
+}
+
+.profile-image-panel {
+  padding: var(--settings-item-padding);
+  border: 1px solid #eee;
+  border-radius: var(--settings-radius);
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: var(--settings-gap);
+}
+
+.profile-image-option {
+  width: 100%;
+  padding: 13px 18px;
+  border: 1px solid #eee;
+  border-radius: 18px;
+  background: #fcfcfc;
+  color: #555;
+  font-size: 0.95em;
+  cursor: pointer;
+  text-align: left;
+}
+
+.profile-image-option:hover {
+  background: #f5f5f5;
+}
+
+.profile-image-file-input {
+  display: none;
 }
 
 .security-panel {
