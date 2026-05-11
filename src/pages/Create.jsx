@@ -32,6 +32,7 @@ const Create = () => {
   const [zoom2, setZoom2] = useState(1);
   const [showEdit1, setShowEdit1] = useState(false);
   const [showEdit2, setShowEdit2] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const fileInputRef1 = useRef(null);
   const fileInputRef2 = useRef(null);
@@ -107,13 +108,20 @@ const Create = () => {
   };
 
   const handleSubmit = async () => {
+    if (isSubmitting) return;
+
     if (!title || !candidate1 || !candidate2) {
       alert("필수 항목을 모두 입력해주세요.");
       return;
     }
 
+    setIsSubmitting(true);
+    setTimeout(() => {
+      setIsSubmitting(false);
+    }, 3000);
+
     try {
-      const response = await addVote(
+      await addVote(
         authorId,
         selectedTag,
         title,
@@ -123,10 +131,8 @@ const Create = () => {
         file2,
       );
 
-      if (response.success) {
-        alert("투표 게시글이 성공적으로 등록되었습니다!");
-        navigate("/vote");
-      }
+      alert("투표 게시글이 성공적으로 등록되었습니다!");
+      navigate("/vote");
     } catch (error) {
       console.error("등록 에러:", error);
       alert("등록에 실패했습니다.");
@@ -386,7 +392,15 @@ const Create = () => {
             </div>
           </div>
 
-          <button className="fab-button" onClick={handleSubmit}>
+          <button
+            className="fab-button"
+            onClick={handleSubmit}
+            disabled={isSubmitting}
+            style={{
+              opacity: isSubmitting ? 0.7 : 1,
+              cursor: isSubmitting ? "not-allowed" : "pointer",
+            }}
+          >
             <span>Publish</span>
           </button>
         </section>
