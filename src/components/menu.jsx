@@ -24,7 +24,7 @@ const Menu = () => {
       <Link to="/mypage">MY PAGE</Link>
       {isAdmin && (
         <Link
-          to="/admin/manage"
+          to="/admin"
           style={{
             color: "#ffa500",
             fontWeight: "bold",
