@@ -19,7 +19,7 @@ const Layout = () => {
       <Header />
 
       {/* 하단 페이지 내용 (MainPage, LoginPage 등이 여기에 렌더링됨) */}
-      <main>
+      <main className="site-main">
         <Outlet />
       </main>
     </div>
