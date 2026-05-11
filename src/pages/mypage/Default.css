@@ -329,6 +329,10 @@
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.18);
 }
 
+.security-settings-modal {
+  transform: translateY(-44px);
+}
+
 .settings-modal-header {
   display: flex;
   align-items: flex-start;
@@ -589,7 +593,7 @@
 }
 
 .account-danger-btn {
-  color: #777;
+  color: #ff868a;
 }
 
 .account-danger-btn:hover {
