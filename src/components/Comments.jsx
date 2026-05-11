@@ -51,10 +51,19 @@ function CommentItem({
     <article className={`comment-item ${isReply ? "comment-reply" : ""}`}>
       <div className="comment-avatar" aria-hidden="true">
         {comment.author_image ? (
-          <img 
-            src={(comment.author_image?.startsWith('http') ? comment.author_image : `http://localhost:4000/uploads/${comment.author_image}`)} 
-            alt="" 
-            style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }}
+          <img
+            src={
+              comment.author_image?.startsWith("http")
+                ? comment.author_image
+                : `http://localhost:4000/uploads/${comment.author_image}`
+            }
+            alt=""
+            style={{
+              width: "100%",
+              height: "100%",
+              borderRadius: "50%",
+              objectFit: "cover",
+            }}
           />
         ) : null}
       </div>
@@ -118,7 +127,11 @@ function CommentItem({
               >
                 {currentUser?.profile_image ? (
                   <img
-                    src={`http://localhost:4000/uploads/${currentUser.profile_image}`}
+                    src={
+                      currentUser.profile_image?.startsWith("http")
+                        ? currentUser.profile_image
+                        : `http://localhost:4000/uploads/${currentUser.profile_image}`
+                    }
                     alt=""
                     style={{
                       width: "100%",
@@ -126,10 +139,6 @@ function CommentItem({
                       borderRadius: "50%",
                       objectFit: "cover",
                     }}
-                  <img 
-                    src={(currentUser.profile_image?.startsWith('http') ? currentUser.profile_image : `http://localhost:4000/uploads/${currentUser.profile_image}`)} 
-                    alt="" 
-                    style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }}
                   />
                 ) : null}
               </div>
@@ -544,10 +553,19 @@ export default function Comments({ title, targetCardId, onClose, postDbId }) {
         <footer className="comment-input">
           <div className="comment-avatar is-small" aria-hidden="true">
             {currentUser?.profile_image ? (
-              <img 
-                src={(currentUser.profile_image?.startsWith('http') ? currentUser.profile_image : `http://localhost:4000/uploads/${currentUser.profile_image}`)} 
-                alt="" 
-                style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }}
+              <img
+                src={
+                  currentUser.profile_image?.startsWith("http")
+                    ? currentUser.profile_image
+                    : `http://localhost:4000/uploads/${currentUser.profile_image}`
+                }
+                alt=""
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  borderRadius: "50%",
+                  objectFit: "cover",
+                }}
               />
             ) : null}
           </div>
