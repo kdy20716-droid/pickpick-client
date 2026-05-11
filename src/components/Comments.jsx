@@ -1,6 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import CommentItem from "./CommentItem.jsx";
-import "../pages/comments.css";
+import "./comments.css";
 import {
   getComments,
   addComment,
@@ -89,7 +89,12 @@ export default function Comments({ title, targetCardId, onClose, postDbId }) {
 
   const [commentReactions, setCommentReactions] = useState(() => {
     const saved = localStorage.getItem(`commentReactions_${userId}`);
-    return saved ? JSON.parse(saved) : {};
+
+    try {
+      return saved ? JSON.parse(saved) : {};
+    } catch {
+      return {};
+    }
   });
 
   useEffect(() => {
@@ -103,6 +108,7 @@ export default function Comments({ title, targetCardId, onClose, postDbId }) {
     let ignore = false;
 
     if (!postDbId) {
+      setComments([]);
       return () => {
         ignore = true;
       };
@@ -501,10 +507,19 @@ export default function Comments({ title, targetCardId, onClose, postDbId }) {
         <footer className="comment-input">
           <div className="comment-avatar is-small" aria-hidden="true">
             {currentUser?.profile_image ? (
-              <img 
-                src={(currentUser.profile_image?.startsWith('http') ? currentUser.profile_image : `http://localhost:4000/uploads/${currentUser.profile_image}`)} 
-                alt="" 
-                style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }}
+              <img
+                src={
+                  currentUser.profile_image?.startsWith("http")
+                    ? currentUser.profile_image
+                    : `http://localhost:4000/uploads/${currentUser.profile_image}`
+                }
+                alt=""
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  borderRadius: "50%",
+                  objectFit: "cover",
+                }}
               />
             ) : null}
           </div>

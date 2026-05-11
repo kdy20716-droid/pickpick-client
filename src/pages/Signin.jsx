@@ -79,16 +79,20 @@ export default function Signin() {
     }
 
     // 도메인 유효성 체크
-    const emailParts = form.email.split('@');
-    if (emailParts.length !== 2 || !emailParts[1] || emailParts[1].split('.').length < 2) {
+    const emailParts = form.email.split("@");
+    if (
+      emailParts.length !== 2 ||
+      !emailParts[1] ||
+      emailParts[1].split(".").length < 2
+    ) {
       setErrorMsg("존재하지 않는 이메일입니다.");
       setShowModal(true);
       return;
     }
 
     const domain = emailParts[1];
-    const domainParts = domain.split('.');
-    
+    const domainParts = domain.split(".");
+
     // 도메인의 마지막 부분(TLD)이 2자 이상이어야 함 (예: .com, .co.kr)
     if (domainParts[domainParts.length - 1].length < 2) {
       setErrorMsg("존재하지 않는 이메일입니다.");
@@ -99,7 +103,7 @@ export default function Signin() {
     try {
       // 백엔드 API 호출하여 이메일 전송
       const data = await sendEmailCode(form.email);
-      
+
       // 서버에서 전달받은 코드를 프론트엔드 상태로 저장 (프론트에서 검증하기 위함)
       setServerCode(data.code);
       setEmailCodeSent(true);
@@ -107,7 +111,8 @@ export default function Signin() {
       alert(`인증 코드가 발송되었습니다`);
     } catch (error) {
       // 서버 에러 응답 메시지 우선 사용
-      const message = error.response?.data?.message || "이메일 발송 중 오류가 발생했습니다.";
+      const message =
+        error.response?.data?.message || "이메일 발송 중 오류가 발생했습니다.";
       setErrorMsg(message);
       setShowModal(true);
       console.error(error);
@@ -175,7 +180,7 @@ export default function Signin() {
       const formData = {
         ...form,
         gender,
-        nationality
+        nationality,
       };
       await signin(formData);
       alert("회원가입이 완료되었습니다!");
@@ -278,90 +283,11 @@ export default function Signin() {
           <input
             type="text"
             name="name"
-            placeholder="이름 (최대 5글자)"
+            placeholder="닉네임 (최대 5글자)"
             value={form.name}
             onChange={handleChange}
             maxLength={5}
           />
-        </div>
-
-        <div className="input-group">
-          <span>📅</span>
-          <input
-            type="text"
-            name="birth"
-            placeholder="생년월일 8자리"
-            value={form.birth}
-            onChange={handleChange}
-            maxLength={8}
-          />
-        </div>
-
-        {/* 성별 */}
-        <div className="option-group">
-          <div>
-            <span>👫</span>
-            <button
-              type="button"
-              className={gender === "남자" ? "active" : ""}
-              onClick={() => setGender("남자")}
-            >
-              남자
-            </button>
-            <button
-              type="button"
-              className={gender === "여자" ? "active" : ""}
-              onClick={() => setGender("여자")}
-            >
-              여자
-            </button>
-          </div>
-
-          {/* 내외국인 */}
-          <div>
-            <span>🏳️</span>
-            <button
-              type="button"
-              className={nationality === "내국인" ? "active" : ""}
-              onClick={() => setNationality("내국인")}
-            >
-              내국인
-            </button>
-            <button
-              type="button"
-              className={nationality === "외국인" ? "active" : ""}
-              onClick={() => setNationality("외국인")}
-            >
-              외국인
-            </button>
-          </div>
-        </div>
-
-        {/* 약관 */}
-        <div className="checkbox">
-          <label className="custom-check terms-check">
-            <input
-              type="checkbox"
-              name="required"
-              checked={checks.required}
-              onChange={handleCheck}
-            />
-            <span className="checkmark"></span>
-            <span className="text">필수 개인정보 처리 방침 동의</span>
-          </label>
-        </div>
-
-        <div className="checkbox">
-          <label className="custom-check terms-check">
-            <input
-              type="checkbox"
-              name="marketing"
-              checked={checks.marketing}
-              onChange={handleCheck}
-            />
-            <span className="checkmark"></span>
-            <span className="text">선택 마케팅 동의</span>
-          </label>
         </div>
 
         <button className="submit-btn" onClick={handleSubmit}>
