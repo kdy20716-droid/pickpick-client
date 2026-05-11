@@ -149,8 +149,52 @@ const Admin = () => {
     }
   };
 
+  if (!currentUser || currentUser.role !== "admin") {
+    return null; // 권한 없으면 렌더링 안 함
+  }
+
+  // 2차 인증 전 화면
+  if (!isVerified) {
+    return (
+      <div className="admin-page">
+        <div className="admin-verification-container">
+          <div className="admin-verification-card">
+            <h2>보안 인증</h2>
+            <p>안전한 관리를 위해 등록된 이메일(kdy20716@gmail.com)로 인증이 필요합니다.</p>
+            
+            <div className="verification-actions">
+              <button 
+                className="admin-btn send-code-btn" 
+                onClick={handleSendVerificationCode}
+                disabled={isSendingCode}
+              >
+                {isSendingCode ? "발송 중..." : (serverCode ? "코드 재발송" : "인증 코드 발송")}
+              </button>
+            </div>
+
+            {serverCode && (
+              <div className="verification-input-group animate-fade-in">
+                <input 
+                  type="text" 
+                  placeholder="인증 코드 6자리 입력" 
+                  value={inputCode}
+                  onChange={(e) => setInputCode(e.target.value)}
+                  maxLength={6}
+                />
+                <button className="admin-btn verify-btn" onClick={handleVerifyCode}>
+                  인증하기
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="admin-wrapper">
+    <div className="admin-page">
+      <div className="admin-wrapper">
       <div className="admin-header">
         <h1>관리자 <span>Dashboard</span></h1>
         <p>안녕하세요, {currentUser?.name}님</p>
@@ -331,6 +375,7 @@ const Admin = () => {
           </div>
         </div>
       )}
+      </div>
     </div>
   );
 };
