@@ -1,13 +1,10 @@
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
-import { useHeaderGlow } from "../hooks/useHeaderGlow";
 import "./Header.css";
 import accountIcon from "../assets/account-icon.svg";
 import { useAuth } from "../contexts/AuthContext";
 
 const Header = () => {
   const { isLoggedIn, user } = useAuth();
-  const { scaleY, opacity } = useHeaderGlow();
 
   return (
     <header className="site-header">
@@ -35,11 +32,6 @@ const Header = () => {
           )}
         </nav>
       </div>
-      <motion.div 
-        className="header-glow" 
-        aria-hidden="true" 
-        style={{ scaleY, opacity, transformOrigin: "top" }}
-      />
     </header>
   );
 };
