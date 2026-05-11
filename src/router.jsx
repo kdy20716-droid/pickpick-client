@@ -50,7 +50,7 @@ const router = createBrowserRouter([
         element: <VotePage />,
       },
       {
-        path: "/admin/manage",
+        path: "/admin",
         element: <Admin />,
       },
       {
