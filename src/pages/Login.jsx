@@ -78,12 +78,6 @@ export default function Login() {
             <label>비밀번호</label>
           </div>
 
-          {/* 자동 로그인 체크박스 */}
-          <div className="auto-login">
-            <input type="checkbox" id="auto" />
-            <label htmlFor="auto">자동 로그인</label>
-          </div>
-
           {/* 로그인 버튼 */}
           <button type="submit">Login</button>
 

@@ -1,13 +1,21 @@
 ﻿import { useLayoutEffect, useRef, useState, useEffect } from "react";
 import { ThumbsUp, ThumbsDown } from "lucide-react";
-import "../pages/comments.css";
-import { getComments, addComment, deleteComment, toggleCommentLike } from "../api/posts.js";
+import "../components/comments.css";
+import {
+  getComments,
+  addComment,
+  deleteComment,
+  toggleCommentLike,
+} from "../api/posts.js";
 import { useAuth } from "../contexts/AuthContext";
 
 const COMMENT_OVERLAY_BREAKPOINT = 1320;
 
 function formatRelativeTime(createdAt) {
-  const diffMinutes = Math.max(0, Math.floor((Date.now() - new Date(createdAt).getTime()) / 60000));
+  const diffMinutes = Math.max(
+    0,
+    Math.floor((Date.now() - new Date(createdAt).getTime()) / 60000),
+  );
 
   if (diffMinutes < 1) {
     return "방금 전";
@@ -37,20 +45,29 @@ function CommentItem({
   onAddReply,
   onDelete,
   replies = [],
-  isReply = false
+  isReply = false,
 }) {
   return (
-    <article className={`comment-item ${isReply ? 'comment-reply' : ''}`}>
+    <article className={`comment-item ${isReply ? "comment-reply" : ""}`}>
       <div className="comment-avatar" aria-hidden="true">
         {comment.author_image ? (
-          <img 
-            src={(comment.author_image?.startsWith('http') ? comment.author_image : `http://localhost:4000/uploads/${comment.author_image}`)} 
-            alt="" 
-            style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }}
+          <img
+            src={
+              comment.author_image?.startsWith("http")
+                ? comment.author_image
+                : `http://localhost:4000/uploads/${comment.author_image}`
+            }
+            alt=""
+            style={{
+              width: "100%",
+              height: "100%",
+              borderRadius: "50%",
+              objectFit: "cover",
+            }}
           />
         ) : null}
       </div>
-      <div className="comment-body" style={{ width: '100%' }}>
+      <div className="comment-body" style={{ width: "100%" }}>
         <div className="comment-top">
           <div>
             <strong className="comment-name">{comment.author}</strong>
@@ -87,21 +104,41 @@ function CommentItem({
             <ThumbsDown /> 싫어요
           </button>
           {!isReply && (
-            <button type="button" className="comment-action action-reply" onClick={() => onToggleReplies && onToggleReplies(comment.id)} style={{ marginLeft: '10px' }}>
+            <button
+              type="button"
+              className="comment-action action-reply"
+              onClick={() => onToggleReplies && onToggleReplies(comment.id)}
+              style={{ marginLeft: "10px" }}
+            >
               답글 {replies.length > 0 ? replies.length : ""}
             </button>
           )}
         </div>
 
         {!isReply && isOpen && (
-          <div className="comment-replies" style={{ width: '100%', marginTop: '12px' }}>
+          <div
+            className="comment-replies"
+            style={{ width: "100%", marginTop: "12px" }}
+          >
             <div className="youtube-reply-container">
-              <div className="comment-avatar comment-avatar-small" aria-hidden="true">
+              <div
+                className="comment-avatar comment-avatar-small"
+                aria-hidden="true"
+              >
                 {currentUser?.profile_image ? (
-                  <img 
-                    src={(currentUser.profile_image?.startsWith('http') ? currentUser.profile_image : `http://localhost:4000/uploads/${currentUser.profile_image}`)} 
-                    alt="" 
-                    style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }}
+                  <img
+                    src={
+                      currentUser.profile_image?.startsWith("http")
+                        ? currentUser.profile_image
+                        : `http://localhost:4000/uploads/${currentUser.profile_image}`
+                    }
+                    alt=""
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      borderRadius: "50%",
+                      objectFit: "cover",
+                    }}
                   />
                 ) : null}
               </div>
@@ -111,27 +148,46 @@ function CommentItem({
                   value={replyDraft}
                   placeholder="답글 추가..."
                   className="youtube-reply-input"
-                  onChange={(e) => onReplyDraftChange && onReplyDraftChange(comment.id, e.target.value)}
+                  onChange={(e) =>
+                    onReplyDraftChange &&
+                    onReplyDraftChange(comment.id, e.target.value)
+                  }
                   onKeyDown={(e) => {
-                    if (e.key === "Enter" && replyDraft.trim()) onAddReply && onAddReply(comment.id);
+                    if (e.key === "Enter" && replyDraft.trim())
+                      onAddReply && onAddReply(comment.id);
                   }}
                 />
                 <div className="youtube-reply-actions">
-                  <button type="button" className="btn-cancel" onClick={() => onToggleReplies && onToggleReplies(comment.id)}>취소</button>
-                  <button type="button" className="btn-submit" onClick={() => onAddReply && onAddReply(comment.id)} disabled={!replyDraft.trim()}>답글</button>
+                  <button
+                    type="button"
+                    className="btn-cancel"
+                    onClick={() =>
+                      onToggleReplies && onToggleReplies(comment.id)
+                    }
+                  >
+                    취소
+                  </button>
+                  <button
+                    type="button"
+                    className="btn-submit"
+                    onClick={() => onAddReply && onAddReply(comment.id)}
+                    disabled={!replyDraft.trim()}
+                  >
+                    답글
+                  </button>
                 </div>
               </div>
             </div>
-            {replies.map(reply => (
-               <CommentItem
-                 key={reply.id}
-                 comment={reply}
-                 currentUser={currentUser}
-                 onLike={onLike}
-                 onDislike={onDislike}
-                 onDelete={onDelete}
-                 isReply={true}
-               />
+            {replies.map((reply) => (
+              <CommentItem
+                key={reply.id}
+                comment={reply}
+                currentUser={currentUser}
+                onLike={onLike}
+                onDislike={onDislike}
+                onDelete={onDelete}
+                isReply={true}
+              />
             ))}
           </div>
         )}
@@ -148,7 +204,7 @@ export default function Comments({ title, targetCardId, onClose, postDbId }) {
   const modalRef = useRef(null);
 
   const { user: currentUser } = useAuth();
-  const userId = currentUser?.id || 'guest';
+  const userId = currentUser?.id || "guest";
 
   const [commentReactions, setCommentReactions] = useState(() => {
     const saved = localStorage.getItem(`commentReactions_${userId}`);
@@ -156,17 +212,20 @@ export default function Comments({ title, targetCardId, onClose, postDbId }) {
   });
 
   useEffect(() => {
-    localStorage.setItem(`commentReactions_${userId}`, JSON.stringify(commentReactions));
+    localStorage.setItem(
+      `commentReactions_${userId}`,
+      JSON.stringify(commentReactions),
+    );
   }, [commentReactions, userId]);
 
   useEffect(() => {
     if (postDbId) {
       getComments(postDbId)
-        .then(res => {
+        .then((res) => {
           if (res.success) {
-            const formatted = res.comments.map(c => ({
+            const formatted = res.comments.map((c) => ({
               ...c,
-              reaction: commentReactions[c.id] || null
+              reaction: commentReactions[c.id] || null,
             }));
             setComments(formatted);
           }
@@ -354,14 +413,19 @@ export default function Comments({ title, targetCardId, onClose, postDbId }) {
     try {
       const res = await toggleCommentLike(postDbId, commentId, currentUser.id);
       if (res.success) {
-        setCommentReactions((prev) => ({ ...prev, [commentId]: res.liked ? "like" : null }));
+        setCommentReactions((prev) => ({
+          ...prev,
+          [commentId]: res.liked ? "like" : null,
+        }));
         setComments((current) =>
           current.map((c) => {
             if (c.id === commentId) {
               return {
                 ...c,
                 reaction: res.liked ? "like" : null,
-                likes: res.liked ? (c.likes || 0) + 1 : Math.max(0, (c.likes || 0) - 1),
+                likes: res.liked
+                  ? (c.likes || 0) + 1
+                  : Math.max(0, (c.likes || 0) - 1),
               };
             }
             return c;
@@ -389,10 +453,15 @@ export default function Comments({ title, targetCardId, onClose, postDbId }) {
 
           if (hadLike && willDislike) {
             // 좋아요 취소 처리 (await 하지 않고 백그라운드 호출)
-            toggleCommentLike(postDbId, commentId, currentUser.id).catch(console.error);
+            toggleCommentLike(postDbId, commentId, currentUser.id).catch(
+              console.error,
+            );
           }
 
-          setCommentReactions((prev) => ({ ...prev, [commentId]: willDislike ? "dislike" : null }));
+          setCommentReactions((prev) => ({
+            ...prev,
+            [commentId]: willDislike ? "dislike" : null,
+          }));
 
           return {
             ...c,
@@ -406,11 +475,11 @@ export default function Comments({ title, targetCardId, onClose, postDbId }) {
   };
 
   const handleToggleReplies = (commentId) => {
-    setOpenReplies(prev => ({ ...prev, [commentId]: !prev[commentId] }));
+    setOpenReplies((prev) => ({ ...prev, [commentId]: !prev[commentId] }));
   };
 
   const handleReplyDraftChange = (commentId, value) => {
-    setReplyDrafts(prev => ({ ...prev, [commentId]: value }));
+    setReplyDrafts((prev) => ({ ...prev, [commentId]: value }));
   };
 
   const handleAddReply = async (parentId) => {
@@ -422,8 +491,8 @@ export default function Comments({ title, targetCardId, onClose, postDbId }) {
       if (res.success) {
         // 백엔드에서 반환된 새 답글 추가
         setComments((prev) => [...prev, { ...res.comment, reaction: null }]);
-        setReplyDrafts(prev => ({ ...prev, [parentId]: "" }));
-        setOpenReplies(prev => ({ ...prev, [parentId]: true }));
+        setReplyDrafts((prev) => ({ ...prev, [parentId]: "" }));
+        setOpenReplies((prev) => ({ ...prev, [parentId]: true }));
       }
     } catch (err) {
       console.error(err);
@@ -431,8 +500,9 @@ export default function Comments({ title, targetCardId, onClose, postDbId }) {
     }
   };
 
-  const parentComments = comments.filter(c => !c.parent_id);
-  const getReplies = (parentId) => comments.filter(c => c.parent_id === parentId);
+  const parentComments = comments.filter((c) => !c.parent_id);
+  const getReplies = (parentId) =>
+    comments.filter((c) => c.parent_id === parentId);
 
   return (
     <div className="comment-modal-layer" key={userId}>
@@ -483,10 +553,19 @@ export default function Comments({ title, targetCardId, onClose, postDbId }) {
         <footer className="comment-input">
           <div className="comment-avatar is-small" aria-hidden="true">
             {currentUser?.profile_image ? (
-              <img 
-                src={(currentUser.profile_image?.startsWith('http') ? currentUser.profile_image : `http://localhost:4000/uploads/${currentUser.profile_image}`)} 
-                alt="" 
-                style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }}
+              <img
+                src={
+                  currentUser.profile_image?.startsWith("http")
+                    ? currentUser.profile_image
+                    : `http://localhost:4000/uploads/${currentUser.profile_image}`
+                }
+                alt=""
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  borderRadius: "50%",
+                  objectFit: "cover",
+                }}
               />
             ) : null}
           </div>
