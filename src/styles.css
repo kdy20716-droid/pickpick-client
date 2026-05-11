@@ -23,3 +23,8 @@ a {
 #root {
   min-width: 850px;
 }
+
+.site-main {
+  position: relative;
+  z-index: 10; /* 배경 빛(z-index: 0)보다 위에 렌더링됨 */
+}
