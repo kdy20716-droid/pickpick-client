@@ -142,6 +142,11 @@ const AccountSettings = () => {
     fontSize: "보통",
   });
   const text = TEXT[displaySettings.language] || TEXT.한국어;
+  const displayNickname =
+    currentUser?.name ||
+    currentUser?.nickname ||
+    currentUser?.email?.split("@")[0] ||
+    "-";
 
   const handleLogout = async () => {
     const isConfirmed = window.confirm(text.logoutConfirm);
@@ -217,7 +222,7 @@ const AccountSettings = () => {
                 <div className="account-info-item">
                   <div>
                     <strong>{text.nickname}</strong>
-                    <span>{currentUser?.nickname || "-"}</span>
+                    <span>{displayNickname}</span>
                   </div>
                 </div>
 

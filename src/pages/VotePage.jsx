@@ -12,11 +12,7 @@ import { isMainRouteTransition } from "./animations/routeTransitions.js";
 import { useActiveVoteCard } from "./vote/useActiveVoteCard.js";
 import { useActiveVoteHash } from "./vote/useActiveVoteHash.js";
 import { useVotePageScrollSnap } from "./vote/useVotePageScrollSnap.js";
-<<<<<<< HEAD
 import { getVoteFeedIdFromHash, getVoteHash } from "./vote/voteCards.js";
-=======
-import { getVoteHash } from "./vote/voteCards.js";
->>>>>>> main
 import {
   getVote,
   submitVote,
