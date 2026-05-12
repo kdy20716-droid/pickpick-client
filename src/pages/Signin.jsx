@@ -18,12 +18,6 @@ export default function Signin() {
   const [gender, setGender] = useState("");
   const [nationality, setNationality] = useState("");
 
-  // ✅ 3️⃣ 체크박스 상태
-  const [checks, setChecks] = useState({
-    required: false,
-    marketing: false,
-  });
-
   // ✅ 4️⃣ 에러 모달 상태
   const [errorMsg, setErrorMsg] = useState("");
   const [showModal, setShowModal] = useState(false);
@@ -54,12 +48,6 @@ export default function Signin() {
     }
 
     setForm({ ...form, [name]: value });
-  };
-
-  // 체크박스 변경
-  const handleCheck = (e) => {
-    const { name, checked } = e.target;
-    setChecks({ ...checks, [name]: checked });
   };
 
   // 이메일 코드 전송
@@ -133,12 +121,6 @@ export default function Signin() {
   // 제출
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (!checks.required) {
-      setErrorMsg("필수 약관에 동의해주세요.");
-      setShowModal(true);
-      return;
-    }
 
     if (form.id.length < 5) {
       setErrorMsg("아이디는 5자 이상 입력하세요.");
