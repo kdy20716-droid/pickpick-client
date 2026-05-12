@@ -3,6 +3,11 @@ body {
   font-family: sans-serif;
 }
 
+:root {
+  --app-min-width: 850px;
+  --layout-vw: max(100vw, var(--app-min-width));
+}
+
 * {
   box-sizing: border-box;
 }
@@ -21,7 +26,7 @@ a {
 }
 
 #root {
-  min-width: 850px;
+  min-width: var(--app-min-width);
 }
 
 .site-main {
