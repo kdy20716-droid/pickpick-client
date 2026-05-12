@@ -401,7 +401,7 @@ const Create = () => {
             onClick={handleSubmit}
             disabled={isPublishDisabled}
           >
-            <span>Publish</span>
+            <span>게시</span>
           </button>
         </section>
       </main>
