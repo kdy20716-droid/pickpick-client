@@ -2,7 +2,7 @@
   position: sticky;
   top: 0;
   z-index: 120;
-  height: clamp(68px, 8vw, 80px);
+  height: 80px;
   background: var(--bg);
 }
 
@@ -19,7 +19,7 @@
 
 .brand {
   font-family: "Jersey 25", cursive;
-  font-size: clamp(2.2rem, 4.6vw, 3.5rem);
+  font-size: 3.5rem;
   line-height: 1;
   color: var(--point);
   letter-spacing: 0.03em;
@@ -28,14 +28,31 @@
 .site-nav {
   display: flex;
   align-items: center;
-  gap: clamp(14px, 3vw, 36px);
-  font-size: clamp(1rem, 2.2vw, 1.5rem);
+  gap: clamp(14px, calc(var(--layout-vw) * 0.03), 36px);
+  font-size: 1.5rem;
   font-weight: 300;
   white-space: nowrap;
 }
 
 .site-nav a:not(.account-link) {
   color: rgba(17, 17, 17, 0.58);
+  transition:
+    color 180ms ease,
+    font-weight 180ms ease;
+}
+
+.site-nav a:not(.account-link)::after {
+  content: attr(data-label);
+  display: block;
+  height: 0;
+  overflow: hidden;
+  font-weight: 700;
+  visibility: hidden;
+}
+
+.site-nav a:not(.account-link):hover {
+  color: #f7a1c4;
+  font-weight: 700;
 }
 
 .account-link {
@@ -44,8 +61,8 @@
 }
 
 .account-link img {
-  width: clamp(40px, 6vw, 54px);
-  height: clamp(40px, 6vw, 54px);
+  width: clamp(40px, calc(var(--layout-vw) * 0.06), 54px);
+  height: clamp(40px, calc(var(--layout-vw) * 0.06), 54px);
 }
 
 .profile-img-small {
@@ -55,7 +72,7 @@
 
 .background-glow {
   position: fixed; /* 페이지의 고정된 배경으로 작동 */
-  top: clamp(68px, 8vw, 80px); /* 헤더의 높이와 정확히 맞물림 */
+  top: 80px; /* 헤더의 높이와 정확히 맞물림 */
   left: 0;
   right: 0;
   height: 50px; /* 기본 두께를 조금 더 두껍게 */

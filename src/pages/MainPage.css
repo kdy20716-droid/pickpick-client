@@ -22,7 +22,7 @@ html {
 
 body {
   margin: 0;
-  min-width: 850px;
+  min-width: var(--app-min-width);
   background: var(--bg);
   color: var(--text);
   font-family: "REM", sans-serif;
@@ -56,7 +56,7 @@ img {
 
 .hero h1 {
   margin: 50px 0 0;
-  font-size: clamp(2.3rem, 3.2vw, 3.5rem);
+  font-size: 3.5rem;
   line-height: 1.12;
   font-weight: 600;
 }
@@ -125,7 +125,7 @@ img {
 .vote-card h2 {
   margin: 0 0;
   text-align: center;
-  font-size: clamp(2rem, 2.5vw, 2.8rem);
+  font-size: 2.8rem;
   font-weight: 550;
 }
 
@@ -162,7 +162,7 @@ img {
   bottom: 22px;
   left: 0;
   text-align: center;
-  font-size: clamp(1.65rem, 1.8vw, 2.2rem);
+  font-size: 2.2rem;
   font-weight: 700;
   color: #ffffff;
   text-shadow:

@@ -13,10 +13,10 @@ const Header = () => {
           PICKPICK
         </Link>
         <nav className="site-nav" aria-label="주요 메뉴">
-          <Link to="/create">+ CREATE</Link>
-          <Link to="/ranking">RANKING</Link>
+          <Link to="/create" data-label="+ CREATE">+ CREATE</Link>
+          <Link to="/ranking" data-label="RANKING">RANKING</Link>
           {!isLoggedIn ? (
-            <Link to="/login">LOG IN</Link>
+            <Link to="/login" data-label="LOG IN">LOG IN</Link>
           ) : (
             <Link to="/mypage" className="account-link" aria-label="계정">
               {user?.profile_image ? (
