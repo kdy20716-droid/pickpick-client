@@ -55,7 +55,7 @@ function CommentItem({
             src={
               comment.author_image?.startsWith("http")
                 ? comment.author_image
-                : `http://localhost:4000/uploads/${comment.author_image}`
+                : `https://pickpick-server.onrender.com/uploads/${comment.author_image}`
             }
             alt=""
             style={{
@@ -130,7 +130,7 @@ function CommentItem({
                     src={
                       currentUser.profile_image?.startsWith("http")
                         ? currentUser.profile_image
-                        : `http://localhost:4000/uploads/${currentUser.profile_image}`
+                        : `https://pickpick-server.onrender.com/uploads/${currentUser.profile_image}`
                     }
                     alt=""
                     style={{
@@ -557,7 +557,7 @@ export default function Comments({ title, targetCardId, onClose, postDbId }) {
                 src={
                   currentUser.profile_image?.startsWith("http")
                     ? currentUser.profile_image
-                    : `http://localhost:4000/uploads/${currentUser.profile_image}`
+                    : `https://pickpick-server.onrender.com/uploads/${currentUser.profile_image}`
                 }
                 alt=""
                 style={{

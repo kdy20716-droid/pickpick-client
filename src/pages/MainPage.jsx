@@ -38,11 +38,11 @@ export default function MainPage() {
             title: item.title,
             leftCandidate: {
               name: item.candidate_a_name,
-              image: item.candidate_a_image ? (item.candidate_a_image?.startsWith('http') ? item.candidate_a_image : `http://localhost:4000/uploads/${item.candidate_a_image}`) : null,
+              image: item.candidate_a_image ? (item.candidate_a_image?.startsWith('http') ? item.candidate_a_image : `https://pickpick-server.onrender.com/uploads/${item.candidate_a_image}`) : null,
             },
             rightCandidate: {
               name: item.candidate_b_name,
-              image: item.candidate_b_image ? (item.candidate_b_image?.startsWith('http') ? item.candidate_b_image : `http://localhost:4000/uploads/${item.candidate_b_image}`) : null,
+              image: item.candidate_b_image ? (item.candidate_b_image?.startsWith('http') ? item.candidate_b_image : `https://pickpick-server.onrender.com/uploads/${item.candidate_b_image}`) : null,
             },
           });
         }

@@ -119,7 +119,7 @@ const Profile = () => {
               <div className={styles.circleBig}>
                 {currentUser?.profile_image ? (
                   <img 
-                    src={(currentUser.profile_image?.startsWith('http') ? currentUser.profile_image : `http://localhost:4000/uploads/${currentUser.profile_image}`)} 
+                    src={(currentUser.profile_image?.startsWith('http') ? currentUser.profile_image : `https://pickpick-server.onrender.com/uploads/${currentUser.profile_image}`)} 
                     alt="Profile" 
                     style={{ width: "100%", height: "100%", objectFit: "cover" }}
                   />

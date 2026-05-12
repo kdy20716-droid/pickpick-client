@@ -373,7 +373,7 @@ export default function VotePage() {
             image: item.candidate_a_image
               ? item.candidate_a_image?.startsWith("http")
                 ? item.candidate_a_image
-                : `http://localhost:4000/uploads/${item.candidate_a_image}`
+                : `https://pickpick-server.onrender.com/uploads/${item.candidate_a_image}`
               : null,
             tone: "light",
           },
@@ -383,7 +383,7 @@ export default function VotePage() {
             image: item.candidate_b_image
               ? item.candidate_b_image?.startsWith("http")
                 ? item.candidate_b_image
-                : `http://localhost:4000/uploads/${item.candidate_b_image}`
+                : `https://pickpick-server.onrender.com/uploads/${item.candidate_b_image}`
               : null,
             tone: "dark",
           },
