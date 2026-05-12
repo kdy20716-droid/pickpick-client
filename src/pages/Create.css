@@ -261,23 +261,20 @@
 }
 
 .vs-badge {
-  background-color: #f7a1c4;
-  color: #fff;
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
+  width: 82px;
+  height: auto;
+  flex: 0 0 82px;
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 5;
-  box-shadow: 0 2px 2px rgba(247, 161, 196, 0.5);
-  margin: 0 -30px;
+  margin: 0 -41px;
+  pointer-events: none;
 }
 
-.vs-badge__text {
-  font-weight: 900;
-  font-style: italic;
-  font-size: 24px;
+.vs-badge img {
+  width: 100%;
+  height: auto;
 }
 
 /* Settings Section */
@@ -309,6 +306,14 @@
   font-size: 14px;
 }
 
+.list-item__num {
+  transition: color 180ms ease;
+}
+
+.list-item:focus-within .list-item__num {
+  color: #f7a1c4;
+}
+
 .tag-cloud {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -324,8 +329,21 @@
   font-size: 14px;
   color: #888;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    background-color 180ms ease,
+    border-color 180ms ease,
+    color 180ms ease;
   width: 100%;
+}
+
+.tag-button:not(.tag-button--active):hover {
+  transform: translateY(-2px);
+  border-color: #f7a1c4;
+  background-color: #fff;
+  color: #f7a1c4;
+  box-shadow: 0 16px 30px rgba(252, 146, 199, 0.22);
 }
 
 .tag-button--active {
@@ -359,6 +377,17 @@
 .fab-button:hover {
   transform: translateY(-5px) scale(1.05);
   background-color: #f589b4;
+}
+
+.fab-button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.fab-button:disabled:hover {
+  transform: none;
+  background-color: #f7a1c4;
 }
 
 /* 반응형 레이아웃 (화면이 1000px 이하일 때 세로 배치) */

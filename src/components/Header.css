@@ -36,6 +36,23 @@
 
 .site-nav a:not(.account-link) {
   color: rgba(17, 17, 17, 0.58);
+  transition:
+    color 180ms ease,
+    font-weight 180ms ease;
+}
+
+.site-nav a:not(.account-link)::after {
+  content: attr(data-label);
+  display: block;
+  height: 0;
+  overflow: hidden;
+  font-weight: 700;
+  visibility: hidden;
+}
+
+.site-nav a:not(.account-link):hover {
+  color: #f7a1c4;
+  font-weight: 700;
 }
 
 .account-link {
