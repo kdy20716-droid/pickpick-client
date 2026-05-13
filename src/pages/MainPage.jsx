@@ -38,11 +38,11 @@ export default function MainPage() {
             title: item.title,
             leftCandidate: {
               name: item.candidate_a_name,
-              image: item.candidate_a_image ? (item.candidate_a_image?.startsWith('http') ? item.candidate_a_image : `https://dolphin-app-onqn2.ondigitalocean.app/uploads/${item.candidate_a_image}`) : null,
+              image: item.candidate_a_image,
             },
             rightCandidate: {
               name: item.candidate_b_name,
-              image: item.candidate_b_image ? (item.candidate_b_image?.startsWith('http') ? item.candidate_b_image : `https://dolphin-app-onqn2.ondigitalocean.app/uploads/${item.candidate_b_image}`) : null,
+              image: item.candidate_b_image,
             },
           });
         }
@@ -92,9 +92,14 @@ export default function MainPage() {
                     aria-label={`${featuredVote.leftCandidate.name}${copy.candidateSuffix}`}
                   >
                     {featuredVote.leftCandidate.image && (
-                      <img src={featuredVote.leftCandidate.image} alt={featuredVote.leftCandidate.name} />
+                      <img
+                        src={featuredVote.leftCandidate.image}
+                        alt={featuredVote.leftCandidate.name}
+                      />
                     )}
-                    <span className="candidate-name">{featuredVote.leftCandidate.name}</span>
+                    <span className="candidate-name">
+                      {featuredVote.leftCandidate.name}
+                    </span>
                   </Link>
 
                   <div className="vs-mark" aria-hidden="true">
@@ -108,9 +113,14 @@ export default function MainPage() {
                     aria-label={`${featuredVote.rightCandidate.name}${copy.candidateSuffix}`}
                   >
                     {featuredVote.rightCandidate.image && (
-                      <img src={featuredVote.rightCandidate.image} alt={featuredVote.rightCandidate.name} />
+                      <img
+                        src={featuredVote.rightCandidate.image}
+                        alt={featuredVote.rightCandidate.name}
+                      />
                     )}
-                    <span className="candidate-name">{featuredVote.rightCandidate.name}</span>
+                    <span className="candidate-name">
+                      {featuredVote.rightCandidate.name}
+                    </span>
                   </Link>
                 </>
               )}

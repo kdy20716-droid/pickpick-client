@@ -12,10 +12,18 @@ const Like = () => {
 
   const fetchLikedVotes = useCallback(async () => {
     if (!currentUser) return;
-    
+
     try {
       setLoading(true);
-      const data = await getVote(searchKeyword, null, null, currentUser.id, null, true, null);
+      const data = await getVote(
+        searchKeyword,
+        null,
+        null,
+        currentUser.id,
+        null,
+        true,
+        null,
+      );
       setLikedVotes(data);
     } catch (error) {
       console.error("좋아요 목록을 불러오는데 실패했습니다.", error);
@@ -53,9 +61,9 @@ const Like = () => {
       {/* 검색바 영역 - Result 페이지와 구조 통일 */}
       <div className="like-search-section">
         <div className="like-search-bar">
-          <input 
-            type="text" 
-            placeholder="좋아요한 투표 검색" 
+          <input
+            type="text"
+            placeholder="좋아요한 투표 검색"
             value={searchKeyword}
             onChange={(e) => setSearchKeyword(e.target.value)}
           />
@@ -69,7 +77,10 @@ const Like = () => {
         </p>
 
         {loading ? (
-          <div className="like-list" style={{ textAlign: "center", color: "#bbb", padding: "60px" }}>
+          <div
+            className="like-list"
+            style={{ textAlign: "center", color: "#bbb", padding: "60px" }}
+          >
             데이터를 불러오는 중입니다...
           </div>
         ) : (
@@ -78,8 +89,8 @@ const Like = () => {
               likedVotes.map((vote) => (
                 <div key={vote.id} className="like-item-row">
                   {/* 왼쪽 하트 아이콘 - 클릭 시 좋아요 취소 */}
-                  <div 
-                    className="like-badge" 
+                  <div
+                    className="like-badge"
                     onClick={() => handleUnlike(vote.id)}
                     style={{ cursor: "pointer" }}
                     title="좋아요 취소"
@@ -89,21 +100,47 @@ const Like = () => {
 
                   {/* 중앙 정보 박스 */}
                   <div className="info-card">
-                  <div className="thumb-img">
-                    {vote.candidate_a_image ? (
-                      <img src={(vote.candidate_a_image?.startsWith('http') ? vote.candidate_a_image : `https://dolphin-app-onqn2.ondigitalocean.app/uploads/${vote.candidate_a_image}`)} alt="candidate a" />
-                    ) : (
-                      <div style={{ width: "100%", height: "100%", background: "#eee", display: "flex", justifyContent: "center", alignItems: "center", fontSize: "12px", color: "#ccc" }}>No Img</div>
-                    )}
-                  </div>
-                  <h3 className="vote-title">{vote.title}</h3>
-                  <div className="thumb-img">
-                    {vote.candidate_b_image ? (
-                      <img src={(vote.candidate_b_image?.startsWith('http') ? vote.candidate_b_image : `https://dolphin-app-onqn2.ondigitalocean.app/uploads/${vote.candidate_b_image}`)} alt="candidate b" />
-                    ) : (
-                      <div style={{ width: "100%", height: "100%", background: "#eee", display: "flex", justifyContent: "center", alignItems: "center", fontSize: "12px", color: "#ccc" }}>No Img</div>
-                    )}
-                  </div>
+                    <div className="thumb-img">
+                      {vote.candidate_a_image ? (
+                        <img src={vote.candidate_a_image} alt="candidate a" />
+                      ) : (
+                        <div
+                          style={{
+                            width: "100%",
+                            height: "100%",
+                            background: "#eee",
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            fontSize: "12px",
+                            color: "#ccc",
+                          }}
+                        >
+                          No Img
+                        </div>
+                      )}
+                    </div>
+                    <h3 className="vote-title">{vote.title}</h3>
+                    <div className="thumb-img">
+                      {vote.candidate_b_image ? (
+                        <img src={vote.candidate_b_image} alt="candidate b" />
+                      ) : (
+                        <div
+                          style={{
+                            width: "100%",
+                            height: "100%",
+                            background: "#eee",
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            fontSize: "12px",
+                            color: "#ccc",
+                          }}
+                        >
+                          No Img
+                        </div>
+                      )}
+                    </div>
                   </div>
                   {/* 오른쪽 댓글 아이콘 버튼 */}
                   <button className="comment-icon-btn">
@@ -112,7 +149,9 @@ const Like = () => {
                 </div>
               ))
             ) : (
-              <div style={{ textAlign: "center", color: "#bbb", padding: "60px" }}>
+              <div
+                style={{ textAlign: "center", color: "#bbb", padding: "60px" }}
+              >
                 좋아요한 투표가 없습니다.
               </div>
             )}

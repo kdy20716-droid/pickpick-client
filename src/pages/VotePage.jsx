@@ -85,9 +85,11 @@ function getTargetVoteId(routePostId, search, hash) {
   ];
 
   return (
-    candidates.find((candidate) => {
-      return typeof candidate === "string" && candidate.trim().length > 0;
-    })?.trim() ?? ""
+    candidates
+      .find((candidate) => {
+        return typeof candidate === "string" && candidate.trim().length > 0;
+      })
+      ?.trim() ?? ""
   );
 }
 
@@ -424,21 +426,13 @@ export default function VotePage() {
           leftCandidate: {
             id: "a",
             name: item.candidate_a_name,
-            image: item.candidate_a_image
-              ? item.candidate_a_image?.startsWith("http")
-                ? item.candidate_a_image
-                : `https://dolphin-app-onqn2.ondigitalocean.app/uploads/${item.candidate_a_image}`
-              : null,
+            image: item.candidate_a_image,
             tone: "light",
           },
           rightCandidate: {
             id: "b",
             name: item.candidate_b_name,
-            image: item.candidate_b_image
-              ? item.candidate_b_image?.startsWith("http")
-                ? item.candidate_b_image
-                : `https://dolphin-app-onqn2.ondigitalocean.app/uploads/${item.candidate_b_image}`
-              : null,
+            image: item.candidate_b_image,
             tone: "dark",
           },
           shares: { left: leftShare, right: rightShare },
