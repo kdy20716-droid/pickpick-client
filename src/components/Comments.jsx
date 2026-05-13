@@ -196,6 +196,7 @@ export default function Comments({
   onClose,
   postDbId,
   isFixed = false,
+  isCentered = false,
 }) {
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
@@ -235,6 +236,10 @@ export default function Comments({
   }, [postDbId, commentReactions]);
 
   useLayoutEffect(() => {
+    if (isCentered) {
+      return undefined;
+    }
+
     const modal = modalRef.current;
     if (!modal) {
       return undefined;
@@ -286,7 +291,6 @@ export default function Comments({
 
       if (!compactLayoutQuery.matches) {
         // Calculate layout shift even if railRect is missing (for Result.jsx)
-        const referenceRight = railRect ? railRect.left : sheetRect.right;
         const sheetToRailGap = railRect
           ? Math.max(0, railRect.left - sheetRect.right)
           : 24;
@@ -383,7 +387,7 @@ export default function Comments({
       window.removeEventListener("resize", scheduleSync);
       feed?.removeEventListener("scroll", scheduleSync);
     };
-  }, [targetCardId, isFixed]);
+  }, [targetCardId, isFixed, isCentered]);
 
   const handleAddComment = async () => {
     const text = newComment.trim();
@@ -524,7 +528,10 @@ export default function Comments({
     comments.filter((c) => c.parent_id === parentId);
 
   return createPortal(
-    <div className="comment-modal-layer" key={userId}>
+    <div
+      className={`comment-modal-layer${isCentered ? " is-centered" : ""}`}
+      key={userId}
+    >
       <button
         type="button"
         className="comment-modal-backdrop"
