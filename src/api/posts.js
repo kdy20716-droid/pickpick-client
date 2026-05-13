@@ -11,6 +11,7 @@ export const getVote = async (
   only_voted = null,
   only_liked = null,
   author_id = null,
+  pinned_post_id = null,
 ) => {
   let url = "/votelist";
   const params = new URLSearchParams();
@@ -21,6 +22,7 @@ export const getVote = async (
   if (only_voted) params.append("only_voted", only_voted);
   if (only_liked) params.append("only_liked", only_liked);
   if (author_id) params.append("author_id", author_id);
+  if (pinned_post_id) params.append("pinned_post_id", pinned_post_id);
 
   const queryString = params.toString();
   if (queryString) url += `?${queryString}`;
