@@ -44,12 +44,12 @@ const Grade = () => {
           <div className="gradeItem">
             <div
               className="gradeIcon"
-              style={{ background: "#E5E4E222", color: "#B4C3D2" }}
+              style={{ background: "#E5E4E222", color: "#4ae46b" }}
             >
               💎
             </div>
             <span className="gradeName">PLATINUM</span>
-            <span className="gradeRequirement">투표 참여 500회 이상</span>
+            <span className="gradeRequirement">투표 참여 1000회 이상</span>
             <span className="gradeRequirement">투표 우승 100회 이상</span>
           </div>
           <div className="gradeItem">
@@ -60,7 +60,8 @@ const Grade = () => {
               👑
             </div>
             <span className="gradeName">DIAMOND</span>
-            <span className="gradeRequirement">투표 참여 500회 이상</span>
+            <span className="gradeRequirement">투표 참여 5000회 이상</span>
+            <span className="gradeRequirement">투표 우승 1000회 이상</span>
           </div>
         </div>
       </div>

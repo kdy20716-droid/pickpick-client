@@ -20,6 +20,7 @@ import {
   incrementView,
 } from "../api/posts.js";
 import { useAuth } from "../contexts/AuthContext";
+import { useFitSingleLineText } from "../hooks/useFitSingleLineText.js";
 
 const tags = [
   "전체",
@@ -124,9 +125,11 @@ function getTargetVoteId(routePostId, search, hash) {
   ];
 
   return (
-    candidates.find((candidate) => {
-      return typeof candidate === "string" && candidate.trim().length > 0;
-    })?.trim() ?? ""
+    candidates
+      .find((candidate) => {
+        return typeof candidate === "string" && candidate.trim().length > 0;
+      })
+      ?.trim() ?? ""
   );
 }
 
@@ -243,6 +246,24 @@ function VoteActionButton({
   );
 }
 
+function VoteSheetTitle({ children }) {
+  const ref = useFitSingleLineText(children);
+  return (
+    <h2 ref={ref} className="vote-sheet-title">
+      {children}
+    </h2>
+  );
+}
+
+function VoteChoiceName({ children }) {
+  const ref = useFitSingleLineText(children);
+  return (
+    <p ref={ref} className="vote-choice-name">
+      {children}
+    </p>
+  );
+}
+
 function VoteCard({
   card,
   selectedCandidateId,
@@ -266,7 +287,7 @@ function VoteCard({
       id={card.feedId}
     >
       <div className={`vote-sheet${hasVoted ? " has-results" : ""}`}>
-        <h2 className="vote-sheet-title">{card.title}</h2>
+        <VoteSheetTitle>{card.title}</VoteSheetTitle>
 
         <div className="vote-sheet-match">
           {[card.leftCandidate, card.rightCandidate].map((candidate) => {
@@ -443,6 +464,7 @@ export default function VotePage() {
       );
 
       const serverVotes = {};
+      const serverActions = {};
       const formattedCards = data.map((item) => {
         const totalVotes =
           (item.candidate_a_count || 0) + (item.candidate_b_count || 0);
@@ -461,6 +483,13 @@ export default function VotePage() {
           serverVotes[cardId] = item.user_voted_side.toLowerCase();
         }
 
+        // 서버에서 받아온 좋아요 상태와 카운트 동기화
+        serverActions[cardId] = {
+          like: Boolean(item.user_liked),
+          dislike: false, // 싫어요는 현재 서버 스키마에 없으므로 로컬 유지 또는 초기화
+          likeCount: item.like_count || 0,
+        };
+
         return {
           id: cardId,
           feedId: cardId,
@@ -468,21 +497,13 @@ export default function VotePage() {
           leftCandidate: {
             id: "a",
             name: item.candidate_a_name,
-            image: item.candidate_a_image
-              ? item.candidate_a_image?.startsWith("http")
-                ? item.candidate_a_image
-                : `https://dolphin-app-onqn2.ondigitalocean.app/uploads/${item.candidate_a_image}`
-              : null,
+            image: item.candidate_a_image,
             tone: "light",
           },
           rightCandidate: {
             id: "b",
             name: item.candidate_b_name,
-            image: item.candidate_b_image
-              ? item.candidate_b_image?.startsWith("http")
-                ? item.candidate_b_image
-                : `https://dolphin-app-onqn2.ondigitalocean.app/uploads/${item.candidate_b_image}`
-              : null,
+            image: item.candidate_b_image,
             tone: "dark",
           },
           shares: { left: leftShare, right: rightShare },
@@ -495,6 +516,7 @@ export default function VotePage() {
 
       // Merge server votes into local state (server has priority)
       setSelectedVotes((prev) => ({ ...prev, ...serverVotes }));
+      setCardActions((prev) => ({ ...prev, ...serverActions }));
       setCards(pinTargetCard(formattedCards, targetVoteId));
     } catch (error) {
       if (fetchSequenceRef.current !== fetchId) {
@@ -793,6 +815,7 @@ export default function VotePage() {
           targetCardId={commentCard.feedId}
           postDbId={commentCard.id}
           onClose={handleCloseComments}
+          layerClassName="is-vote-page"
         />
       ) : null}
     </div>

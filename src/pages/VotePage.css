@@ -364,10 +364,14 @@
 
 .vote-sheet-title {
   margin: 0;
+  width: 100%;
+  box-sizing: border-box;
   text-align: center;
   font-size: var(--vote-sheet-title-size);
   font-weight: 700;
   letter-spacing: 0;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
 .vote-sheet-match {
