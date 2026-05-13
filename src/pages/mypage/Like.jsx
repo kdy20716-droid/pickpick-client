@@ -3,12 +3,15 @@ import "./Like.css";
 import styles from "./MyPage.module.css";
 import { useAuth } from "../../contexts/AuthContext";
 import { getVote, toggleLike } from "../../api/posts";
+import Comments from "../../components/Comments.jsx";
+import { getImageUrl } from "../../utils/image";
 
 const Like = () => {
   const [likedVotes, setLikedVotes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchKeyword, setSearchKeyword] = useState("");
   const { user: currentUser } = useAuth();
+  const [selectedVoteForComments, setSelectedVoteForComments] = useState(null);
 
   const fetchLikedVotes = useCallback(async () => {
     if (!currentUser) return;
@@ -44,10 +47,40 @@ const Like = () => {
       if (res.success) {
         // 성공적으로 취소되면 목록에서 해당 항목 제거
         setLikedVotes((prev) => prev.filter((vote) => vote.id !== postId));
+
+        // VotePage와 좋아요 상태 동기화 (localStorage 업데이트)
+        const userId = currentUser.id;
+        const savedActions = localStorage.getItem(`cardActions_${userId}`);
+        if (savedActions) {
+          const actions = JSON.parse(savedActions);
+          const cardId = postId.toString();
+          if (actions[cardId]) {
+            actions[cardId].like = false;
+            // 로컬 카운트도 1 감소 (VotePage에서 표시용)
+            if (typeof actions[cardId].likeCount === "number") {
+              actions[cardId].likeCount = Math.max(
+                0,
+                actions[cardId].likeCount - 1,
+              );
+            }
+            localStorage.setItem(
+              `cardActions_${userId}`,
+              JSON.stringify(actions),
+            );
+          }
+        }
       }
     } catch (error) {
       console.error("좋아요 취소 실패:", error);
       alert("좋아요 취소에 실패했습니다.");
+    }
+  };
+
+  const handleToggleComments = (vote) => {
+    if (selectedVoteForComments?.id === vote.id) {
+      setSelectedVoteForComments(null);
+    } else {
+      setSelectedVoteForComments(vote);
     }
   };
 
@@ -102,7 +135,10 @@ const Like = () => {
                   <div className="info-card">
                     <div className="thumb-img">
                       {vote.candidate_a_image ? (
-                        <img src={vote.candidate_a_image} alt="candidate a" />
+                        <img
+                          src={getImageUrl(vote.candidate_a_image)}
+                          alt="candidate a"
+                        />
                       ) : (
                         <div
                           style={{
@@ -123,7 +159,10 @@ const Like = () => {
                     <h3 className="vote-title">{vote.title}</h3>
                     <div className="thumb-img">
                       {vote.candidate_b_image ? (
-                        <img src={vote.candidate_b_image} alt="candidate b" />
+                        <img
+                          src={getImageUrl(vote.candidate_b_image)}
+                          alt="candidate b"
+                        />
                       ) : (
                         <div
                           style={{
@@ -142,8 +181,10 @@ const Like = () => {
                       )}
                     </div>
                   </div>
-                  {/* 오른쪽 댓글 아이콘 버튼 */}
-                  <button className="comment-icon-btn">
+                  <button
+                    className={`icon-btn${selectedVoteForComments?.id === vote.id ? " active" : ""}`}
+                    onClick={() => handleToggleComments(vote)}
+                  >
                     <span className="material-icons">chat_bubble_outline</span>
                   </button>
                 </div>
@@ -158,6 +199,15 @@ const Like = () => {
           </div>
         )}
       </div>
+      {selectedVoteForComments && (
+        <Comments
+          title={selectedVoteForComments.title}
+          targetCardId={`vote-item-${selectedVoteForComments.id}`}
+          postDbId={selectedVoteForComments.id}
+          onClose={() => setSelectedVoteForComments(null)}
+          isCentered={true}
+        />
+      )}
     </div>
   );
 };

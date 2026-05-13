@@ -69,7 +69,7 @@ const ImageCropper = ({ image, onCropComplete, onCancel }) => {
               type="range"
               value={zoom}
               min={1}
-              max={3}
+              max={5}
               step={0.1}
               aria-labelledby="Zoom"
               onChange={(e) => setZoom(Number(e.target.value))}
