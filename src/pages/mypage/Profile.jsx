@@ -103,6 +103,19 @@ const Profile = () => {
     setSelectedImage(null);
   };
 
+  const getGradeInfo = (grade) => {
+    const g = grade?.toUpperCase() || "브론즈";
+    if (g === "SILVER" || g === "실버") return { color: "#C0C0C0", emoji: "🥈" };
+    if (g === "GOLD" || g === "골드") return { color: "#FFD700", emoji: "🥇" };
+    if (g === "PLATINUM" || g === "플래티넘")
+      return { color: "#B4C3D2", emoji: "💎" };
+    if (g === "DIAMOND" || g === "다이아몬드")
+      return { color: "#70D1F4", emoji: "👑" };
+    return { color: "#CD7F32", emoji: "🥉" }; // 브론즈
+  };
+
+  const gradeInfo = getGradeInfo(currentUser?.grade || "브론즈");
+
   return (
     <>
       <div className={styles.topSearchRow}>
@@ -124,11 +137,7 @@ const Profile = () => {
               <div className={styles.circleBig}>
                 {currentUser?.profile_image ? (
                   <img
-                    src={
-                      currentUser.profile_image?.startsWith("http")
-                        ? currentUser.profile_image
-                        : `https://dolphin-app-onqn2.ondigitalocean.app/uploads/${currentUser.profile_image}`
-                    }
+                    src={getImageUrl(currentUser.profile_image)}
                     alt="Profile"
                     style={{
                       width: "100%",
@@ -152,9 +161,11 @@ const Profile = () => {
               />
             </div>
             <div className={`${styles.card} ${styles.nicknameCard}`}>
-              <div className={styles.lvBadge}>
-                LV.99 <span className={styles.qMark}>?</span>{" "}
-                <span className={styles.playBtn}>▶</span>
+              <div
+                className={styles.lvBadge}
+                style={{ color: gradeInfo.color }}
+              >
+                {gradeInfo.emoji} {currentUser?.grade || "브론즈"}{" "}
               </div>
               <h2 className={styles.nickname}>
                 {currentUser?.name || "게스트"} 님
@@ -169,6 +180,7 @@ const Profile = () => {
               </button>
             </div>
           </div>
+          <Grade />
         </div>
 
         <div className={styles.rightPanel}>
@@ -214,8 +226,6 @@ const Profile = () => {
           </div>
         </div>
       </section>
-
-      <Grade />
 
       {isCropping && (
         <ImageCropper

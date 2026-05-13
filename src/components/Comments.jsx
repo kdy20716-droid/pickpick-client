@@ -1,4 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import CommentItem from "./CommentItem.jsx";
 import "./comments.css";
 import {
@@ -8,7 +9,6 @@ import {
   toggleCommentLike,
 } from "../api/posts.js";
 import { useAuth } from "../contexts/AuthContext";
-import { getImageUrl } from "../utils/image";
 
 const COMMENT_OVERLAY_BREAKPOINT = 1320;
 
@@ -77,7 +77,13 @@ function buildCommentTree(comments, reactions) {
   return parents;
 }
 
-export default function Comments({ title, targetCardId, onClose, postDbId }) {
+export default function Comments({
+  title,
+  targetCardId,
+  onClose,
+  postDbId,
+  isFixed = false,
+}) {
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
   const [openReplies, setOpenReplies] = useState({});
@@ -139,7 +145,9 @@ export default function Comments({ title, targetCardId, onClose, postDbId }) {
       return undefined;
     }
 
-    const page = modal.closest(".vote-page");
+    const page =
+      document.querySelector(".vote-page") ||
+      document.querySelector(".result-container");
     const compactLayoutQuery = window.matchMedia(
       `(max-width: ${COMMENT_OVERLAY_BREAKPOINT}px)`,
     );
@@ -153,8 +161,10 @@ export default function Comments({ title, targetCardId, onClose, postDbId }) {
 
       return (
         targetCard?.querySelector(".vote-sheet") ??
+        targetCard ??
         document.querySelector(".vote-feed-item.is-active .vote-sheet") ??
-        document.querySelector(".vote-sheet")
+        document.querySelector(".vote-sheet") ??
+        document.querySelector(".result-layout")
       );
     };
 
@@ -179,15 +189,20 @@ export default function Comments({ title, targetCardId, onClose, postDbId }) {
       let railRect = actionRail?.getBoundingClientRect();
       const modalWidth = modal.getBoundingClientRect().width;
 
-      if (railRect && !compactLayoutQuery.matches) {
-        const sheetToRailGap = Math.max(0, railRect.left - sheetRect.right);
+      if (!compactLayoutQuery.matches) {
+        // Calculate layout shift even if railRect is missing (for Result.jsx)
+        const referenceRight = railRect ? railRect.left : sheetRect.right;
+        const sheetToRailGap = railRect
+          ? Math.max(0, railRect.left - sheetRect.right)
+          : 24;
+
         const maxSheetWidth = Math.max(
           420,
           Math.min(
             850,
             window.innerWidth -
               modalWidth -
-              railRect.width -
+              (railRect ? railRect.width : 0) -
               sheetToRailGap * 2 -
               48,
           ),
@@ -199,35 +214,45 @@ export default function Comments({ title, targetCardId, onClose, postDbId }) {
         page?.style.setProperty("--vote-comment-group-shift", "0px");
 
         sheetRect = voteSheet.getBoundingClientRect();
-        railRect = actionRail.getBoundingClientRect();
+        if (railRect) railRect = actionRail.getBoundingClientRect();
 
-        const settledGap = Math.max(0, railRect.left - sheetRect.right);
+        const settledGap = railRect
+          ? Math.max(0, railRect.left - sheetRect.right)
+          : 24;
         const groupWidth =
           sheetRect.width +
           settledGap +
-          railRect.width +
+          (railRect ? railRect.width : 0) +
           settledGap +
           modalWidth;
         const centeredGroupLeft = (window.innerWidth - groupWidth) / 2;
         const nextGroupLeft = Math.max(24, centeredGroupLeft);
-        const nextShift = nextGroupLeft - sheetRect.left;
+        const nextShift = isFixed ? 0 : nextGroupLeft - sheetRect.left;
         const nextModalLeft =
-          nextGroupLeft +
-          sheetRect.width +
+          (isFixed ? sheetRect.right : nextGroupLeft + sheetRect.width) +
           settledGap +
-          railRect.width +
-          settledGap;
+          (railRect ? railRect.width : 0) +
+          settledGap +
+          100;
 
         page?.style.setProperty("--vote-comment-group-shift", `${nextShift}px`);
         modal.style.setProperty("--comment-modal-left", `${nextModalLeft}px`);
         modal.style.setProperty("--comment-modal-right", "auto");
       }
 
-      modal.style.setProperty("--comment-modal-top", `${sheetRect.top}px`);
-      modal.style.setProperty(
-        "--comment-modal-height",
-        `${sheetRect.height}px`,
-      );
+      if (isFixed) {
+        modal.style.setProperty("--comment-modal-top", "120px");
+        modal.style.setProperty(
+          "--comment-modal-height",
+          "calc(100vh - 180px)",
+        );
+      } else {
+        modal.style.setProperty("--comment-modal-top", `${sheetRect.top}px`);
+        modal.style.setProperty(
+          "--comment-modal-height",
+          `${sheetRect.height}px`,
+        );
+      }
     };
 
     const scheduleSync = () => {
@@ -239,10 +264,10 @@ export default function Comments({ title, targetCardId, onClose, postDbId }) {
     };
 
     syncModalSize();
-    settleTimeoutId = window.setTimeout(scheduleSync, 280);
+    scheduleSync();
 
     const targetVoteSheet = getTargetVoteSheet();
-    const feed = document.querySelector(".vote-feed");
+    const feed = document.querySelector(".vote-feed") || window;
     const resizeObserver =
       window.ResizeObserver && targetVoteSheet
         ? new ResizeObserver(scheduleSync)
@@ -264,7 +289,7 @@ export default function Comments({ title, targetCardId, onClose, postDbId }) {
       window.removeEventListener("resize", scheduleSync);
       feed?.removeEventListener("scroll", scheduleSync);
     };
-  }, [targetCardId]);
+  }, [targetCardId, isFixed]);
 
   const handleAddComment = async () => {
     const text = newComment.trim();
@@ -459,7 +484,7 @@ export default function Comments({ title, targetCardId, onClose, postDbId }) {
     );
   };
 
-  return (
+  return createPortal(
     <div className="comment-modal-layer" key={userId}>
       <button
         type="button"
@@ -548,6 +573,7 @@ export default function Comments({ title, targetCardId, onClose, postDbId }) {
           </button>
         </footer>
       </aside>
-    </div>
+    </div>,
+    document.body,
   );
 }
