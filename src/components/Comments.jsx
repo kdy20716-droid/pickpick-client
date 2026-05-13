@@ -541,11 +541,7 @@ export default function Comments({
           <div className="comment-avatar is-small" aria-hidden="true">
             {currentUser?.profile_image ? (
               <img
-                src={
-                  currentUser.profile_image?.startsWith("http")
-                    ? currentUser.profile_image
-                    : `https://dolphin-app-onqn2.ondigitalocean.app/uploads/${currentUser.profile_image}`
-                }
+                src={currentUser.profile_image}
                 alt=""
                 style={{
                   width: "100%",

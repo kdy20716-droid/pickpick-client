@@ -14,7 +14,15 @@ const MyCreate = () => {
     try {
       setLoading(true);
       // author_id 파라미터를 사용하여 본인이 만든 투표만 조회
-      const data = await getVote(null, null, null, null, null, null, currentUser.id);
+      const data = await getVote(
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        currentUser.id,
+      );
       setMyVotes(data);
     } catch (error) {
       console.error("내가 만든 투표를 불러오는데 실패했습니다.", error);
@@ -44,22 +52,34 @@ const MyCreate = () => {
               myVotes.map((vote) => (
                 <div key={vote.id} className="my-vote-item">
                   <div className="vote-info">
-                    <span className="vote-category">[{vote.category || "기타"}]</span>
+                    <span className="vote-category">
+                      [{vote.category || "기타"}]
+                    </span>
                     <h3 className="vote-title">{vote.title}</h3>
                     <div className="vote-stats">
                       <span>조회수 {vote.view_count || 0}</span>
-                      <span>투표수 {(vote.candidate_a_count || 0) + (vote.candidate_b_count || 0)}</span>
-                      <span>작성일 {new Date(vote.created_at).toLocaleDateString()}</span>
+                      <span>
+                        투표수{" "}
+                        {(vote.candidate_a_count || 0) +
+                          (vote.candidate_b_count || 0)}
+                      </span>
+                      <span>
+                        작성일 {new Date(vote.created_at).toLocaleDateString()}
+                      </span>
                     </div>
                   </div>
                   <div className="vote-preview">
                     {vote.candidate_a_image ? (
-                       <img src={(vote.candidate_a_image?.startsWith('http') ? vote.candidate_a_image : `https://dolphin-app-onqn2.ondigitalocean.app/uploads/${vote.candidate_a_image}`)} alt="a" />
-                    ) : <div className="no-img">No Img</div>}
+                      <img src={vote.candidate_a_image} alt="a" />
+                    ) : (
+                      <div className="no-img">No Img</div>
+                    )}
                     <span className="vs-text">VS</span>
                     {vote.candidate_b_image ? (
-                       <img src={(vote.candidate_b_image?.startsWith('http') ? vote.candidate_b_image : `https://dolphin-app-onqn2.ondigitalocean.app/uploads/${vote.candidate_b_image}`)} alt="b" />
-                    ) : <div className="no-img">No Img</div>}
+                      <img src={vote.candidate_b_image} alt="b" />
+                    ) : (
+                      <div className="no-img">No Img</div>
+                    )}
                   </div>
                 </div>
               ))
