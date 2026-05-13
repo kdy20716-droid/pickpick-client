@@ -74,6 +74,12 @@
   overflow: visible;
 }
 
+.vote-page .comment-modal-layer,
+.vote-page .comment-modal-backdrop,
+.vote-page .comment-modal-backdrop:hover {
+  background: transparent;
+}
+
 .vote-filter-panel {
   --filter-close-text: #111111;
   --filter-close-hover-text: #fc92c7;
@@ -476,13 +482,27 @@
   --vote-name-accent-shadow: 0 3px 12px rgba(255, 255, 255, 0.28);
   margin: 0;
   position: absolute;
-  right: 16px;
+  right: 0;
   bottom: 14px;
-  left: 16px;
+  left: 0;
+  box-sizing: border-box;
+  width: auto;
+  padding: 0 18px;
+  display: -webkit-box;
+  max-height: calc(100% - 36px);
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
   text-align: center;
-  font-size: var(--vote-choice-name-size);
+  overflow-wrap: anywhere;
+  word-break: normal;
+  white-space: normal;
+  font-size: min(
+    var(--vote-choice-name-size),
+    var(--vote-choice-name-fit-size, var(--vote-choice-name-size))
+  );
   font-weight: 900;
-  line-height: 1.05;
+  line-height: 1.08;
   color: #ffffff;
   text-shadow:
     var(--vote-name-outline-negative-size)
@@ -967,9 +987,9 @@
   }
 
   .vote-choice-name {
-    right: 8px;
     bottom: 10px;
-    left: 8px;
+    padding: 0 8px;
+    max-height: calc(100% - 20px);
   }
 
   .vote-sheet-vs img {
