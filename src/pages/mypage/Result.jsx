@@ -213,7 +213,7 @@ const Result = () => {
           targetCardId={`vote-item-${selectedVoteForComments.id}`}
           postDbId={selectedVoteForComments.id}
           onClose={() => setSelectedVoteForComments(null)}
-          isFixed={true}
+          isCentered={true}
         />
       )}
     </div>
