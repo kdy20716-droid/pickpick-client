@@ -26,7 +26,7 @@ const Menu = () => {
       <NavLink to="/mypage/contact">CONTACT</NavLink>
       {isAdmin && (
         <NavLink
-          to="/admin/manage"
+          to="/admin"
           style={{
             color: "#ffa500",
             fontWeight: "bold",
