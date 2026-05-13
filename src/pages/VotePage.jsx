@@ -810,6 +810,7 @@ export default function VotePage() {
           targetCardId={commentCard.feedId}
           postDbId={commentCard.id}
           onClose={handleCloseComments}
+          layerClassName="is-vote-page"
         />
       ) : null}
     </div>
