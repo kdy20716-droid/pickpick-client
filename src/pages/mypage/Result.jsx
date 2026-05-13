@@ -5,6 +5,7 @@ import styles from "./MyPage.module.css";
 import { useAuth } from "../../contexts/AuthContext";
 import { getVote } from "../../api/posts";
 import Comments from "../../components/Comments.jsx";
+import { getImageUrl } from "../../utils/image";
 
 const Result = () => {
   const [voteResults, setVoteResults] = useState([]);
@@ -137,7 +138,7 @@ const Result = () => {
                       <div className="img-wrapper">
                         {vote.candidate_a_image ? (
                           <img
-                            src={`http://localhost:4000/uploads/${vote.candidate_a_image}`}
+                            src={`https://dolphin-app-onqn2.ondigitalocean.app/uploads/${vote.candidate_a_image}`}
                             alt="left"
                           />
                         ) : (
@@ -171,7 +172,7 @@ const Result = () => {
                       <div className="img-wrapper">
                         {vote.candidate_b_image ? (
                           <img
-                            src={`http://localhost:4000/uploads/${vote.candidate_b_image}`}
+                            src={`https://dolphin-app-onqn2.ondigitalocean.app/uploads/${vote.candidate_b_image}`}
                             alt="right"
                           />
                         ) : (
@@ -231,7 +232,7 @@ const Result = () => {
                           src={
                             vote.candidate_a_image?.startsWith("http")
                               ? vote.candidate_a_image
-                              : `http://localhost:4000/uploads/${vote.candidate_a_image}`
+                              : `https://dolphin-app-onqn2.ondigitalocean.app/uploads/${vote.candidate_a_image}`
                           }
                           alt="left"
                         />
@@ -269,7 +270,7 @@ const Result = () => {
                           src={
                             vote.candidate_b_image?.startsWith("http")
                               ? vote.candidate_b_image
-                              : `http://localhost:4000/uploads/${vote.candidate_b_image}`
+                              : `https://dolphin-app-onqn2.ondigitalocean.app/uploads/${vote.candidate_b_image}`
                           }
                           alt="right"
                         />

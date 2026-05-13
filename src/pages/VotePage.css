@@ -52,11 +52,11 @@
   --vote-sheet-bg: rgba(255, 255, 255, 0.96);
   --vote-sheet-shadow: 0 22px 60px rgba(17, 17, 17, 0.08);
   --vote-sheet-active-shadow: 0 28px 72px rgba(17, 17, 17, 0.12);
-  --vote-sheet-title-size: clamp(2rem, 3.1vw, 3rem);
+  --vote-sheet-title-size: 3rem;
   --vote-choice-gap: 16px;
   --vote-choice-radius: 20px;
   --vote-choice-bg: #f4f0ea;
-  --vote-choice-name-size: clamp(1.95rem, 2vw, 2.65rem);
+  --vote-choice-name-size: 2.65rem;
   --vote-result-bar-height: 18px;
   --vote-result-left-color: linear-gradient(90deg, #76b9ff 0%, #9bc7ff 100%);
   --vote-result-right-color: linear-gradient(90deg, #fc92c7 0%, #ffabd5 100%);

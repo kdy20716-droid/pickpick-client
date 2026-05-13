@@ -8,6 +8,7 @@ import {
   toggleCommentLike,
 } from "../api/posts.js";
 import { useAuth } from "../contexts/AuthContext";
+import { getImageUrl } from "../utils/image";
 
 const COMMENT_OVERLAY_BREAKPOINT = 1320;
 
@@ -511,7 +512,7 @@ export default function Comments({ title, targetCardId, onClose, postDbId }) {
                 src={
                   currentUser.profile_image?.startsWith("http")
                     ? currentUser.profile_image
-                    : `http://localhost:4000/uploads/${currentUser.profile_image}`
+                    : `https://dolphin-app-onqn2.ondigitalocean.app/uploads/${currentUser.profile_image}`
                 }
                 alt=""
                 style={{
