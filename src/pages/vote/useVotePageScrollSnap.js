@@ -1,11 +1,19 @@
-import { useEffect, useEffectEvent } from "react";
+import { useEffect, useEffectEvent, useRef } from "react";
 
 function getHeaderHeight() {
   const header = document.querySelector(".site-header");
   return Math.round(header?.getBoundingClientRect().height ?? 0);
 }
 
-export function useVotePageScrollSnap({ pageRef, feedRef, activeCardId, cardRefs }) {
+export function useVotePageScrollSnap({
+  pageRef,
+  feedRef,
+  activeCardId,
+  cardRefs,
+  targetCardId = "",
+}) {
+  const alignedTargetCardIdRef = useRef("");
+
   const syncViewportOffset = useEffectEvent(() => {
     const page = pageRef.current;
     if (!page) {
@@ -20,7 +28,7 @@ export function useVotePageScrollSnap({ pageRef, feedRef, activeCardId, cardRefs
     const activeCard = cardRefs.current.get(activeCardId);
 
     if (!feed || !activeCard) {
-      return;
+      return false;
     }
 
     const feedRect = feed.getBoundingClientRect();
@@ -31,6 +39,8 @@ export function useVotePageScrollSnap({ pageRef, feedRef, activeCardId, cardRefs
       top: Math.max(0, Math.round(nextTop)),
       behavior,
     });
+
+    return true;
   });
 
   useEffect(() => {
@@ -47,4 +57,24 @@ export function useVotePageScrollSnap({ pageRef, feedRef, activeCardId, cardRefs
       window.removeEventListener("resize", handleResize);
     };
   }, []);
+
+  useEffect(() => {
+    if (!targetCardId || activeCardId !== targetCardId) {
+      return undefined;
+    }
+
+    if (alignedTargetCardIdRef.current === targetCardId) {
+      return undefined;
+    }
+
+    const frameId = window.requestAnimationFrame(() => {
+      if (alignActiveCard()) {
+        alignedTargetCardIdRef.current = targetCardId;
+      }
+    });
+
+    return () => {
+      window.cancelAnimationFrame(frameId);
+    };
+  }, [activeCardId, targetCardId]);
 }
