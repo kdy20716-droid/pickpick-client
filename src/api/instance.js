@@ -1,8 +1,10 @@
 import axios from "axios";
 
 const instance = axios.create({
-  // 배포된 서버 URL이 환경변수에 있으면 사용, 없으면 로컬호스트 사용
-  baseURL: import.meta.env.VITE_API_BASE_URL || "http://localhost:4000",
+  // 환경변수가 있으면 사용하고, 없으면 배포 서버를 기본값으로 사용합니다.
+  baseURL:
+    import.meta.env.VITE_API_BASE_URL ||
+    "https://dolphin-app-onqn2.ondigitalocean.app",
 });
 
 // 인터셉터 (interceptor) : 요청 / 응답시 중간에 가로채는 함수
