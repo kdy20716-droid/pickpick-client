@@ -73,6 +73,45 @@ const initialActionState = {
   likeCount: 0,
 };
 
+const CANDIDATE_NAME_MAX_SIZE_REM = 2.65;
+const CANDIDATE_NAME_MIN_SIZE_REM = 1.05;
+const CANDIDATE_NAME_COMFORT_LENGTH = 6.5;
+const CANDIDATE_NAME_SHRINK_RATE = 0.17;
+
+function getCandidateNameWeight(name = "") {
+  return Array.from(String(name).trim()).reduce((total, character) => {
+    if (/\s/.test(character)) {
+      return total + 0.35;
+    }
+
+    if (/[A-Za-z0-9]/.test(character)) {
+      return total + 0.6;
+    }
+
+    if (/[\x20-\x7E]/.test(character)) {
+      return total + 0.45;
+    }
+
+    return total + 1;
+  }, 0);
+}
+
+function getCandidateNameStyle(name) {
+  const overflowLength = Math.max(
+    0,
+    getCandidateNameWeight(name) - CANDIDATE_NAME_COMFORT_LENGTH,
+  );
+  const sizeRem = Math.max(
+    CANDIDATE_NAME_MIN_SIZE_REM,
+    CANDIDATE_NAME_MAX_SIZE_REM -
+      overflowLength * CANDIDATE_NAME_SHRINK_RATE,
+  );
+
+  return {
+    "--vote-choice-name-fit-size": `${sizeRem.toFixed(2)}rem`,
+  };
+}
+
 function getTargetVoteId(routePostId, search, hash) {
   const searchParams = new URLSearchParams(search);
   const candidates = [
