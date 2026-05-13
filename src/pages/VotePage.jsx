@@ -20,6 +20,7 @@ import {
   incrementView,
 } from "../api/posts.js";
 import { useAuth } from "../contexts/AuthContext";
+import { useFitSingleLineText } from "../hooks/useFitSingleLineText.js";
 
 const tags = [
   "전체",
@@ -206,6 +207,24 @@ function VoteActionButton({
   );
 }
 
+function VoteSheetTitle({ children }) {
+  const ref = useFitSingleLineText(children);
+  return (
+    <h2 ref={ref} className="vote-sheet-title">
+      {children}
+    </h2>
+  );
+}
+
+function VoteChoiceName({ children }) {
+  const ref = useFitSingleLineText(children);
+  return (
+    <p ref={ref} className="vote-choice-name">
+      {children}
+    </p>
+  );
+}
+
 function VoteCard({
   card,
   selectedCandidateId,
@@ -229,7 +248,7 @@ function VoteCard({
       id={card.feedId}
     >
       <div className={`vote-sheet${hasVoted ? " has-results" : ""}`}>
-        <h2 className="vote-sheet-title">{card.title}</h2>
+        <VoteSheetTitle>{card.title}</VoteSheetTitle>
 
         <div className="vote-sheet-match">
           {[card.leftCandidate, card.rightCandidate].map((candidate) => {
@@ -257,7 +276,7 @@ function VoteCard({
                   </span>
                 )}
                 <span className="vote-choice-overlay" aria-hidden="true" />
-                <p className="vote-choice-name">{candidate.name}</p>
+                <VoteChoiceName>{candidate.name}</VoteChoiceName>
               </button>
             );
           })}
