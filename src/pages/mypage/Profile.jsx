@@ -8,6 +8,9 @@ import {
   updateProfile,
 } from "../../api/users";
 import ImageCropper from "../../components/ImageCropper";
+import Grade from "./Grade";
+
+import { getImageUrl } from "../../utils/image";
 
 const Profile = () => {
   const [notifications, setNotifications] = useState([]);
@@ -119,7 +122,7 @@ const Profile = () => {
               <div className={styles.circleBig}>
                 {currentUser?.profile_image ? (
                   <img 
-                    src={(currentUser.profile_image?.startsWith('http') ? currentUser.profile_image : `https://pickpick-server.onrender.com/uploads/${currentUser.profile_image}`)} 
+                    src={getImageUrl(currentUser.profile_image)} 
                     alt="Profile" 
                     style={{ width: "100%", height: "100%", objectFit: "cover" }}
                   />
@@ -192,6 +195,8 @@ const Profile = () => {
           </div>
         </div>
       </section>
+
+      <Grade />
 
       {isCropping && (
         <ImageCropper 
