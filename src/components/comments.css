@@ -1,4 +1,4 @@
-﻿.comment-modal-layer {
+.comment-modal-layer {
   position: fixed;
   inset: 0;
   z-index: 80;
@@ -29,7 +29,7 @@
   top: var(--comment-modal-top, calc(var(--vote-header-offset, 110px) + 52px));
   right: var(
     --comment-modal-right,
-    max(24px, calc((max(100vw, 850px) - 1180px) / 2))
+    max(14px, calc((max(100vw, 850px) - 1180px) / 2))
   );
   left: var(--comment-modal-left, auto);
   bottom: auto;
@@ -46,7 +46,7 @@
   background: #ffffff;
   box-shadow: 0 26px 72px rgba(0, 0, 0, 0.28);
   pointer-events: auto;
-  animation: commentPanelEnter 240ms ease both;
+  animation: commentPanelEnter 200ms ease-out both;
 }
 
 .comment-modal-header {
@@ -294,12 +294,12 @@
 @keyframes commentPanelEnter {
   from {
     opacity: 0;
-    transform: translateX(24px);
+    transform: translateX(30px) scale(0.98);
   }
 
   to {
     opacity: 1;
-    transform: translateX(0);
+    transform: translateX(0) scale(1);
   }
 }
 

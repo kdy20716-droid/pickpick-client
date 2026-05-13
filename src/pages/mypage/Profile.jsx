@@ -15,7 +15,7 @@ import { getImageUrl } from "../../utils/image";
 const Profile = () => {
   const [notifications, setNotifications] = useState([]);
   const { user: currentUser, updateUser } = useAuth();
-  
+
   // 프로필 이미지 관련 상태
   const fileInputRef = useRef(null);
   const [selectedImage, setSelectedImage] = useState(null);
@@ -80,11 +80,11 @@ const Profile = () => {
   const handleCropComplete = async (croppedBlob) => {
     setIsCropping(false);
     setSelectedImage(null);
-    
+
     try {
       const formData = new FormData();
       formData.append("profile_image", croppedBlob, "profile.jpg");
-      
+
       const res = await updateProfile(currentUser.id, formData);
       if (res.success) {
         updateUser(res.user);
@@ -101,6 +101,19 @@ const Profile = () => {
     setSelectedImage(null);
   };
 
+  const getGradeInfo = (grade) => {
+    const g = grade?.toUpperCase() || "브론즈";
+    if (g === "SILVER" || g === "실버") return { color: "#C0C0C0", emoji: "🥈" };
+    if (g === "GOLD" || g === "골드") return { color: "#FFD700", emoji: "🥇" };
+    if (g === "PLATINUM" || g === "플래티넘")
+      return { color: "#B4C3D2", emoji: "💎" };
+    if (g === "DIAMOND" || g === "다이아몬드")
+      return { color: "#70D1F4", emoji: "👑" };
+    return { color: "#CD7F32", emoji: "🥉" }; // 브론즈
+  };
+
+  const gradeInfo = getGradeInfo(currentUser?.grade || "브론즈");
+
   return (
     <>
       <div className={styles.topSearchRow}>
@@ -114,17 +127,21 @@ const Profile = () => {
       <section className={styles.contentBody}>
         <div className={styles.leftPanel}>
           <div className={styles.profileHeader}>
-            <div 
+            <div
               className={`${styles.card} ${styles.profileImgCard}`}
               onClick={handleImageClick}
               style={{ cursor: "pointer" }}
             >
               <div className={styles.circleBig}>
                 {currentUser?.profile_image ? (
-                  <img 
-                    src={getImageUrl(currentUser.profile_image)} 
-                    alt="Profile" 
-                    style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                  <img
+                    src={getImageUrl(currentUser.profile_image)}
+                    alt="Profile"
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                    }}
                   />
                 ) : (
                   <div className={styles.silhouette}></div>
@@ -133,23 +150,28 @@ const Profile = () => {
               <div className={styles.camIconWrapper}>
                 <div className={styles.camIcon}>📷</div>
               </div>
-              <input 
-                type="file" 
-                ref={fileInputRef} 
-                onChange={onSelectFile} 
-                accept="image/*" 
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={onSelectFile}
+                accept="image/*"
                 style={{ display: "none" }}
               />
             </div>
             <div className={`${styles.card} ${styles.nicknameCard}`}>
-              <div className={styles.lvBadge}>
-                LV.99 <span className={styles.qMark}>?</span>{" "}
-                <span className={styles.playBtn}>▶</span>
+              <div
+                className={styles.lvBadge}
+                style={{ color: gradeInfo.color }}
+              >
+                {gradeInfo.emoji} {currentUser?.grade || "브론즈"}{" "}
               </div>
-              <h2 className={styles.nickname}>{currentUser?.name || "게스트"} 님</h2>
+              <h2 className={styles.nickname}>
+                {currentUser?.name || "게스트"} 님
+              </h2>
               <span className={styles.gearIcon}>⚙</span>
             </div>
           </div>
+          <Grade />
         </div>
 
         <div className={styles.rightPanel}>
@@ -196,12 +218,10 @@ const Profile = () => {
         </div>
       </section>
 
-      <Grade />
-
       {isCropping && (
-        <ImageCropper 
-          image={selectedImage} 
-          onCropComplete={handleCropComplete} 
+        <ImageCropper
+          image={selectedImage}
+          onCropComplete={handleCropComplete}
           onCancel={handleCropCancel}
         />
       )}
