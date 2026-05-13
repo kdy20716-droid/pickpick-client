@@ -1,7 +1,10 @@
 .ranking-section {
+  --top3-header-gap: 50px;
+  --top3-medal-offset: 32px;
+  --top3-first-lift: 20px;
   width: min(1100px, calc(100% - 40px));
   margin: 0 auto;
-  padding: 36px 0 56px;
+  padding: calc(var(--top3-header-gap) + var(--top3-medal-offset) + var(--top3-first-lift)) 0 56px;
 }
 
 .top3 {
@@ -132,8 +135,8 @@
 
 @media (max-width: 768px) {
   .ranking-section {
+    --top3-first-lift: 0px;
     width: calc(100% - 24px);
-    padding-top: 28px;
   }
 
   .top3 {

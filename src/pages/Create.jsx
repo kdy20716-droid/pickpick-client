@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { addVote } from "../api/posts";
 import { useAuth } from "../contexts/AuthContext";
 import { Pencil, Trash2, Maximize, Minus, Plus } from "lucide-react";
+import vsLogo from "../assets/vs-logo.svg";
 import "./Create.css";
 
 const Create = () => {
@@ -33,6 +34,9 @@ const Create = () => {
   const [showEdit1, setShowEdit1] = useState(false);
   const [showEdit2, setShowEdit2] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const hasCandidateNames =
+    candidate1.trim().length > 0 && candidate2.trim().length > 0;
+  const isPublishDisabled = isSubmitting || !hasCandidateNames;
 
   const fileInputRef1 = useRef(null);
   const fileInputRef2 = useRef(null);
@@ -110,7 +114,7 @@ const Create = () => {
   const handleSubmit = async () => {
     if (isSubmitting) return;
 
-    if (!title || !candidate1 || !candidate2) {
+    if (!title.trim() || !candidate1.trim() || !candidate2.trim()) {
       alert("필수 항목을 모두 입력해주세요.");
       return;
     }
@@ -249,7 +253,7 @@ const Create = () => {
             </div>
 
             <div className="vs-badge">
-              <span className="vs-badge__text">VS</span>
+              <img src={vsLogo} alt="VS" />
             </div>
 
             <div
@@ -395,13 +399,9 @@ const Create = () => {
           <button
             className="fab-button"
             onClick={handleSubmit}
-            disabled={isSubmitting}
-            style={{
-              opacity: isSubmitting ? 0.7 : 1,
-              cursor: isSubmitting ? "not-allowed" : "pointer",
-            }}
+            disabled={isPublishDisabled}
           >
-            <span>Publish</span>
+            <span>Upload</span>
           </button>
         </section>
       </main>

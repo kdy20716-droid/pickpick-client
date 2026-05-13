@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useState, useEffect } from "react";
+﻿import { useLayoutEffect, useRef, useState, useEffect } from "react";
 import { ThumbsUp, ThumbsDown } from "lucide-react";
 import "../components/comments.css";
 import {
@@ -52,7 +52,11 @@ function CommentItem({
       <div className="comment-avatar" aria-hidden="true">
         {comment.author_image ? (
           <img
-            src={`http://localhost:4000/uploads/${comment.author_image}`}
+            src={
+              comment.author_image?.startsWith("http")
+                ? comment.author_image
+                : `https://pickpick-server.onrender.com/uploads/${comment.author_image}`
+            }
             alt=""
             style={{
               width: "100%",
@@ -123,7 +127,11 @@ function CommentItem({
               >
                 {currentUser?.profile_image ? (
                   <img
-                    src={`http://localhost:4000/uploads/${currentUser.profile_image}`}
+                    src={
+                      currentUser.profile_image?.startsWith("http")
+                        ? currentUser.profile_image
+                        : `https://pickpick-server.onrender.com/uploads/${currentUser.profile_image}`
+                    }
                     alt=""
                     style={{
                       width: "100%",
@@ -546,7 +554,11 @@ export default function Comments({ title, targetCardId, onClose, postDbId }) {
           <div className="comment-avatar is-small" aria-hidden="true">
             {currentUser?.profile_image ? (
               <img
-                src={`http://localhost:4000/uploads/${currentUser.profile_image}`}
+                src={
+                  currentUser.profile_image?.startsWith("http")
+                    ? currentUser.profile_image
+                    : `https://pickpick-server.onrender.com/uploads/${currentUser.profile_image}`
+                }
                 alt=""
                 style={{
                   width: "100%",

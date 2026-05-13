@@ -19,7 +19,7 @@
 }
 
 .admin-header h1 {
-  font-size: clamp(2rem, 3vw, 2.8rem);
+  font-size: 2.8rem;
   margin: 0 0 10px;
   font-weight: 700;
   color: var(--text);
@@ -380,14 +380,17 @@
 }
 
 .delete-comment-btn {
+  display: block;
+  margin-left: auto;
+  width: fit-content;
   background: transparent;
   color: #ff6b5b;
   border: 2px solid #ff6b5b;
-  padding: 8px 14px;
-  border-radius: 8px;
+  padding: 6px 12px;
+  border-radius: 6px;
   cursor: pointer;
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   transition: all 0.2s;
 }
 
@@ -498,5 +501,167 @@
 
   .search-input {
     min-width: auto;
+  }
+}
+
+/* ============================================================
+   관리자 2차 인증 페이지 (Admin Verification) 
+   ============================================================ */
+.admin-page {
+  min-height: calc(100vh - 80px);
+  background: var(--bg);
+  padding: 40px 20px;
+}
+
+.admin-verification-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 160px);
+}
+
+.admin-verification-card {
+  background: var(--surface);
+  padding: 50px 40px;
+  border-radius: 24px;
+  box-shadow: 0 20px 60px rgba(252, 146, 199, 0.15); /* 핑크빛 은은한 그림자 */
+  text-align: center;
+  max-width: 480px;
+  width: 100%;
+  border: 1px solid rgba(252, 146, 199, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+/* 카드 상단의 얇은 핑크 띠 */
+.admin-verification-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background: linear-gradient(90deg, #fc92c7, #ffb5d4);
+}
+
+.admin-verification-card h2 {
+  color: var(--text);
+  margin-top: 0;
+  margin-bottom: 12px;
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+
+/* 🔐 자물쇠 아이콘 대체 이모지 */
+.admin-verification-card h2::before {
+  content: "🔐 ";
+  font-size: 24px;
+}
+
+.admin-verification-card p {
+  color: #666;
+  line-height: 1.6;
+  margin-bottom: 40px;
+  font-size: 15px;
+  word-break: keep-all;
+}
+
+.verification-actions {
+  margin-bottom: 25px;
+}
+
+.verification-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  background: #fafafa;
+  padding: 25px 20px;
+  border-radius: 16px;
+  border: 1px solid #f0f0f0;
+}
+
+.verification-input-group input {
+  padding: 16px;
+  border-radius: 12px;
+  border: 2px solid #ddd;
+  background: white;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text);
+  text-align: center;
+  letter-spacing: 8px;
+  outline: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.verification-input-group input::placeholder {
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: normal;
+  color: #bbb;
+}
+
+.verification-input-group input:focus {
+  border-color: var(--point);
+  box-shadow: 0 0 0 4px rgba(252, 146, 199, 0.15);
+  transform: translateY(-2px);
+}
+
+.admin-btn {
+  padding: 16px;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  width: 100%;
+}
+
+.send-code-btn {
+  background: white;
+  color: var(--point);
+  border: 2px solid var(--point);
+}
+
+.send-code-btn:hover:not(:disabled) {
+  background: rgba(252, 146, 199, 0.05);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(252, 146, 199, 0.1);
+}
+
+.send-code-btn:disabled {
+  border-color: #ddd;
+  color: #999;
+  background: #f9f9f9;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.verify-btn {
+  background: var(--point);
+  color: white;
+}
+
+.verify-btn:hover {
+  background: #f27ab8;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(252, 146, 199, 0.3);
+}
+
+.animate-fade-in {
+  animation: verificationFadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes verificationFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

@@ -11,17 +11,6 @@ export default function Signin() {
     pw: "",
     email: "",
     name: "",
-    birth: "",
-  });
-
-  // ✅ 2️⃣ 옵션 상태
-  const [gender, setGender] = useState("");
-  const [nationality, setNationality] = useState("");
-
-  // ✅ 3️⃣ 체크박스 상태
-  const [checks, setChecks] = useState({
-    required: false,
-    marketing: false,
   });
 
   // ✅ 4️⃣ 에러 모달 상태
@@ -45,21 +34,7 @@ export default function Signin() {
   // 입력값 변경
   const handleChange = (e) => {
     const { name, value } = e.target;
-
-    // 생년월일 숫자만 제한
-    if (name === "birth") {
-      const onlyNumber = value.replace(/[^0-9]/g, "");
-      setForm({ ...form, [name]: onlyNumber });
-      return;
-    }
-
     setForm({ ...form, [name]: value });
-  };
-
-  // 체크박스 변경
-  const handleCheck = (e) => {
-    const { name, checked } = e.target;
-    setChecks({ ...checks, [name]: checked });
   };
 
   // 이메일 코드 전송
@@ -134,12 +109,6 @@ export default function Signin() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!checks.required) {
-      setErrorMsg("필수 약관에 동의해주세요.");
-      setShowModal(true);
-      return;
-    }
-
     if (form.id.length < 5) {
       setErrorMsg("아이디는 5자 이상 입력하세요.");
       setShowModal(true);
@@ -170,17 +139,9 @@ export default function Signin() {
       return;
     }
 
-    if (form.birth.length !== 8) {
-      setErrorMsg("생년월일은 8자리 숫자입니다.");
-      setShowModal(true);
-      return;
-    }
-
     try {
       const formData = {
         ...form,
-        gender,
-        nationality,
       };
       await signin(formData);
       alert("회원가입이 완료되었습니다!");
