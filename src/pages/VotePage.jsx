@@ -401,6 +401,7 @@ export default function VotePage() {
       );
 
       const serverVotes = {};
+      const serverActions = {};
       const formattedCards = data.map((item) => {
         const totalVotes =
           (item.candidate_a_count || 0) + (item.candidate_b_count || 0);
@@ -418,6 +419,13 @@ export default function VotePage() {
         if (item.user_voted_side) {
           serverVotes[cardId] = item.user_voted_side.toLowerCase();
         }
+
+        // 서버에서 받아온 좋아요 상태와 카운트 동기화
+        serverActions[cardId] = {
+          like: Boolean(item.user_liked),
+          dislike: false, // 싫어요는 현재 서버 스키마에 없으므로 로컬 유지 또는 초기화
+          likeCount: item.like_count || 0,
+        };
 
         return {
           id: cardId,
@@ -445,6 +453,7 @@ export default function VotePage() {
 
       // Merge server votes into local state (server has priority)
       setSelectedVotes((prev) => ({ ...prev, ...serverVotes }));
+      setCardActions((prev) => ({ ...prev, ...serverActions }));
       setCards(pinTargetCard(formattedCards, targetVoteId));
     } catch (error) {
       if (fetchSequenceRef.current !== fetchId) {

@@ -15,7 +15,9 @@ export const useRouteAnimation = () => {
   useEffect(() => {
     // 경로가 실제로 바뀌었을 때만 퇴장 애니메이션 시작
     if (location.pathname !== prevPath.current) {
-      setTransitionStage("exit");
+      Promise.resolve().then(() => {
+        setTransitionStage("exit");
+      });
       // 주의: 이때 displayOutlet은 업데이트하지 않고 "이전 것"을 유지합니다.
     }
     prevPath.current = location.pathname;
