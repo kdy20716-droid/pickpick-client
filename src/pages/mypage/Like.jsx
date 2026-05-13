@@ -91,7 +91,7 @@ const Like = () => {
                   <div className="info-card">
                   <div className="thumb-img">
                     {vote.candidate_a_image ? (
-                      <img src={(vote.candidate_a_image?.startsWith('http') ? vote.candidate_a_image : `https://pickpick-server.onrender.com/uploads/${vote.candidate_a_image}`)} alt="candidate a" />
+                      <img src={(vote.candidate_a_image?.startsWith('http') ? vote.candidate_a_image : `https://dolphin-app-onqn2.ondigitalocean.app/uploads/${vote.candidate_a_image}`)} alt="candidate a" />
                     ) : (
                       <div style={{ width: "100%", height: "100%", background: "#eee", display: "flex", justifyContent: "center", alignItems: "center", fontSize: "12px", color: "#ccc" }}>No Img</div>
                     )}
@@ -99,7 +99,7 @@ const Like = () => {
                   <h3 className="vote-title">{vote.title}</h3>
                   <div className="thumb-img">
                     {vote.candidate_b_image ? (
-                      <img src={(vote.candidate_b_image?.startsWith('http') ? vote.candidate_b_image : `https://pickpick-server.onrender.com/uploads/${vote.candidate_b_image}`)} alt="candidate b" />
+                      <img src={(vote.candidate_b_image?.startsWith('http') ? vote.candidate_b_image : `https://dolphin-app-onqn2.ondigitalocean.app/uploads/${vote.candidate_b_image}`)} alt="candidate b" />
                     ) : (
                       <div style={{ width: "100%", height: "100%", background: "#eee", display: "flex", justifyContent: "center", alignItems: "center", fontSize: "12px", color: "#ccc" }}>No Img</div>
                     )}

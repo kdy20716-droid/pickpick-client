@@ -137,7 +137,7 @@ const Result = () => {
                       <div className="img-wrapper">
                         {vote.candidate_a_image ? (
                           <img
-                            src={`https://pickpick-server.onrender.com/uploads/${vote.candidate_a_image}`}
+                            src={`https://dolphin-app-onqn2.ondigitalocean.app/uploads/${vote.candidate_a_image}`}
                             alt="left"
                           />
                         ) : (
@@ -171,7 +171,7 @@ const Result = () => {
                       <div className="img-wrapper">
                         {vote.candidate_b_image ? (
                           <img
-                            src={`https://pickpick-server.onrender.com/uploads/${vote.candidate_b_image}`}
+                            src={`https://dolphin-app-onqn2.ondigitalocean.app/uploads/${vote.candidate_b_image}`}
                             alt="right"
                           />
                         ) : (
@@ -231,7 +231,7 @@ const Result = () => {
                           src={
                             vote.candidate_a_image?.startsWith("http")
                               ? vote.candidate_a_image
-                              : `https://pickpick-server.onrender.com/uploads/${vote.candidate_a_image}`
+                              : `https://dolphin-app-onqn2.ondigitalocean.app/uploads/${vote.candidate_a_image}`
                           }
                           alt="left"
                         />
@@ -269,7 +269,7 @@ const Result = () => {
                           src={
                             vote.candidate_b_image?.startsWith("http")
                               ? vote.candidate_b_image
-                              : `https://pickpick-server.onrender.com/uploads/${vote.candidate_b_image}`
+                              : `https://dolphin-app-onqn2.ondigitalocean.app/uploads/${vote.candidate_b_image}`
                           }
                           alt="right"
                         />
