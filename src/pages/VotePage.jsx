@@ -321,6 +321,7 @@ export default function VotePage() {
   const [cards, setCards] = useState([]);
   const [isVotesLoading, setIsVotesLoading] = useState(true);
   const [votesError, setVotesError] = useState("");
+
   const { user: currentUser, isLoggedIn } = useAuth();
   const userId = currentUser?.id || "guest";
 
