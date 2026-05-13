@@ -54,11 +54,11 @@ const MyCreate = () => {
                   </div>
                   <div className="vote-preview">
                     {vote.candidate_a_image ? (
-                       <img src={(vote.candidate_a_image?.startsWith('http') ? vote.candidate_a_image : `https://pickpick-server.onrender.com/uploads/${vote.candidate_a_image}`)} alt="a" />
+                       <img src={(vote.candidate_a_image?.startsWith('http') ? vote.candidate_a_image : `https://dolphin-app-onqn2.ondigitalocean.app/uploads/${vote.candidate_a_image}`)} alt="a" />
                     ) : <div className="no-img">No Img</div>}
                     <span className="vs-text">VS</span>
                     {vote.candidate_b_image ? (
-                       <img src={(vote.candidate_b_image?.startsWith('http') ? vote.candidate_b_image : `https://pickpick-server.onrender.com/uploads/${vote.candidate_b_image}`)} alt="b" />
+                       <img src={(vote.candidate_b_image?.startsWith('http') ? vote.candidate_b_image : `https://dolphin-app-onqn2.ondigitalocean.app/uploads/${vote.candidate_b_image}`)} alt="b" />
                     ) : <div className="no-img">No Img</div>}
                   </div>
                 </div>

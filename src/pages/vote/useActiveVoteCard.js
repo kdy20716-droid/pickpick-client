@@ -1,23 +1,36 @@
-import { useEffect, useEffectEvent, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useEffectEvent,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
-export function useActiveVoteCard(cards) {
-  const [activeCardId, setActiveCardId] = useState("");
+export function useActiveVoteCard(cards, preferredCardId = "") {
+  const [manualActiveCardId, setManualActiveCardId] = useState("");
   const feedRef = useRef(null);
   const cardRefs = useRef(new Map());
 
-  // Derive initial activeCardId if not set
-  if (!activeCardId && cards.length > 0) {
-    setActiveCardId(cards[0].feedId);
-  }
+  const cardIds = useMemo(() => {
+    return new Set(cards.map((card) => card.feedId));
+  }, [cards]);
 
-  const registerCardRef = (cardId) => (node) => {
+  const activeCardId =
+    manualActiveCardId && cardIds.has(manualActiveCardId)
+      ? manualActiveCardId
+      : preferredCardId && cardIds.has(preferredCardId)
+        ? preferredCardId
+        : (cards[0]?.feedId ?? "");
+
+  const registerCardRef = useCallback((cardId) => (node) => {
     if (node) {
       cardRefs.current.set(cardId, node);
       return;
     }
 
     cardRefs.current.delete(cardId);
-  };
+  }, []);
 
   const syncActiveCard = useEffectEvent(() => {
     const feed = feedRef.current;
@@ -41,7 +54,7 @@ export function useActiveVoteCard(cards) {
     });
 
     if (nearestCardId && nearestCardId !== activeCardId) {
-      setActiveCardId(nearestCardId);
+      setManualActiveCardId(nearestCardId);
     }
   });
 

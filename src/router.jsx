@@ -10,6 +10,7 @@ import Create from "./pages/Create";
 import VotePage from "./pages/VotePage";
 import MyPage from "./pages/mypage/MyPage";
 import Profile from "./pages/mypage/Profile";
+import Profileedit from "./pages/mypage/Default";
 import Like from "./pages/mypage/Like";
 import MyCreate from "./pages/mypage/MyCreate";
 import Admin from "./pages/Admin";
@@ -49,6 +50,14 @@ const router = createBrowserRouter([
         element: <VotePage />,
       },
       {
+        path: "/vote/:postId",
+        element: <VotePage />,
+      },
+      {
+        path: "/post/:postId",
+        element: <VotePage />,
+      },
+      {
         path: "/admin",
         element: <Admin />,
       },
@@ -64,6 +73,10 @@ const router = createBrowserRouter([
           {
             path: "like",
             element: <Like />,
+          },
+          {
+            path: "profileedit",
+            element: <Profileedit />,
           },
           {
             path: "mypoll",

@@ -119,10 +119,13 @@ const Create = () => {
       return;
     }
 
+    if (!authorId) {
+      alert("로그인이 필요합니다.");
+      navigate("/login");
+      return;
+    }
+
     setIsSubmitting(true);
-    setTimeout(() => {
-      setIsSubmitting(false);
-    }, 3000);
 
     try {
       await addVote(
@@ -140,6 +143,8 @@ const Create = () => {
     } catch (error) {
       console.error("등록 에러:", error);
       alert("등록에 실패했습니다.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 

@@ -183,7 +183,7 @@ const Result = () => {
                       </div>
                       <span className="percent">{rightPercent}%</span>
                     </div>
-
+                    {/* test */}
                     {/* 댓글 버튼 */}
                     <button
                       className={`icon-btn${selectedVoteForComments?.id === vote.id ? " active" : ""}`}

@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 
 const Menu = () => {
@@ -17,13 +17,15 @@ const Menu = () => {
 
   return (
     <nav className="menu-nav">
-      <Link to="/mypage/history">HISTORY</Link>
-      <Link to="/mypage/like">LIKE</Link>
-      <Link to="/mypage/mypoll">MY CREATE</Link>
-      <Link to="/mypage/contact">CONTACT</Link>
-      <Link to="/mypage">MY PAGE</Link>
+      <NavLink to="/mypage" end>
+        MY PAGE
+      </NavLink>
+      <NavLink to="/mypage/history">HISTORY</NavLink>
+      <NavLink to="/mypage/like">LIKE</NavLink>
+      <NavLink to="/mypage/mypoll">MY CREATE</NavLink>
+      <NavLink to="/mypage/contact">CONTACT</NavLink>
       {isAdmin && (
-        <Link
+        <NavLink
           to="/admin"
           style={{
             color: "#ffa500",
@@ -34,23 +36,20 @@ const Menu = () => {
           onMouseOut={(e) => (e.target.style.color = "#ffa500")}
         >
           MANAGE
-        </Link>
+        </NavLink>
       )}
-      <a
-        onClick={(e) => {
-          e.preventDefault();
-          handleLogout();
-        }}
+      <button
+        type="button"
+        className="menu-logout-button"
+        onClick={handleLogout}
         style={{
-          cursor: "pointer",
           color: "#ff9ea2",
-          transition: "color 0.3s",
         }}
         onMouseOver={(e) => (e.target.style.color = "#ff868a")}
         onMouseOut={(e) => (e.target.style.color = "#ff9ea2")}
       >
         LOGOUT
-      </a>
+      </button>
     </nav>
   );
 };

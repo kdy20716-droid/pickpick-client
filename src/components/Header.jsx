@@ -21,7 +21,7 @@ const Header = () => {
             <Link to="/mypage" className="account-link" aria-label="계정">
               {user?.profile_image ? (
                 <img 
-                  src={(user.profile_image?.startsWith('http') ? user.profile_image : `https://pickpick-server.onrender.com/uploads/${user.profile_image}`)} 
+                  src={(user.profile_image?.startsWith('http') ? user.profile_image : `https://dolphin-app-onqn2.ondigitalocean.app/uploads/${user.profile_image}`)} 
                   alt="" 
                   className="profile-img-small" 
                 />

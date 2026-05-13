@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import styles from "./MyPage.module.css";
 import { useAuth } from "../../contexts/AuthContext";
 import {
@@ -15,6 +16,7 @@ import { getImageUrl } from "../../utils/image";
 const Profile = () => {
   const [notifications, setNotifications] = useState([]);
   const { user: currentUser, updateUser } = useAuth();
+  const navigate = useNavigate();
 
   // 프로필 이미지 관련 상태
   const fileInputRef = useRef(null);
@@ -168,7 +170,14 @@ const Profile = () => {
               <h2 className={styles.nickname}>
                 {currentUser?.name || "게스트"} 님
               </h2>
-              <span className={styles.gearIcon}>⚙</span>
+              <button
+                type="button"
+                className={styles.gearIcon}
+                onClick={() => navigate("/mypage/profileedit")}
+                aria-label="프로필 설정"
+              >
+                ⚙
+              </button>
             </div>
           </div>
           <Grade />

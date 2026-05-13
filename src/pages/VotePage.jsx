@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, useCallback, useMemo } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useParams } from "react-router-dom";
 import "./VotePage.css";
 import vsLogo from "../assets/vs-logo.svg";
 import favoriteIcon from "../assets/favorite.svg";
@@ -12,7 +12,7 @@ import { isMainRouteTransition } from "./animations/routeTransitions.js";
 import { useActiveVoteCard } from "./vote/useActiveVoteCard.js";
 import { useActiveVoteHash } from "./vote/useActiveVoteHash.js";
 import { useVotePageScrollSnap } from "./vote/useVotePageScrollSnap.js";
-import { getVoteHash } from "./vote/voteCards.js";
+import { getVoteFeedIdFromHash, getVoteHash } from "./vote/voteCards.js";
 import {
   getVote,
   submitVote,
@@ -37,15 +37,6 @@ const tags = [
   "밸런스 게임",
   "밈",
   "기타",
-];
-
-const sortOptions = [
-  { id: "random", label: "랜덤순" },
-  { id: "latest", label: "최신순" },
-  { id: "popular", label: "인기순" },
-  { id: "comments", label: "댓글 많은순" },
-  { id: "name_asc", label: "이름(ㄱ~ㅎ)순" },
-  { id: "name_desc", label: "이름(ㅎ~ㄱ)순" },
 ];
 
 const actionButtons = [
@@ -80,6 +71,42 @@ const initialActionState = {
   dislike: false,
   likeCount: 0,
 };
+
+function getTargetVoteId(routePostId, search, hash) {
+  const searchParams = new URLSearchParams(search);
+  const candidates = [
+    routePostId,
+    searchParams.get("post"),
+    searchParams.get("postId"),
+    searchParams.get("vote"),
+    searchParams.get("voteId"),
+    searchParams.get("id"),
+    getVoteFeedIdFromHash(hash),
+  ];
+
+  return (
+    candidates.find((candidate) => {
+      return typeof candidate === "string" && candidate.trim().length > 0;
+    })?.trim() ?? ""
+  );
+}
+
+function pinTargetCard(cards, targetCardId) {
+  if (!targetCardId) {
+    return cards;
+  }
+
+  const targetIndex = cards.findIndex((card) => card.feedId === targetCardId);
+  if (targetIndex < 0) {
+    return cards;
+  }
+
+  return [
+    cards[targetIndex],
+    ...cards.slice(0, targetIndex),
+    ...cards.slice(targetIndex + 1),
+  ];
+}
 
 function updateCardActionState(currentActions, cardId, actionId) {
   const previousState = currentActions[cardId] ?? initialActionState;
@@ -285,8 +312,15 @@ function VoteCard({
 
 export default function VotePage() {
   const location = useLocation();
+  const { postId: routePostId } = useParams();
   const entersFromMain = isMainRouteTransition(location.state?.transition);
+  const targetVoteId = useMemo(
+    () => getTargetVoteId(routePostId, location.search, location.hash),
+    [routePostId, location.search, location.hash],
+  );
   const [cards, setCards] = useState([]);
+  const [isVotesLoading, setIsVotesLoading] = useState(true);
+  const [votesError, setVotesError] = useState("");
 
   const { user: currentUser, isLoggedIn } = useAuth();
   const userId = currentUser?.id || "guest";
@@ -300,6 +334,15 @@ export default function VotePage() {
     const saved = localStorage.getItem(`cardActions_${userId}`);
     return saved ? JSON.parse(saved) : {};
   });
+
+  // 유저가 바뀌면(로그인/로그아웃) 기록을 다시 로드합니다.
+  useEffect(() => {
+    const savedVotes = localStorage.getItem(`selectedVotes_${userId}`);
+    setSelectedVotes(savedVotes ? JSON.parse(savedVotes) : {});
+
+    const savedActions = localStorage.getItem(`cardActions_${userId}`);
+    setCardActions(savedActions ? JSON.parse(savedActions) : {});
+  }, [userId]);
 
   // 상태가 변경될 때마다 유저별 키로 localStorage에 저장합니다.
   useEffect(() => {
@@ -321,13 +364,14 @@ export default function VotePage() {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const pageRef = useRef(null);
   const copyTimeoutRef = useRef(null);
+  const fetchSequenceRef = useRef(0);
   const { activeCardId, cardRefs, feedRef, registerCardRef } =
-    useActiveVoteCard(cards);
+    useActiveVoteCard(cards, targetVoteId);
 
   // 조회수 증가 로직
   useEffect(() => {
     if (activeCardId) {
-      const card = cards.find((c) => c.id === activeCardId);
+      const card = cards.find((c) => c.feedId === activeCardId);
       if (card) {
         incrementView(card.id).catch(console.error);
       }
@@ -335,6 +379,12 @@ export default function VotePage() {
   }, [activeCardId, cards]);
 
   const fetchVotes = useCallback(async () => {
+    const fetchId = fetchSequenceRef.current + 1;
+    fetchSequenceRef.current = fetchId;
+
+    setIsVotesLoading(true);
+    setVotesError("");
+
     try {
       const passedUserId = !isLoggedIn ? null : currentUser?.id;
       const data = await getVote(
@@ -342,6 +392,10 @@ export default function VotePage() {
         selectedTag,
         sortBy,
         passedUserId,
+        null,
+        null,
+        null,
+        targetVoteId || null,
       );
 
       const serverVotes = {};
@@ -373,7 +427,7 @@ export default function VotePage() {
             image: item.candidate_a_image
               ? item.candidate_a_image?.startsWith("http")
                 ? item.candidate_a_image
-                : `https://pickpick-server.onrender.com/uploads/${item.candidate_a_image}`
+                : `https://dolphin-app-onqn2.ondigitalocean.app/uploads/${item.candidate_a_image}`
               : null,
             tone: "light",
           },
@@ -383,7 +437,7 @@ export default function VotePage() {
             image: item.candidate_b_image
               ? item.candidate_b_image?.startsWith("http")
                 ? item.candidate_b_image
-                : `https://pickpick-server.onrender.com/uploads/${item.candidate_b_image}`
+                : `https://dolphin-app-onqn2.ondigitalocean.app/uploads/${item.candidate_b_image}`
               : null,
             tone: "dark",
           },
@@ -391,13 +445,34 @@ export default function VotePage() {
         };
       });
 
+      if (fetchSequenceRef.current !== fetchId) {
+        return;
+      }
+
       // Merge server votes into local state (server has priority)
       setSelectedVotes((prev) => ({ ...prev, ...serverVotes }));
-      setCards(formattedCards);
+      setCards(pinTargetCard(formattedCards, targetVoteId));
     } catch (error) {
+      if (fetchSequenceRef.current !== fetchId) {
+        return;
+      }
+
       console.error("투표 목록을 불러오는데 실패했습니다.", error);
+      setCards([]);
+      setVotesError("투표 목록을 불러오지 못했습니다.");
+    } finally {
+      if (fetchSequenceRef.current === fetchId) {
+        setIsVotesLoading(false);
+      }
     }
-  }, [selectedTag, searchKeyword, sortBy, userId, isLoggedIn, currentUser]);
+  }, [
+    selectedTag,
+    searchKeyword,
+    sortBy,
+    isLoggedIn,
+    currentUser?.id,
+    targetVoteId,
+  ]);
 
   useEffect(() => {
     const t = setTimeout(() => {
@@ -460,6 +535,7 @@ export default function VotePage() {
     feedRef,
     activeCardId,
     cardRefs,
+    targetCardId: targetVoteId,
   });
 
   useActiveVoteHash(activeCardId, location);
@@ -632,7 +708,15 @@ export default function VotePage() {
 
       <div className="vote-layout">
         <div ref={feedRef} className="vote-feed">
-          {cards.length > 0 ? (
+          {isVotesLoading ? (
+            <div className="empty-state" role="status">
+              투표 목록을 불러오는 중입니다.
+            </div>
+          ) : votesError ? (
+            <div className="empty-state" role="alert">
+              {votesError}
+            </div>
+          ) : cards.length > 0 ? (
             cards.map((card) => {
               const actionState = cardActions[card.feedId];
 

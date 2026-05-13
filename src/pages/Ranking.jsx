@@ -1,15 +1,36 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import "./ranking.css";
 import goldMedal from "../assets/1위 메달.png";
 import silverMedal from "../assets/2위메달.png";
 import bronzeMedal from "../assets/3위 메달.png";
 import vsImage from "../assets/vs.png";
 import { getRanking } from "../api/posts.js";
+import { getVoteHash } from "./vote/voteCards.js";
+
+const API_ORIGIN = "http://localhost:4000";
+
+function getUploadUrl(image) {
+  if (!image) {
+    return null;
+  }
+
+  return image.startsWith("http") ? image : `${API_ORIGIN}/uploads/${image}`;
+}
 
 function Ranking() {
   const [topRankings, setTopRankings] = useState([]);
   const [rankingItems, setRankingItems] = useState([]);
   const [loading, setLoading] = useState(true);
+  const rankingRows = Array.from(
+    { length: Math.max(3, rankingItems.length) },
+    (_, index) =>
+      rankingItems[index] ?? {
+        id: `placeholder-${index + 4}`,
+        title: "랭킹 집계 중 • • •",
+        isPlaceholder: true,
+      },
+  );
 
   useEffect(() => {
     const fetchRanking = async () => {
@@ -20,26 +41,10 @@ function Ranking() {
         const formatted = data.map((item) => ({
           id: item.id,
           title: item.title,
-          topImage: item.candidate_a_image
-            ? item.candidate_a_image?.startsWith("http")
-              ? item.candidate_a_image
-              : `https://pickpick-server.onrender.com/uploads/${item.candidate_a_image}`
-            : null,
-          bottomImage: item.candidate_b_image
-            ? item.candidate_b_image?.startsWith("http")
-              ? item.candidate_b_image
-              : `https://pickpick-server.onrender.com/uploads/${item.candidate_b_image}`
-            : null,
-          leftImage: item.candidate_a_image
-            ? item.candidate_a_image?.startsWith("http")
-              ? item.candidate_a_image
-              : `https://pickpick-server.onrender.com/uploads/${item.candidate_a_image}`
-            : null,
-          rightImage: item.candidate_b_image
-            ? item.candidate_b_image?.startsWith("http")
-              ? item.candidate_b_image
-              : `https://pickpick-server.onrender.com/uploads/${item.candidate_b_image}`
-            : null,
+          topImage: getUploadUrl(item.candidate_a_image),
+          bottomImage: getUploadUrl(item.candidate_b_image),
+          leftImage: getUploadUrl(item.candidate_a_image),
+          rightImage: getUploadUrl(item.candidate_b_image),
         }));
 
         // 1, 2, 3위 분리 (순서: 2위, 1위, 3위로 화면에 배치됨)
@@ -81,12 +86,13 @@ function Ranking() {
     fetchRanking();
   }, []);
 
-  if (loading)
+  if (loading) {
     return (
       <div style={{ textAlign: "center", padding: "100px", color: "white" }}>
         랭킹 로딩 중...
       </div>
     );
+  }
 
   return (
     <>
@@ -100,11 +106,15 @@ function Ranking() {
                 alt={ranking.medalAlt}
               />
 
-              <div className={`card${ranking.isBig ? " big" : ""}`}>
+              <Link
+                to={`/vote${getVoteHash(ranking.id)}`}
+                className={`card ranking-link${ranking.isBig ? " big" : ""}`}
+                aria-label={`${ranking.title} 투표하기`}
+              >
                 {ranking.topImage && (
                   <img
                     src={ranking.topImage}
-                    className="img top"
+                    className="img top ranking-card-image"
                     alt="candidate A"
                   />
                 )}
@@ -112,34 +122,81 @@ function Ranking() {
                 {ranking.bottomImage && (
                   <img
                     src={ranking.bottomImage}
-                    className="img bottom"
+                    className="img bottom ranking-card-image"
                     alt="candidate B"
                   />
                 )}
-              </div>
-              <div className="vote-title">{ranking.title}</div>
+              </Link>
+              <Link
+                to={`/vote${getVoteHash(ranking.id)}`}
+                className="vote-title ranking-title-link"
+              >
+                {ranking.title}
+              </Link>
             </div>
           ))}
         </div>
 
         <div className="ranking-list">
-          {rankingItems.map((item, index) => (
-            <div key={item.id} className="item">
-              <div className="num">{index + 4}</div>
+          {rankingRows.map((item, index) => {
+            const usePlaceholderImages = item.isPlaceholder;
 
-              <div className="vs-row">
-                {item.leftImage && (
-                  <img src={item.leftImage} alt="candidate A" />
-                )}
-                <img src={vsImage} className="vs-small" alt="vs" />
-                {item.rightImage && (
-                  <img src={item.rightImage} alt="candidate B" />
+            return (
+              <div
+                key={item.id}
+                className={`item${item.isPlaceholder ? " placeholder" : ""}`}
+              >
+                <div className="num">{index + 4}</div>
+
+                {item.isPlaceholder ? (
+                  <>
+                    <div className="vs-row ranking-placeholder">
+                      <div className="ranking-list-image placeholder-image" />
+                      <img src={vsImage} className="vs-small" alt="vs" />
+                      <div className="ranking-list-image placeholder-image" />
+                    </div>
+
+                    <div className="title placeholder-title">{item.title}</div>
+                  </>
+                ) : (
+                  <>
+                    <Link
+                      to={`/vote${getVoteHash(item.id)}`}
+                      className="vs-row ranking-link"
+                      aria-label={`${item.title} 투표하기`}
+                    >
+                      {!usePlaceholderImages && item.leftImage ? (
+                        <img
+                          src={item.leftImage}
+                          className="ranking-list-image"
+                          alt="candidate A"
+                        />
+                      ) : (
+                        <div className="ranking-list-image placeholder-image" />
+                      )}
+                      <img src={vsImage} className="vs-small" alt="vs" />
+                      {!usePlaceholderImages && item.rightImage ? (
+                        <img
+                          src={item.rightImage}
+                          className="ranking-list-image"
+                          alt="candidate B"
+                        />
+                      ) : (
+                        <div className="ranking-list-image placeholder-image" />
+                      )}
+                    </Link>
+
+                    <Link
+                      to={`/vote${getVoteHash(item.id)}`}
+                      className="title ranking-title-link"
+                    >
+                      {item.title}
+                    </Link>
+                  </>
                 )}
               </div>
-
-              <div className="title">{item.title}</div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </section>
     </>

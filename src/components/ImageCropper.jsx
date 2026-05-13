@@ -1,28 +1,49 @@
-import React, { useState, useCallback } from 'react';
-import Cropper from 'react-easy-crop';
-import { getCroppedImgBlob } from '../utils/cropImage';
-import styles from './ImageCropper.module.css';
+import { useState } from "react";
+import styles from "./ImageCropper.module.css";
+
+const createImage = (src) =>
+  new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = reject;
+    img.src = src;
+  });
+
+const createCenteredSquareBlob = async (imageSrc, zoom) => {
+  const img = await createImage(imageSrc);
+  const sourceSize = Math.min(img.naturalWidth, img.naturalHeight) / zoom;
+  const sourceX = (img.naturalWidth - sourceSize) / 2;
+  const sourceY = (img.naturalHeight - sourceSize) / 2;
+  const canvas = document.createElement("canvas");
+  const outputSize = 512;
+  const ctx = canvas.getContext("2d");
+
+  canvas.width = outputSize;
+  canvas.height = outputSize;
+
+  ctx.drawImage(
+    img,
+    sourceX,
+    sourceY,
+    sourceSize,
+    sourceSize,
+    0,
+    0,
+    outputSize,
+    outputSize,
+  );
+
+  return new Promise((resolve) => {
+    canvas.toBlob((blob) => resolve(blob), "image/jpeg", 0.92);
+  });
+};
 
 const ImageCropper = ({ image, onCropComplete, onCancel }) => {
-  const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
-  const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
-
-  const onCropChange = (crop) => {
-    setCrop(crop);
-  };
-
-  const onZoomChange = (zoom) => {
-    setZoom(zoom);
-  };
-
-  const onCropCompleteInternal = useCallback((croppedArea, croppedAreaPixels) => {
-    setCroppedAreaPixels(croppedAreaPixels);
-  }, []);
 
   const handleCrop = async () => {
     try {
-      const croppedImageBlob = await getCroppedImgBlob(image, croppedAreaPixels);
+      const croppedImageBlob = await createCenteredSquareBlob(image, zoom);
       onCropComplete(croppedImageBlob);
     } catch (e) {
       console.error(e);
@@ -34,16 +55,11 @@ const ImageCropper = ({ image, onCropComplete, onCancel }) => {
       <div className={styles.modalContent}>
         <h3 className={styles.title}>프로필 사진 크롭</h3>
         <div className={styles.cropperContainer}>
-          <Cropper
-            image={image}
-            crop={crop}
-            zoom={zoom}
-            aspect={1}
-            onCropChange={onCropChange}
-            onCropComplete={onCropCompleteInternal}
-            onZoomChange={onZoomChange}
-            cropShape="round"
-            showGrid={false}
+          <img
+            src={image}
+            alt=""
+            className={styles.previewImage}
+            style={{ transform: `scale(${zoom})` }}
           />
         </div>
         <div className={styles.controls}>
@@ -56,7 +72,7 @@ const ImageCropper = ({ image, onCropComplete, onCancel }) => {
               max={3}
               step={0.1}
               aria-labelledby="Zoom"
-              onChange={(e) => setZoom(e.target.value)}
+              onChange={(e) => setZoom(Number(e.target.value))}
               className={styles.zoomRange}
             />
           </div>

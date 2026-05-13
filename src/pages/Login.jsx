@@ -14,7 +14,10 @@ export default function Login() {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const data = await apiLogin(form);
+      const data = await apiLogin({
+        username: form.username.trim(),
+        password: form.password,
+      });
       // 로그인 성공 시 Context의 login 함수 호출
       login(data.user, data.token);
 
@@ -64,7 +67,7 @@ export default function Login() {
               value={form.username}
               onChange={(e) => setForm({ ...form, username: e.target.value })}
             />
-            <label>PickPick 계정</label>
+            <label>아이디 또는 이메일</label>
           </div>
 
           {/* 비밀번호 */}
