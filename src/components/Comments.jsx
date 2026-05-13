@@ -116,7 +116,9 @@ export default function Comments({
     let ignore = false;
 
     if (!postDbId) {
-      setComments([]);
+      Promise.resolve().then(() => {
+        if (!ignore) setComments((prev) => (prev.length === 0 ? prev : []));
+      });
       return () => {
         ignore = true;
       };
