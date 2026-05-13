@@ -8,11 +8,14 @@ import {
   updateProfile,
 } from "../../api/users";
 import ImageCropper from "../../components/ImageCropper";
+import Grade from "./Grade";
+
+import { getImageUrl } from "../../utils/image";
 
 const Profile = () => {
   const [notifications, setNotifications] = useState([]);
   const { user: currentUser, updateUser } = useAuth();
-  
+
   // 프로필 이미지 관련 상태
   const fileInputRef = useRef(null);
   const [selectedImage, setSelectedImage] = useState(null);
@@ -77,11 +80,11 @@ const Profile = () => {
   const handleCropComplete = async (croppedBlob) => {
     setIsCropping(false);
     setSelectedImage(null);
-    
+
     try {
       const formData = new FormData();
       formData.append("profile_image", croppedBlob, "profile.jpg");
-      
+
       const res = await updateProfile(currentUser.id, formData);
       if (res.success) {
         updateUser(res.user);
@@ -111,17 +114,25 @@ const Profile = () => {
       <section className={styles.contentBody}>
         <div className={styles.leftPanel}>
           <div className={styles.profileHeader}>
-            <div 
+            <div
               className={`${styles.card} ${styles.profileImgCard}`}
               onClick={handleImageClick}
               style={{ cursor: "pointer" }}
             >
               <div className={styles.circleBig}>
                 {currentUser?.profile_image ? (
-                  <img 
-                    src={(currentUser.profile_image?.startsWith('http') ? currentUser.profile_image : `https://dolphin-app-onqn2.ondigitalocean.app/uploads/${currentUser.profile_image}`)} 
-                    alt="Profile" 
-                    style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                  <img
+                    src={
+                      currentUser.profile_image?.startsWith("http")
+                        ? currentUser.profile_image
+                        : `https://dolphin-app-onqn2.ondigitalocean.app/uploads/${currentUser.profile_image}`
+                    }
+                    alt="Profile"
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                    }}
                   />
                 ) : (
                   <div className={styles.silhouette}></div>
@@ -130,11 +141,11 @@ const Profile = () => {
               <div className={styles.camIconWrapper}>
                 <div className={styles.camIcon}>📷</div>
               </div>
-              <input 
-                type="file" 
-                ref={fileInputRef} 
-                onChange={onSelectFile} 
-                accept="image/*" 
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={onSelectFile}
+                accept="image/*"
                 style={{ display: "none" }}
               />
             </div>
@@ -143,7 +154,9 @@ const Profile = () => {
                 LV.99 <span className={styles.qMark}>?</span>{" "}
                 <span className={styles.playBtn}>▶</span>
               </div>
-              <h2 className={styles.nickname}>{currentUser?.name || "게스트"} 님</h2>
+              <h2 className={styles.nickname}>
+                {currentUser?.name || "게스트"} 님
+              </h2>
               <span className={styles.gearIcon}>⚙</span>
             </div>
           </div>
@@ -193,10 +206,12 @@ const Profile = () => {
         </div>
       </section>
 
+      <Grade />
+
       {isCropping && (
-        <ImageCropper 
-          image={selectedImage} 
-          onCropComplete={handleCropComplete} 
+        <ImageCropper
+          image={selectedImage}
+          onCropComplete={handleCropComplete}
           onCancel={handleCropCancel}
         />
       )}

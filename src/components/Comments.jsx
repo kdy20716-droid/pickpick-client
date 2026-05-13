@@ -8,6 +8,7 @@ import {
   toggleCommentLike,
 } from "../api/posts.js";
 import { useAuth } from "../contexts/AuthContext";
+import { getImageUrl } from "../utils/image";
 
 const COMMENT_OVERLAY_BREAKPOINT = 1320;
 
