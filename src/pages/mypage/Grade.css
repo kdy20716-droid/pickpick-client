@@ -96,4 +96,12 @@
   font-size: 13px;
   color: #bbb;
   text-align: center;
+  line-height: 1.2;
+}
+
+.gradeRequirements {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: center;
 }
