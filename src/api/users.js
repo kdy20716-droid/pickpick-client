@@ -60,3 +60,9 @@ export const updateBorder = async (userId, border) => {
   const response = await instance.put(`/users/border/${userId}`, { border });
   return response.data;
 };
+
+// 로그인 기록 조회 API
+export const getLoginHistory = async (userId) => {
+  const response = await instance.get(`/users/login-history/${userId}`);
+  return response.data;
+};
