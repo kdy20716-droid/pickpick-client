@@ -84,6 +84,7 @@ export default function Comments({
   postDbId,
   isFixed = false,
   isCentered = false,
+  layerClassName = "",
 }) {
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
@@ -492,7 +493,9 @@ export default function Comments({
 
   return createPortal(
     <div
-      className={`comment-modal-layer${isCentered ? " is-centered" : ""}`}
+      className={`comment-modal-layer${isCentered ? " is-centered" : ""}${
+        layerClassName ? ` ${layerClassName}` : ""
+      }`}
       key={userId}
     >
       <button

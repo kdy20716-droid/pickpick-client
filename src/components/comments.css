@@ -30,6 +30,15 @@
   ); /* 전역 button:hover의 핑크색 속성 덮어쓰기 */
 }
 
+.comment-modal-layer.is-vote-page {
+  background-color: transparent;
+}
+
+.comment-modal-layer.is-vote-page .comment-modal-backdrop,
+.comment-modal-layer.is-vote-page .comment-modal-backdrop:hover {
+  background: transparent;
+}
+
 .comment-modal {
   position: fixed;
   top: var(--comment-modal-top, calc(var(--vote-header-offset, 110px) + 52px));
