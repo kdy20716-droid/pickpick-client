@@ -131,6 +131,7 @@
   height: 40px;
   border-radius: 50%;
   background: linear-gradient(135deg, #76b9ff 0%, #fc92c7 100%);
+  margin-bottom: 4px; /* Space for border tag */
 }
 
 .comment-avatar-small {
@@ -556,7 +557,7 @@ p {
 }
 
 .comment-input {
-  padding: 14px 16px;
+  padding: 14px 16px 18px; /* Increased bottom padding */
   border-top: 1px solid #eceff2;
   background: #ffffff;
 }

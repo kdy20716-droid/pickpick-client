@@ -121,20 +121,21 @@ const Profile = () => {
               style={{ cursor: "pointer" }}
             >
               <div className={`${styles.circleBig} ${currentUser?.selected_border ? `profile-border-${currentUser.selected_border}` : ""}`}>
-                {currentUser?.profile_image ? (
-                  <img
-                    src={getImageUrl(currentUser.profile_image)}
-                    alt="Profile"
-                    style={{
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "cover",
-                      borderRadius: "50%",
-                    }}
-                  />
-                ) : (
-                  <div className={styles.silhouette}></div>
-                )}
+                <div style={{ width: "100%", height: "100%", borderRadius: "50%", overflow: "hidden" }}>
+                  {currentUser?.profile_image ? (
+                    <img
+                      src={getImageUrl(currentUser.profile_image)}
+                      alt="Profile"
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                      }}
+                    />
+                  ) : (
+                    <div className={styles.silhouette}></div>
+                  )}
+                </div>
               </div>
               <div className={styles.camIconWrapper}>
                 <div className={styles.camIcon}>📷</div>

@@ -546,7 +546,7 @@ export default function Comments({
         </div>
 
         <footer className="comment-input">
-          <div className={`comment-avatar is-small ${currentUser?.selected_border ? `profile-border-${currentUser.selected_border}` : ""}`} aria-hidden="true">
+          <div className={`comment-avatar comment-avatar-small ${currentUser?.selected_border ? `profile-border-${currentUser.selected_border}` : ""}`} aria-hidden="true">
             {currentUser?.profile_image ? (
               <img
                 src={getImageUrl(currentUser.profile_image)}
