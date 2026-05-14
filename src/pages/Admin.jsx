@@ -10,9 +10,11 @@ const Admin = () => {
   const [comments, setComments] = useState([]);
   const [selectedVoteId, setSelectedVoteId] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState("votes"); // 'votes' or 'comments'
+  const [activeTab, setActiveTab] = useState("votes"); // 'votes', 'comments', or 'users'
   const [deleteModal, setDeleteModal] = useState(null); // null, 'vote', 'comment'
   const [itemToDelete, setItemToDelete] = useState(null);
+  const [users, setUsers] = useState([]);
+  const [editingUser, setEditingUser] = useState(null);
 
   // 2차 인증 상태
   const [isVerified, setIsVerified] = useState(false);
@@ -196,6 +198,43 @@ const Admin = () => {
     }
   };
 
+  // 유저 목록 조회
+  const handleLoadUsers = async () => {
+    setLoading(true);
+    try {
+      const response = await instance.get("/admin/users", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setUsers(response.data.users);
+      setActiveTab("users");
+    } catch (error) {
+      console.error("유저 조회 에러:", error);
+      if (!handleAuthError(error)) {
+        alert("유저 목록을 불러오는 중 에러가 발생했습니다.");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 유저 상태 업데이트 (티어, 역할, 테두리 등)
+  const handleUpdateUserStatus = async (userId, updates) => {
+    setLoading(true);
+    try {
+      await instance.put(`/admin/users/${userId}/status`, updates, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      alert("유저 정보가 수정되었습니다.");
+      // 목록 업데이트
+      setUsers(users.map(u => u.id === userId ? { ...u, ...updates } : u));
+    } catch (error) {
+      console.error("유저 수정 에러:", error);
+      alert("유저 수정 중 에러가 발생했습니다.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   if (!currentUser || currentUser.role !== "admin") {
     return null; // 권한 없으면 렌더링 안 함
   }
@@ -297,6 +336,12 @@ const Admin = () => {
               투표 ({votes.length})
             </button>
             <button
+              className={`tab ${activeTab === "users" ? "active" : ""}`}
+              onClick={handleLoadUsers}
+            >
+              유저 ({users.length || "..."})
+            </button>
+            <button
               className={`tab ${activeTab === "comments" ? "active" : ""}`}
               onClick={() => setActiveTab("comments")}
               disabled={!selectedVoteId}
@@ -373,6 +418,88 @@ const Admin = () => {
                   ))}
                 </div>
               )}
+            </div>
+          )}
+
+          {/* 유저 관리 섹션 */}
+          {activeTab === "users" && (
+            <div className="content-section">
+              <div className="users-table-container">
+                <table className="users-table">
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>닉네임(이름)</th>
+                      <th>티어</th>
+                      <th>권한</th>
+                      <th>특별 테두리</th>
+                      <th>가입일</th>
+                      <th>작업</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {users.map(user => (
+                      <tr key={user.id}>
+                        <td>{user.id}</td>
+                        <td>{user.nickname} ({user.name})</td>
+                        <td>
+                          <select 
+                            value={user.tier} 
+                            onChange={(e) => handleUpdateUserStatus(user.id, { tier: e.target.value })}
+                          >
+                            <option value="bronze">BRONZE</option>
+                            <option value="silver">SILVER</option>
+                            <option value="gold">GOLD</option>
+                            <option value="platinum">PLATINUM</option>
+                            <option value="diamond">DIAMOND</option>
+                          </select>
+                        </td>
+                        <td>
+                          <select 
+                            value={user.role} 
+                            onChange={(e) => handleUpdateUserStatus(user.id, { role: e.target.value })}
+                          >
+                            <option value="user">USER</option>
+                            <option value="admin">ADMIN</option>
+                          </select>
+                        </td>
+                        <td>
+                          <div className="border-grant-cell">
+                            <span className="current-unlocked">{user.unlocked_borders || "없음"}</span>
+                            <button 
+                              className="grant-btn"
+                              onClick={() => {
+                                const border = prompt("지급할 테두리 코드 (admin, event 등):", "admin");
+                                if (border) {
+                                  const newList = user.unlocked_borders 
+                                    ? [...new Set([...user.unlocked_borders.split(','), border])].join(',')
+                                    : border;
+                                  handleUpdateUserStatus(user.id, { unlocked_borders: newList });
+                                }
+                              }}
+                            >
+                              지급
+                            </button>
+                            {user.unlocked_borders && (
+                              <button 
+                                className="clear-btn"
+                                onClick={() => handleUpdateUserStatus(user.id, { unlocked_borders: null })}
+                              >
+                                초기화
+                              </button>
+                            )}
+                          </div>
+                        </td>
+                        <td>{new Date(user.created_at).toLocaleDateString()}</td>
+                        <td>
+                          {/* 추가 관리 기능 필요시 배치 */}
+                          -
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           )}
 

@@ -212,6 +212,8 @@ const Profile = () => {
           initialImage={currentUser?.profile_image}
           initialBorder={currentUser?.selected_border}
           userTier={currentUser?.tier}
+          unlockedBorders={currentUser?.unlocked_borders}
+          isAdmin={currentUser?.role === "admin"}
           onSave={handleProfileSave}
           onCancel={() => setIsEditingProfile(false)}
         />
