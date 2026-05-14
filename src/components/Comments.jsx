@@ -10,7 +10,8 @@ import {
 } from "../api/posts.js";
 import { useAuth } from "../contexts/AuthContext";
 
-const COMMENT_OVERLAY_BREAKPOINT = 1320;
+const COMMENT_OVERLAY_BREAKPOINT = 950;
+const COMMENT_SIDE_BY_SIDE_MARGIN = 24;
 
 function toTimestamp(value) {
   if (!value) {
@@ -91,6 +92,7 @@ export default function Comments({
   const [openReplies, setOpenReplies] = useState({});
   const [replyDrafts, setReplyDrafts] = useState({});
   const [openMenuId, setOpenMenuId] = useState(null);
+  const [isOverlayMode, setIsOverlayMode] = useState(false);
   const modalRef = useRef(null);
 
   const { user: currentUser } = useAuth();
@@ -177,13 +179,6 @@ export default function Comments({
     };
 
     const syncModalSize = () => {
-      if (compactLayoutQuery.matches) {
-        page?.style.removeProperty("--vote-comment-sheet-width");
-        page?.style.removeProperty("--vote-comment-group-shift");
-      } else {
-        page?.style.setProperty("--vote-comment-group-shift", "0px");
-      }
-
       const voteSheet = getTargetVoteSheet();
       if (!voteSheet) {
         return;
@@ -196,28 +191,32 @@ export default function Comments({
       let sheetRect = voteSheet.getBoundingClientRect();
       let railRect = actionRail?.getBoundingClientRect();
       const modalWidth = modal.getBoundingClientRect().width;
+      const sheetToRailGap = railRect
+        ? Math.max(0, railRect.left - sheetRect.right)
+        : 24;
+      const requiredSideBySideWidth =
+        sheetRect.width +
+        sheetToRailGap * 2 +
+        (railRect ? railRect.width : 0) +
+        modalWidth +
+        COMMENT_SIDE_BY_SIDE_MARGIN * 2;
+      const shouldUseOverlay =
+        compactLayoutQuery.matches ||
+        window.innerWidth < requiredSideBySideWidth;
 
-      if (!compactLayoutQuery.matches) {
-        // Calculate layout shift even if railRect is missing (for Result.jsx)
-        const sheetToRailGap = railRect
-          ? Math.max(0, railRect.left - sheetRect.right)
-          : 24;
+      setIsOverlayMode((currentOverlayMode) =>
+        currentOverlayMode === shouldUseOverlay
+          ? currentOverlayMode
+          : shouldUseOverlay,
+      );
 
-        const maxSheetWidth = Math.max(
-          420,
-          Math.min(
-            850,
-            window.innerWidth -
-              modalWidth -
-              (railRect ? railRect.width : 0) -
-              sheetToRailGap * 2 -
-              48,
-          ),
-        );
-        page?.style.setProperty(
-          "--vote-comment-sheet-width",
-          `${Math.round(maxSheetWidth)}px`,
-        );
+      if (shouldUseOverlay) {
+        page?.style.removeProperty("--vote-comment-group-shift");
+      } else {
+        page?.style.setProperty("--vote-comment-group-shift", "0px");
+      }
+
+      if (!shouldUseOverlay) {
         page?.style.setProperty("--vote-comment-group-shift", "0px");
 
         sheetRect = voteSheet.getBoundingClientRect();
@@ -239,8 +238,7 @@ export default function Comments({
           (isFixed ? sheetRect.right : nextGroupLeft + sheetRect.width) +
           settledGap +
           (railRect ? railRect.width : 0) +
-          settledGap +
-          100;
+          settledGap;
 
         page?.style.setProperty("--vote-comment-group-shift", `${nextShift}px`);
         modal.style.setProperty("--comment-modal-left", `${nextModalLeft}px`);
@@ -291,7 +289,6 @@ export default function Comments({
 
       window.clearTimeout(settleTimeoutId);
       resizeObserver?.disconnect();
-      page?.style.removeProperty("--vote-comment-sheet-width");
       page?.style.removeProperty("--vote-comment-group-shift");
       window.removeEventListener("resize", scheduleSync);
       feed?.removeEventListener("scroll", scheduleSync);
@@ -494,6 +491,8 @@ export default function Comments({
   return createPortal(
     <div
       className={`comment-modal-layer${isCentered ? " is-centered" : ""}${
+        isOverlayMode ? " is-overlay-mode" : ""
+      }${
         layerClassName ? ` ${layerClassName}` : ""
       }`}
       key={userId}
