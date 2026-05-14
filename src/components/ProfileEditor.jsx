@@ -79,11 +79,16 @@ const ProfileEditor = ({ initialImage, initialBorder, userTier, onSave, onCancel
 
   const handleSave = async () => {
     let imageBlob = null;
-    if (hasNewImage) {
+    
+    // 새 이미지가 있거나, 줌을 조절한 경우 크롭 시도
+    if (hasNewImage || zoom !== 1) {
       try {
-        imageBlob = await createCenteredSquareBlob(previewImage, zoom);
+        const src = hasNewImage ? previewImage : getImageUrl(previewImage);
+        imageBlob = await createCenteredSquareBlob(src, zoom);
       } catch (e) {
-        console.error("이미지 처리 실패:", e);
+        console.error("이미지 크롭 실패:", e);
+        // 새 이미지가 아닌 경우(기존 이미지 줌 조절) CORS 문제로 실패할 수 있음
+        // 이 경우 에러를 내지 않고 테두리만 저장될 수 있도록 진행
       }
     }
     onSave(imageBlob, selectedBorder);
