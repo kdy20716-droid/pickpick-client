@@ -1,13 +1,15 @@
 import React, { useState, useEffect, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import styles from "./MyPage.module.css";
 import "./MyCreate.css";
 import { useAuth } from "../../contexts/AuthContext";
-import { getVote } from "../../api/posts";
+import { getVote, deleteVote } from "../../api/posts";
 
 const MyCreate = () => {
   const [myVotes, setMyVotes] = useState([]);
   const [loading, setLoading] = useState(true);
   const { user: currentUser } = useAuth();
+  const navigate = useNavigate();
 
   const fetchMyVotes = useCallback(async () => {
     if (!currentUser) return;
@@ -34,6 +36,23 @@ const MyCreate = () => {
   useEffect(() => {
     fetchMyVotes();
   }, [fetchMyVotes]);
+
+  const handleEdit = (vote) => {
+    navigate("/create", { state: { editData: vote } });
+  };
+
+  const handleDelete = async (postId) => {
+    if (!window.confirm("정말로 이 투표를 삭제하시겠습니까?")) return;
+
+    try {
+      await deleteVote(postId, currentUser.id);
+      alert("투표가 삭제되었습니다.");
+      setMyVotes((prev) => prev.filter((v) => v.id !== postId));
+    } catch (error) {
+      console.error("투표 삭제 에러:", error);
+      alert("투표 삭제에 실패했습니다.");
+    }
+  };
 
   return (
     <div className="my-create-container">
@@ -66,6 +85,20 @@ const MyCreate = () => {
                       <span>
                         작성일 {new Date(vote.created_at).toLocaleDateString()}
                       </span>
+                    </div>
+                    <div className="vote-actions">
+                      <button
+                        className="edit-btn"
+                        onClick={() => handleEdit(vote)}
+                      >
+                        수정
+                      </button>
+                      <button
+                        className="delete-btn"
+                        onClick={() => handleDelete(vote.id)}
+                      >
+                        삭제
+                      </button>
                     </div>
                   </div>
                   <div className="vote-preview">

@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { addVote } from "../api/posts";
+import { useNavigate, useLocation } from "react-router-dom";
+import { addVote, updateVote } from "../api/posts";
 import { useAuth } from "../contexts/AuthContext";
 import { Pencil, Trash2, Maximize, Minus, Plus } from "lucide-react";
 import vsLogo from "../assets/vs-logo.svg";
@@ -8,8 +8,12 @@ import "./Create.css";
 
 const Create = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user: currentUser, token } = useAuth();
   const authorId = currentUser?.id || null;
+
+  const editData = location.state?.editData || null;
+  const isEditing = !!editData;
 
   useEffect(() => {
     if (!token) {
@@ -19,7 +23,6 @@ const Create = () => {
   }, [token, navigate]);
 
   const [title, setTitle] = useState("");
-
   const [selectedTag, setSelectedTag] = useState("영화 / 드라마");
   const [candidate1, setCandidate1] = useState("");
   const [candidate2, setCandidate2] = useState("");
@@ -28,6 +31,17 @@ const Create = () => {
   const [previewImage2, setPreviewImage2] = useState(null);
   const [file1, setFile1] = useState(null);
   const [file2, setFile2] = useState(null);
+
+  useEffect(() => {
+    if (isEditing) {
+      setTitle(editData.title);
+      setSelectedTag(editData.category || "기타");
+      setCandidate1(editData.candidate_a_name);
+      setCandidate2(editData.candidate_b_name);
+      setPreviewImage1(editData.candidate_a_image);
+      setPreviewImage2(editData.candidate_b_image);
+    }
+  }, [isEditing, editData]);
 
   const [zoom1, setZoom1] = useState(1);
   const [zoom2, setZoom2] = useState(1);
@@ -128,21 +142,35 @@ const Create = () => {
     setIsSubmitting(true);
 
     try {
-      await addVote(
-        authorId,
-        selectedTag,
-        title,
-        candidate1,
-        file1,
-        candidate2,
-        file2,
-      );
+      if (isEditing) {
+        await updateVote(
+          editData.id,
+          authorId,
+          selectedTag,
+          title,
+          candidate1,
+          file1,
+          candidate2,
+          file2,
+        );
+        alert("투표 게시글이 성공적으로 수정되었습니다!");
+      } else {
+        await addVote(
+          authorId,
+          selectedTag,
+          title,
+          candidate1,
+          file1,
+          candidate2,
+          file2,
+        );
+        alert("투표 게시글이 성공적으로 등록되었습니다!");
+      }
 
-      alert("투표 게시글이 성공적으로 등록되었습니다!");
       navigate("/vote");
     } catch (error) {
-      console.error("등록 에러:", error);
-      alert("등록에 실패했습니다.");
+      console.error("처리 에러:", error);
+      alert(isEditing ? "수정에 실패했습니다." : "등록에 실패했습니다.");
     } finally {
       setIsSubmitting(false);
     }
@@ -406,7 +434,7 @@ const Create = () => {
             onClick={handleSubmit}
             disabled={isPublishDisabled}
           >
-            <span>Upload</span>
+            <span>{isEditing ? "Update" : "Upload"}</span>
           </button>
         </section>
       </main>
