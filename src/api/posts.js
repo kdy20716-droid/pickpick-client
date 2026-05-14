@@ -55,7 +55,39 @@ export const addVote = async (
   return response.data;
 };
 
-// 3. 투표하기 API
+// 3. 투표 게시글 수정 API
+export const updateVote = async (
+  postId,
+  author_id,
+  category,
+  title,
+  candidate_a_name,
+  candidate_a_image,
+  candidate_b_name,
+  candidate_b_image,
+) => {
+  const formData = new FormData();
+  formData.append("author_id", author_id);
+  if (category) formData.append("category", category);
+  if (title) formData.append("title", title);
+  if (candidate_a_name) formData.append("candidate_a_name", candidate_a_name);
+  if (candidate_a_image) formData.append("candidate_a_image", candidate_a_image);
+  if (candidate_b_name) formData.append("candidate_b_name", candidate_b_name);
+  if (candidate_b_image) formData.append("candidate_b_image", candidate_b_image);
+
+  const response = await instance.put(`${VOTE_LIST_PATH}/${postId}`, formData);
+  return response.data;
+};
+
+// 4. 투표 게시글 삭제 API
+export const deleteVote = async (postId, user_id) => {
+  const response = await instance.delete(`${VOTE_LIST_PATH}/${postId}`, {
+    data: { user_id },
+  });
+  return response.data;
+};
+
+// 5. 투표하기 API
 export const submitVote = async (postId, user_id, selected_side) => {
   const response = await instance.post(`/api/votes/${postId}`, {
     user_id,
