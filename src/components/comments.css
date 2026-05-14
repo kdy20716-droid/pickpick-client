@@ -131,6 +131,17 @@
   height: 40px;
   border-radius: 50%;
   background: linear-gradient(135deg, #76b9ff 0%, #fc92c7 100%);
+  margin-bottom: 4px; /* Space for border tag */
+}
+
+/* 댓글창에서는 관리자 테두리 애니메이션(깜빡임) 및 강한 발광 효과 제거 */
+.comment-avatar.profile-border-admin {
+  animation: none !important;
+  box-shadow: 0 0 0 2px #ff0000 !important; /* 빛 번짐(Glow)을 최소화하고 얇은 선으로만 표시 */
+}
+
+.comment-avatar.profile-border-admin::after {
+  box-shadow: none !important; /* 태그 하단의 그림자 효과도 제거하여 더 깔끔하게 */
 }
 
 .comment-avatar-small {
@@ -556,7 +567,7 @@ p {
 }
 
 .comment-input {
-  padding: 14px 16px;
+  padding: 14px 16px 18px; /* Increased bottom padding */
   border-top: 1px solid #eceff2;
   background: #ffffff;
 }

@@ -66,7 +66,67 @@ a {
   animation: border-glow 2s infinite alternate;
 }
 
+.profile-border-pick {
+  box-shadow: 0 0 0 4px #ff4b8d, 0 0 25px #ff4b8d;
+  border-radius: 50%;
+  position: relative;
+  animation: pick-glow 1.5s infinite alternate;
+}
+
+.profile-border-pick::after {
+  content: "pick";
+  position: absolute;
+  bottom: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #ff4b8d;
+  color: white;
+  font-size: 6.5px;
+  font-weight: 900;
+  padding: 0px 3px;
+  border-radius: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  box-shadow: 0 0 8px #ff4b8d;
+  z-index: 10;
+}
+
+.profile-border-admin {
+  box-shadow: 0 0 0 4px #ff0000, 0 0 25px #ff0000;
+  border-radius: 50%;
+  position: relative;
+  animation: admin-glow 1.5s infinite alternate;
+}
+
+.profile-border-admin::after {
+  content: "admin";
+  position: absolute;
+  bottom: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #ff0000;
+  color: white;
+  font-size: 6.5px;
+  font-weight: 900;
+  padding: 0px 3px;
+  border-radius: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  box-shadow: 0 0 8px #ff0000;
+  z-index: 10;
+}
+
 @keyframes border-glow {
   from { box-shadow: 0 0 0 4px #70D1F4, 0 0 10px #70D1F4; }
   to { box-shadow: 0 0 0 4px #70D1F4, 0 0 30px #70D1F4; }
+}
+
+@keyframes pick-glow {
+  from { box-shadow: 0 0 0 4px #ff4b8d, 0 0 15px #ff4b8d; }
+  to { box-shadow: 0 0 0 4px #ff4b8d, 0 0 35px #ff4b8d; }
+}
+
+@keyframes admin-glow {
+  from { box-shadow: 0 0 0 4px #ff0000, 0 0 15px #ff0000; }
+  to { box-shadow: 0 0 0 4px #ff0000, 0 0 35px #ff0000; }
 }

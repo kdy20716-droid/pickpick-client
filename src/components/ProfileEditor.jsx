@@ -43,7 +43,7 @@ const createCenteredSquareBlob = async (imageSrc, zoom) => {
   });
 };
 
-const ProfileEditor = ({ initialImage, initialBorder, userTier, onSave, onCancel }) => {
+const ProfileEditor = ({ initialImage, initialBorder, userTier, unlockedBorders, isAdmin, onSave, onCancel }) => {
   const [zoom, setZoom] = useState(1);
   const [selectedBorder, setSelectedBorder] = useState(initialBorder);
   const [previewImage, setPreviewImage] = useState(initialImage);
@@ -57,9 +57,19 @@ const ProfileEditor = ({ initialImage, initialBorder, userTier, onSave, onCancel
     { id: "gold", name: "골드", tier: "gold" },
     { id: "platinum", name: "플래티넘", tier: "platinum" },
     { id: "diamond", name: "다이아몬드", tier: "diamond" },
+    { id: "pick", name: "Pick", tier: "diamond" }, // Added pick border
+    { id: "admin", name: "Admin", tier: "admin" }, // Special border
   ];
 
-  const isBorderUnlocked = (borderTier) => {
+  const isBorderUnlocked = (borderId, borderTier) => {
+    // 1. 관리자면 전부 해금
+    if (isAdmin) return true;
+    
+    // 2. 개별 지급된 테두리 확인
+    if (unlockedBorders && unlockedBorders.split(',').includes(borderId)) return true;
+
+    // 3. 티어별 해금 확인
+    if (borderTier === "admin") return false; // 어드민 테두리는 티어로 해금 불가
     const tiers = ["bronze", "silver", "gold", "platinum", "diamond"];
     const currentTier = userTier || "bronze";
     return tiers.indexOf(currentTier) >= tiers.indexOf(borderTier);
@@ -105,17 +115,18 @@ const ProfileEditor = ({ initialImage, initialBorder, userTier, onSave, onCancel
             <div className={styles.avatarWrapper}>
               <div 
                 className={`${styles.avatarContainer} ${selectedBorder ? `profile-border-${selectedBorder}` : ""}`}
-                style={{ overflow: "hidden" }}
               >
-                <img
-                  src={hasNewImage ? previewImage : getImageUrl(previewImage)}
-                  alt="Preview"
-                  className={styles.avatarImage}
-                  style={{ 
-                    transform: `scale(${zoom})`,
-                    borderRadius: "50%"
-                  }}
-                />
+                <div style={{ width: "100%", height: "100%", borderRadius: "50%", overflow: "hidden" }}>
+                  <img
+                    src={hasNewImage ? previewImage : getImageUrl(previewImage)}
+                    alt="Preview"
+                    className={styles.avatarImage}
+                    style={{ 
+                      transform: `scale(${zoom})`,
+                      borderRadius: "50%"
+                    }}
+                  />
+                </div>
               </div>
             </div>
             <button 
@@ -151,21 +162,31 @@ const ProfileEditor = ({ initialImage, initialBorder, userTier, onSave, onCancel
             <div className={styles.controlGroup}>
               <label className={styles.label}>프로필 테두리</label>
               <div className={styles.borderGrid}>
-                {borders.map((border) => {
-                  const unlocked = isBorderUnlocked(border.tier);
-                  return (
-                    <div
-                      key={border.id || "none"}
-                      className={`${styles.borderItem} ${selectedBorder === border.id ? styles.active : ""} ${!unlocked ? styles.locked : ""}`}
-                      onClick={() => unlocked && setSelectedBorder(border.id)}
-                    >
-                      <div className={`${styles.borderCircle} ${border.id ? `profile-border-${border.id}` : ""}`}>
-                        {/* 미니 미리보기 */}
+                {borders
+                  .filter((border) => {
+                    // Admin 테두리와 Pick 테두리는 관리자이거나 직접 해금한 경우에만 노출
+                    if (border.id === "admin" || border.id === "pick") {
+                      if (isAdmin) return true;
+                      if (unlockedBorders && unlockedBorders.split(',').includes(border.id)) return true;
+                      return false;
+                    }
+                    return true;
+                  })
+                  .map((border) => {
+                    const unlocked = isBorderUnlocked(border.id, border.tier);
+                    return (
+                      <div
+                        key={border.id || "none"}
+                        className={`${styles.borderItem} ${selectedBorder === border.id ? styles.active : ""} ${!unlocked ? styles.locked : ""}`}
+                        onClick={() => unlocked && setSelectedBorder(border.id)}
+                      >
+                        <div className={`${styles.borderCircle} ${border.id ? `profile-border-${border.id}` : ""}`}>
+                          {/* 미니 미리보기 */}
+                        </div>
+                        <span className={styles.borderName}>{border.name}</span>
                       </div>
-                      <span className={styles.borderName}>{border.name}</span>
-                    </div>
-                  );
-                })}
+                    );
+                  })}
               </div>
             </div>
           </div>
