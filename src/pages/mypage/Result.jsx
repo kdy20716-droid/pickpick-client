@@ -100,15 +100,15 @@ const Result = () => {
             <p className={styles.breadcrumb}>{getBreadcrumb()}</p>
           </div>
         )}
-        <div className="search-section">
-          <div className="search-bar">
+        <div className="result-search-section">
+          <div className="result-search-bar">
             <input
               type="text"
               placeholder="투표 결과 모아보기"
               value={searchKeyword}
               onChange={(e) => setSearchKeyword(e.target.value)}
             />
-            <span className="material-icons search-icon">search</span>
+            <span className="result-search-icon">🔍</span>
           </div>
         </div>
 
@@ -121,19 +121,23 @@ const Result = () => {
               const leftPercent =
                 total === 0 ? 50 : Math.round((leftVotes / total) * 100);
               const rightPercent = total === 0 ? 50 : 100 - leftPercent;
-              const isLeftWinner = leftVotes > rightVotes;
-              const isRightWinner = rightVotes > leftVotes;
+              const isLeftWinner = vote.winner_side === 'A' || (vote.winner_side === null && leftVotes > rightVotes);
+              const isRightWinner = vote.winner_side === 'B' || (vote.winner_side === null && rightVotes > leftVotes);
+              const isExpired = new Date(vote.expires_at) <= new Date();
 
               return (
                 <div
                   key={vote.id}
-                  className="result-item"
+                  className={`result-item ${isExpired ? 'is-expired' : ''}`}
                   id={`vote-item-${vote.id}`}
                 >
-                  <h3 className="result-title">{vote.title}</h3>
+                  <h3 className="result-title">
+                    {vote.title}
+                    {isExpired && <span className="status-badge">종료</span>}
+                  </h3>
                   <div className="result-row">
-                    {/* 왼쪽 후보 */}
-                    <div className="candidate">
+                    {/* ... (existing candidate elements) */}
+                    <div className={`candidate ${isLeftWinner && isExpired ? 'winner' : ''}`}>
                       {isLeftWinner && <div className="crown">👑</div>}
                       <div className="img-wrapper">
                         {vote.candidate_a_image ? (
@@ -146,8 +150,10 @@ const Result = () => {
                             {vote.candidate_a_name?.slice(0, 1)}
                           </div>
                         )}
+                        {isLeftWinner && isExpired && <div className="win-badge">WIN</div>}
                       </div>
                       <span className="percent">{leftPercent}%</span>
+                      <span className="candidate-name">{vote.candidate_a_name}</span>
                     </div>
 
                     {/* 중앙 게이지 */}
@@ -167,7 +173,7 @@ const Result = () => {
                     </div>
 
                     {/* 오른쪽 후보 */}
-                    <div className="candidate">
+                    <div className={`candidate ${isRightWinner && isExpired ? 'winner' : ''}`}>
                       {isRightWinner && <div className="crown">👑</div>}
                       <div className="img-wrapper">
                         {vote.candidate_b_image ? (
@@ -180,8 +186,10 @@ const Result = () => {
                             {vote.candidate_b_name?.slice(0, 1)}
                           </div>
                         )}
+                        {isRightWinner && isExpired && <div className="win-badge">WIN</div>}
                       </div>
                       <span className="percent">{rightPercent}%</span>
+                      <span className="candidate-name">{vote.candidate_b_name}</span>
                     </div>
                     {/* test */}
                     {/* 댓글 버튼 */}
@@ -193,6 +201,10 @@ const Result = () => {
                         chat_bubble_outline
                       </span>
                     </button>
+                  </div>
+                  {/* 남은 시간 표시 */}
+                  <div className="remaining-time">
+                    {calculateRemainingTime(vote.expires_at)}
                   </div>
                 </div>
               );
@@ -218,6 +230,25 @@ const Result = () => {
       )}
     </div>
   );
+};
+
+// 남은 시간 계산 함수를 컴포넌트 외부로 이동
+const calculateRemainingTime = (expiresAt) => {
+  if (!expiresAt) return "정보 없음";
+  const now = new Date();
+  const expiration = new Date(expiresAt);
+  const diff = expiration - now;
+
+  if (diff <= 0) return "만료됨";
+
+  const hours = Math.floor(diff / (1000 * 60 * 60));
+  const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+  
+  if (hours > 0) {
+    return `남은 시간: ${hours}시간 ${minutes}분`;
+  } else {
+    return `남은 시간: ${minutes}분`;
+  }
 };
 
 export default Result;
