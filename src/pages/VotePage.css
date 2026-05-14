@@ -27,7 +27,10 @@
   --vote-filter-panel-min-width: 150px;
   --vote-filter-panel-fallback-left: 70px;
   --vote-filter-panel-top: var(--vote-filter-button-top);
-  --vote-filter-panel-left: calc((100vw - 1420px) / 2 + 11px);
+  --vote-filter-panel-left: max(
+    0px,
+    calc((var(--layout-vw) - 1420px) / 2 + 11px)
+  );
   --vote-filter-panel-width: max(
     var(--vote-filter-panel-min-width),
     calc(
@@ -45,7 +48,10 @@
   --vote-filter-button-size: 64px;
   --vote-filter-button-icon-size: 42px;
   --vote-filter-button-top: calc(var(--vote-header-offset) + 46px);
-  --vote-filter-button-left: calc((100vw - var(--vote-page-width)) / 2 + 76px);
+  --vote-filter-button-left: max(
+    0px,
+    calc((var(--layout-vw) - var(--vote-page-width)) / 2 + 26px)
+  );
   --vote-filter-gap: 25px;
   --vote-sheet-padding: 20px 20px 18px;
   --vote-sheet-radius: 22px;
@@ -63,11 +69,12 @@
   position: relative;
   z-index: var(--vote-page-z-index);
   isolation: isolate;
-  width: min(var(--vote-page-width), calc(100% - var(--vote-page-gutter)));
+  width: var(--vote-page-width);
+  min-width: var(--vote-page-width);
   margin: 0 auto;
   height: calc(100vh - var(--vote-header-offset));
   padding: 0;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .vote-page.has-comment-modal {
@@ -240,20 +247,17 @@
   --vote-action-space: calc(
     var(--vote-action-button-size) + var(--vote-rail-gap)
   );
-  --vote-side-balance: clamp(
-    0px,
-    calc((max(100vw, 850px) - 850px) * 0.3),
-    var(--vote-action-space)
-  );
-  --vote-sheet-width-default: min(
-    850px,
-    calc(
-      max(100vw, 850px) - var(--vote-page-gutter) -
-        var(--vote-sheet-glow-space) - var(--vote-sheet-glow-space) -
-        var(--vote-action-space) - var(--vote-side-balance)
+  --vote-sheet-fixed-width: 950px;
+  --vote-filter-reserve-space: 40px;
+  --vote-side-balance: max(
+    var(--vote-filter-reserve-space),
+    clamp(
+      0px,
+      calc((var(--layout-vw) - var(--vote-sheet-fixed-width)) * 0.3),
+      var(--vote-action-space)
     )
   );
-  --vote-sheet-width: var(--vote-sheet-width-default);
+  --vote-sheet-width: var(--vote-sheet-fixed-width);
   --vote-feed-width: calc(
     var(--vote-sheet-width) + var(--vote-action-space) +
       var(--vote-side-balance) + var(--vote-sheet-glow-space) +
@@ -269,10 +273,6 @@
 
 .vote-page.has-comment-modal .vote-layout {
   --vote-side-balance: 52px;
-  --vote-sheet-width: var(
-    --vote-comment-sheet-width,
-    var(--vote-sheet-width-default)
-  );
   transform: translateX(var(--vote-comment-group-shift, 0px));
   transition: none;
 }
@@ -281,7 +281,7 @@
   position: relative;
   z-index: 0;
   width: var(--vote-feed-width);
-  max-width: 100%;
+  min-width: var(--vote-feed-width);
   height: 100%;
   padding: var(--vote-sheet-glow-space);
   overflow-y: auto;
@@ -331,7 +331,7 @@
   flex-direction: column;
   flex: 1;
   min-height: 0;
-  width: 100%;
+  width: var(--vote-sheet-width);
   padding: var(--vote-sheet-padding);
   border-radius: var(--vote-sheet-radius);
   background: var(--vote-sheet-bg);
@@ -870,14 +870,14 @@
   }
 }
 
-@media (max-width: 1320px) {
+@media (max-width: 0px) {
   .vote-page.has-comment-modal .vote-layout {
     --vote-side-balance: var(--vote-action-space);
     transform: none;
   }
 }
 
-@media (max-width: 900px) {
+@media (max-width: 0px) {
   .vote-page {
     --vote-page-gutter: 16px;
     --vote-min-height: 540px;
@@ -886,12 +886,12 @@
     --vote-filter-button-left: 16px;
     --vote-filter-button-top: calc(var(--vote-header-offset) + 18px);
     --vote-filter-panel-left: 12px;
-    --vote-filter-panel-width: min(190px, calc(100vw - 24px));
+    --vote-filter-panel-width: min(190px, calc(var(--layout-vw) - 24px));
     --vote-filter-panel-height: calc(
       100dvh - var(--vote-filter-panel-top) - 20px
     );
-    --vote-sheet-title-size: clamp(1.5rem, 5.4vw, 2.2rem);
-    --vote-choice-name-size: clamp(1.35rem, 5vw, 2rem);
+    --vote-sheet-title-size: clamp(1.5rem, calc(var(--layout-vw) * 0.054), 2.2rem);
+    --vote-choice-name-size: clamp(1.35rem, calc(var(--layout-vw) * 0.05), 2rem);
   }
 
   .vote-layout {
@@ -941,62 +941,3 @@
   }
 }
 
-@media (max-width: 560px) {
-  .vote-page {
-    --vote-header-offset: 86px;
-    --vote-min-height: 500px;
-    --vote-filter-button-size: 48px;
-    --vote-filter-button-icon-size: 30px;
-    --vote-filter-button-top: calc(var(--vote-header-offset) + 10px);
-    height: calc(100dvh - var(--vote-header-offset));
-  }
-
-  .vote-layout {
-    --vote-action-button-size: 50px;
-    --vote-rail-gap: 10px;
-  }
-
-  .vote-filter-panel {
-    top: var(--vote-filter-button-top);
-    max-height: calc(100dvh - var(--vote-filter-button-top) - 12px);
-    border-radius: 18px;
-  }
-
-  .vote-filter-header {
-    margin-bottom: 12px;
-    padding-left: 10px;
-  }
-
-  .vote-filter-chip {
-    min-height: 38px;
-    padding: 0 14px;
-    font-size: 15px;
-  }
-
-  .vote-feed-item {
-    padding: 64px 0 82px;
-  }
-
-  .vote-sheet {
-    border-radius: 16px;
-    padding: 12px;
-  }
-
-  .vote-sheet-match {
-    padding-top: 12px;
-  }
-
-  .vote-choice {
-    border-radius: 14px;
-  }
-
-  .vote-choice-name {
-    bottom: 10px;
-    padding: 0 8px;
-    max-height: calc(100% - 20px);
-  }
-
-  .vote-sheet-vs img {
-    width: 48px;
-  }
-}

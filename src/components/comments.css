@@ -44,14 +44,14 @@
   top: var(--comment-modal-top, calc(var(--vote-header-offset, 110px) + 52px));
   right: var(
     --comment-modal-right,
-    max(14px, calc((max(100vw, 850px) - 1180px) / 2))
+    max(14px, calc((var(--layout-vw) - 1180px) / 2))
   );
   left: var(--comment-modal-left, auto);
   bottom: auto;
   z-index: 81;
   display: flex;
   flex-direction: column;
-  width: min(430px, calc(max(100vw, 850px) - 48px));
+  width: min(430px, calc(var(--layout-vw) - 48px));
   height: var(
     --comment-modal-height,
     calc(100dvh - var(--vote-header-offset, 110px) - 56px)
@@ -607,7 +607,23 @@ p {
   }
 }
 
-@media (max-width: 1320px) {
+.comment-modal-layer.is-overlay-mode .comment-modal-backdrop {
+  display: block;
+}
+
+.comment-modal-layer.is-vote-page.is-overlay-mode .comment-modal-backdrop,
+.comment-modal-layer.is-vote-page.is-overlay-mode .comment-modal-backdrop:hover {
+  background: rgba(0, 0, 0, 0.28);
+}
+
+.comment-modal-layer.is-overlay-mode .comment-modal {
+  left: auto;
+  right: 50%;
+  transform: translateX(50%);
+  animation-name: commentPanelDropIn;
+}
+
+@media (max-width: 0px) {
   .comment-modal-backdrop {
     display: block;
   }
@@ -658,9 +674,9 @@ p {
   }
 }
 
-@media (max-width: 850px) {
+@media (max-width: 0px) {
   .comment-modal {
-    width: min(430px, calc(max(100vw, 850px) - 24px));
+    width: min(430px, calc(var(--layout-vw) - 24px));
   }
 
   .comment-modal-header,

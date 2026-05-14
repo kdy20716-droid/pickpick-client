@@ -390,8 +390,8 @@
   background-color: #f7a1c4;
 }
 
-/* 반응형 레이아웃 (화면이 1000px 이하일 때 세로 배치) */
-@media (max-width: 1280px) {
+/* 반응형 레이아웃 (화면이 950px 이하일 때 세로 배치) */
+@media (max-width: 0px) {
   .create-page-container {
     height: auto;
     min-height: calc(100vh - 80px);
@@ -424,7 +424,7 @@
 
   .candidate-box {
     width: 45%;
-    max-width: 280px;
+    max-width: 380px;
     height: 380px;
   }
 
@@ -439,12 +439,3 @@
   }
 }
 
-/* 아주 작은 모바일 화면을 위한 추가 대응 */
-@media (max-width: 480px) {
-  .candidate-box {
-    height: 280px;
-  }
-  .candidate-box__label {
-    bottom: 20px;
-  }
-}
