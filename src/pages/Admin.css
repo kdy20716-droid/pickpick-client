@@ -486,7 +486,7 @@
 }
 
 /* 반응형 */
-@media (max-width: 900px) {
+@media (max-width: 0px) {
   .admin-container {
     padding: 24px;
   }
@@ -664,4 +664,78 @@
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+/* 유저 관리 테이블 */
+.users-table-container {
+  overflow-x: auto;
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #eee;
+}
+
+.users-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.users-table th,
+.users-table td {
+  padding: 15px;
+  border-bottom: 1px solid #eee;
+  font-size: 0.9rem;
+}
+
+.users-table th {
+  background: #fafafa;
+  font-weight: 700;
+  color: #666;
+}
+
+.users-table select {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  font-family: inherit;
+  font-size: 0.85rem;
+}
+
+.border-grant-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.current-unlocked {
+  font-size: 0.8rem;
+  color: #888;
+  word-break: break-all;
+}
+
+.grant-btn, .clear-btn {
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+
+.grant-btn {
+  background: #ff4b8d;
+  color: white;
+}
+
+.grant-btn:hover {
+  background: #ff2d78;
+}
+
+.clear-btn {
+  background: #eee;
+  color: #666;
+}
+
+.clear-btn:hover {
+  background: #ddd;
 }

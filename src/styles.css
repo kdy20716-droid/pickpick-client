@@ -4,7 +4,7 @@ body {
 }
 
 :root {
-  --app-min-width: 850px;
+  --app-min-width: 950px;
   --layout-vw: max(100vw, var(--app-min-width));
 }
 
@@ -12,12 +12,19 @@ body {
   box-sizing: border-box;
 }
 
+html,
+body,
+#root {
+  width: var(--layout-vw);
+  min-width: var(--app-min-width);
+}
+
 body {
   font-family: "Pretendard", "Segoe UI", sans-serif;
   background-color: #FDFDFD;
   color: var(--text-dark);
   line-height: 1.5;
-  overflow-x: hidden;
+  overflow-x: auto;
 }
 
 a {
@@ -25,11 +32,71 @@ a {
   text-decoration: none;
 }
 
-#root {
-  min-width: var(--app-min-width);
-}
-
 .site-main {
   position: relative;
+  width: var(--layout-vw);
+  min-width: var(--app-min-width);
   z-index: auto; /* z-index를 auto로 설정하여 새로운 스태킹 컨텍스트를 만들지 않으면서도 DOM 순서상 빛(z-index: 0)보다 위에 오게 함 */
+}
+
+/* Profile Borders */
+.profile-border-bronze {
+  box-shadow: 0 0 0 4px #CD7F32, 0 0 10px #CD7F32;
+  border-radius: 50%;
+}
+
+.profile-border-silver {
+  box-shadow: 0 0 0 4px #C0C0C0, 0 0 10px #C0C0C0;
+  border-radius: 50%;
+}
+
+.profile-border-gold {
+  box-shadow: 0 0 0 4px #FFD700, 0 0 10px #FFD700;
+  border-radius: 50%;
+}
+
+.profile-border-platinum {
+  box-shadow: 0 0 0 4px #B4C3D2, 0 0 15px #B4C3D2;
+  border-radius: 50%;
+}
+
+.profile-border-diamond {
+  box-shadow: 0 0 0 4px #70D1F4, 0 0 20px #70D1F4;
+  border-radius: 50%;
+  animation: border-glow 2s infinite alternate;
+}
+
+.profile-border-admin {
+  box-shadow: 0 0 0 4px #ff4b8d, 0 0 25px #ff4b8d;
+  border-radius: 50%;
+  position: relative;
+  animation: admin-glow 1.5s infinite alternate;
+}
+
+.profile-border-admin::after {
+  content: "pick";
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #ff4b8d;
+  color: white;
+  font-size: 10px;
+  font-weight: 900;
+  padding: 1px 6px;
+  border-radius: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 0 10px #ff4b8d;
+  z-index: 10;
+}
+
+@keyframes border-glow {
+  from { box-shadow: 0 0 0 4px #70D1F4, 0 0 10px #70D1F4; }
+  to { box-shadow: 0 0 0 4px #70D1F4, 0 0 30px #70D1F4; }
+}
+
+@keyframes admin-glow {
+  from { box-shadow: 0 0 0 4px #ff4b8d, 0 0 15px #ff4b8d; }
+  to { box-shadow: 0 0 0 4px #ff4b8d, 0 0 35px #ff4b8d; }
 }

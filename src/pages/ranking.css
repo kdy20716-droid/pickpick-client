@@ -182,7 +182,7 @@
   color: #444;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 0px) {
   .ranking-section {
     --top3-first-lift: 0px;
     width: calc(100% - 24px);
