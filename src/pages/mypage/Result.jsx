@@ -100,15 +100,15 @@ const Result = () => {
             <p className={styles.breadcrumb}>{getBreadcrumb()}</p>
           </div>
         )}
-        <div className="search-section">
-          <div className="search-bar">
+        <div className="result-search-section">
+          <div className="result-search-bar">
             <input
               type="text"
               placeholder="투표 결과 모아보기"
               value={searchKeyword}
               onChange={(e) => setSearchKeyword(e.target.value)}
             />
-            <span className="material-icons search-icon">search</span>
+            <span className="result-search-icon">🔍</span>
           </div>
         </div>
 
