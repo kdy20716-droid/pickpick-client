@@ -81,13 +81,13 @@ a {
   transform: translateX(-50%);
   background-color: #ff4b8d;
   color: white;
-  font-size: 8px;
+  font-size: 6.5px;
   font-weight: 900;
-  padding: 0.5px 4px;
-  border-radius: 10px;
+  padding: 0px 3px;
+  border-radius: 8px;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  box-shadow: 0 0 10px #ff4b8d;
+  letter-spacing: 0.3px;
+  box-shadow: 0 0 8px #ff4b8d;
   z-index: 10;
 }
 
@@ -106,13 +106,13 @@ a {
   transform: translateX(-50%);
   background-color: #ff0000;
   color: white;
-  font-size: 8px;
+  font-size: 6.5px;
   font-weight: 900;
-  padding: 0.5px 4px;
-  border-radius: 10px;
+  padding: 0px 3px;
+  border-radius: 8px;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  box-shadow: 0 0 10px #ff0000;
+  letter-spacing: 0.3px;
+  box-shadow: 0 0 8px #ff0000;
   z-index: 10;
 }
 
