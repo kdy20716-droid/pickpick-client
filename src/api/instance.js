@@ -3,7 +3,7 @@ import axios from "axios";
 const instance = axios.create({
   // 배포된 서버 URL이 환경변수에 있으면 사용, 없으면 로컬호스트 사용
   // 테스트 할 떄는 localhost:4000
-  //baseURL: "http://localhost:4000",
+  // baseURL: "http://localhost:4000",
   baseURL: "https://dolphin-app-onqn2.ondigitalocean.app/",
 });
 
@@ -20,3 +20,4 @@ instance.interceptors.request.use((config) => {
 });
 
 export default instance;
+// 수정1

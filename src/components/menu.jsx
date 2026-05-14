@@ -44,6 +44,7 @@ const Menu = () => {
         onClick={handleLogout}
         style={{
           color: "#ff9ea2",
+          margin: "12px",
         }}
         onMouseOver={(e) => (e.target.style.color = "#ff868a")}
         onMouseOut={(e) => (e.target.style.color = "#ff9ea2")}
