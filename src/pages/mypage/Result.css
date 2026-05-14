@@ -70,11 +70,11 @@
 .result-card {
   background: white;
   border-radius: 35px;
-  padding: 32px 40px;
+  padding: 40px 45px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
   display: flex;
   flex-direction: column;
-  gap: 25px;
+  gap: 40px; /* 투표 항목 사이 간격 증가 */
   max-width: 1100px; /* 너비 최적화 */
   width: 100%;
   margin: 0 auto; /* 카드 자체를 중앙 정렬 */
@@ -84,9 +84,9 @@
 .result-item {
   display: flex;
   flex-direction: column;
-  gap: 15px;
-  padding-bottom: 25px;
-  border-bottom: 1px solid #f8f8f8;
+  gap: 20px;
+  padding-bottom: 40px; /* 하단 패딩 증가 */
+  border-bottom: 1px solid #f0f0f0; /* 선 색상을 약간 더 명확하게 */
   align-items: center; /* 내부 요소들 중앙 정렬 */
 }
 
@@ -203,6 +203,72 @@
 
 .count {
   white-space: nowrap;
+}
+
+.remaining-time {
+  margin-top: 10px;
+  font-size: 13px;
+  color: #f1a0c0;
+  font-weight: 600;
+  text-align: center;
+  background: #fdf2f6;
+  padding: 4px 15px;
+  border-radius: 20px;
+  display: inline-block;
+}
+
+/* 종료 상태 및 승자 하이라이트 */
+.result-item.is-expired {
+  background: #fafafa;
+  border-radius: 20px;
+  margin-bottom: 15px;
+  padding-top: 20px;
+}
+
+.status-badge {
+  background: #888;
+  color: white;
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  margin-left: 10px;
+  vertical-align: middle;
+}
+
+.candidate.winner .img-wrapper {
+  border: 3px solid #f1a0c0;
+  box-shadow: 0 0 15px rgba(241, 160, 192, 0.3);
+}
+
+.win-badge {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translate(-50%, 50%);
+  background: #f1a0c0;
+  color: white;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 2px 10px;
+  border-radius: 10px;
+  z-index: 10;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.candidate-name {
+  margin-top: 15px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #888;
+  text-align: center;
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.candidate.winner .candidate-name {
+  color: #f1a0c0;
 }
 
 /* 아이콘 버튼 */
