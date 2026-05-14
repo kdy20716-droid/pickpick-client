@@ -194,6 +194,7 @@
   align-items: center;
   position: relative;
   flex-shrink: 0;
+  overflow: visible; /* Ensure border glow shows */
 }
 
 .circleBig {
@@ -203,7 +204,7 @@
   border-radius: 50%;
   display: flex;
   justify-content: center;
-  align-items: flex-end;
+  align-items: center; /* Changed from align-items: flex-end */
 }
 
 .silhouette {
