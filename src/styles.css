@@ -81,9 +81,9 @@ a {
   transform: translateX(-50%);
   background-color: #ff4b8d;
   color: white;
-  font-size: 10px;
+  font-size: 8px;
   font-weight: 900;
-  padding: 1px 6px;
+  padding: 0.5px 4px;
   border-radius: 10px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -106,9 +106,9 @@ a {
   transform: translateX(-50%);
   background-color: #ff0000;
   color: white;
-  font-size: 10px;
+  font-size: 8px;
   font-weight: 900;
-  padding: 1px 6px;
+  padding: 0.5px 4px;
   border-radius: 10px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
