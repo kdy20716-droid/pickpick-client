@@ -10,7 +10,8 @@ const MyPage = () => {
   const navigate = useNavigate();
   const { user: currentUser, token, logout } = useAuth();
   const [confirmModal, setConfirmModal] = useState(null); // 'logout', 'delete', or null
-  const { displayOutlet, transitionStage, onTransitionEnd, activePath } = useRouteAnimation();
+  const { displayOutlet, transitionStage, onTransitionEnd, activePath } =
+    useRouteAnimation();
 
   useEffect(() => {
     if (!token) {
@@ -61,13 +62,21 @@ const MyPage = () => {
       <main className={styles.mainContent}>
         <div
           key={activePath}
-          className={transitionStage === "enter" ? styles.animateEnter : styles.animateExit}
+          className={
+            transitionStage === "enter"
+              ? styles.animateEnter
+              : styles.animateExit
+          }
           onAnimationEnd={onTransitionEnd}
           style={{ width: "100%" }}
         >
           {displayOutlet}
         </div>
       </main>
+
+      <a href="mailto:support@pickpick.dev" className={styles.supportButton}>
+        Support
+      </a>
 
       {confirmModal && (
         <div
