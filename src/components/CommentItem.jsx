@@ -99,7 +99,9 @@ function TrashIcon() {
   );
 }
 
-function ReplyItem({ reply }) {
+function ReplyItem({ reply, openMenuId, onToggleMenu, onDeleteComment }) {
+  const isMenuOpen = openMenuId === reply.id;
+  
   return (
     <div className="reply-item">
       <div className={`comment-avatar comment-avatar-small ${reply.author_border ? `profile-border-${reply.author_border}` : ""}`} aria-hidden="true">
@@ -114,11 +116,33 @@ function ReplyItem({ reply }) {
         </div>
       </div>
       <div className="reply-content">
-        <div className="name-row">
-          <span className="comment-name">{reply.name}</span>
-          <span className="time-label">
-            {formatRelativeTime(reply.createdAt)}
-          </span>
+        <div className="comment-top">
+          <div className="name-row">
+            <span className="comment-name">{reply.name}</span>
+            <span className="time-label">
+              {formatRelativeTime(reply.createdAt)}
+            </span>
+          </div>
+          <div className="comment-menu-wrap">
+            <button
+              type="button"
+              className="menu-button"
+              onClick={() => onToggleMenu(reply.id)}
+              aria-label="댓글 메뉴 열기"
+            >
+              ...
+            </button>
+            {isMenuOpen ? (
+              <button
+                type="button"
+                className="comment-delete"
+                onClick={() => onDeleteComment(reply.id)}
+              >
+                <TrashIcon />
+                댓글 삭제
+              </button>
+            ) : null}
+          </div>
         </div>
         <p className="comment-text">{reply.text}</p>
       </div>
@@ -130,7 +154,7 @@ export default function CommentItem({
   comment,
   isOpen,
   replyDraft,
-  isMenuOpen,
+  openMenuId,
   onLike,
   onDislike,
   onToggleReplies,
@@ -140,6 +164,7 @@ export default function CommentItem({
   onDeleteComment,
 }) {
   const replyCount = comment.replyItems.length;
+  const isMenuOpen = openMenuId === comment.id;
 
   return (
     <article className="comment-item">
@@ -206,7 +231,6 @@ export default function CommentItem({
               onClick={() => onDislike(comment.id)}
             >
               <DislikeIcon isActive={comment.reaction === "dislike"} />
-              <span>{comment.dislikes || 0}</span>
             </button>
             <button
               type="button"
@@ -237,7 +261,13 @@ export default function CommentItem({
             {replyCount > 0 ? (
               <div className="reply-list">
                 {comment.replyItems.map((reply) => (
-                  <ReplyItem key={reply.id} reply={reply} />
+                  <ReplyItem 
+                    key={reply.id} 
+                    reply={reply}
+                    openMenuId={openMenuId}
+                    onToggleMenu={onToggleMenu}
+                    onDeleteComment={onDeleteComment}
+                  />
                 ))}
               </div>
             ) : null}
