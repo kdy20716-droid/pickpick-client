@@ -265,11 +265,20 @@ function VoteChoiceName({ children }) {
 }
 
 function YouTubePlayer({ videoId, title, isActive }) {
-  const [isPaused, setIsPaused] = useState(false);
+  const [isPaused, setIsPaused] = useState(true);
   const iframeRef = useRef(null);
+
+  // 화면에서 벗어나면(비활성화되면) 상태 초기화
+  useEffect(() => {
+    if (!isActive) {
+      setIsPaused(true);
+    }
+  }, [isActive]);
 
   const togglePlayback = (e) => {
     e.stopPropagation();
+    if (!isActive) return;
+
     const nextPaused = !isPaused;
     setIsPaused(nextPaused);
 
@@ -290,7 +299,7 @@ function YouTubePlayer({ videoId, title, isActive }) {
           alt={title}
           style={{ width: "100%", height: "100%", objectFit: "cover" }}
         />
-        <div className="player-controls">
+        <div className="player-controls is-paused">
           <div className="play-icon" />
         </div>
       </div>
@@ -304,7 +313,7 @@ function YouTubePlayer({ videoId, title, isActive }) {
           ref={iframeRef}
           width="100%"
           height="100%"
-          src={`https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&mute=1&controls=0&loop=1&playlist=${videoId}&rel=0&playsinline=1&enablejsapi=1`}
+          src={`https://www.youtube-nocookie.com/embed/${videoId}?autoplay=0&mute=1&controls=0&loop=1&playlist=${videoId}&rel=0&playsinline=1&enablejsapi=1`}
           title={title}
           frameBorder="0"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -334,7 +343,7 @@ function VoteCard({
   isActive,
   registerCardRef,
 }) {
-  const hasVoted = Boolean(selectedCandidateId);
+  const hasVoted = Boolean(selectedCandidateId) || card.isExpired;
 
   return (
     <article
@@ -359,7 +368,7 @@ function VoteCard({
                 }`}
                 aria-pressed={isSelected}
               >
-                {!hasVoted && (
+                {!hasVoted && isVideo && (
                   <button
                     type="button"
                     className="vote-pick-badge"
@@ -606,6 +615,7 @@ export default function VotePage() {
           id: cardId,
           feedId: cardId,
           title: item.title,
+          isExpired: item.expires_at ? new Date(item.expires_at) <= new Date() : false,
           leftCandidate: {
             id: "a",
             name: item.candidate_a_name,
