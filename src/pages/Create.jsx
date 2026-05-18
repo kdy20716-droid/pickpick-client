@@ -65,6 +65,23 @@ const Create = () => {
   const fileInputRef1 = useRef(null);
   const fileInputRef2 = useRef(null);
 
+  const tags = [
+    "연예",
+    "음식",
+    "애니메이션",
+    "동물",
+    "스포츠",
+    "일상",
+    "게임",
+    "음악",
+    "영화 / 드라마",
+    "웹툰 / 웹소설",
+    "유튜버 / 스트리머",
+    "밸런스 게임",
+    "밈",
+    "기타",
+  ];
+
   const getYouTubeId = (url) => {
     const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
     const match = url.match(regExp);
