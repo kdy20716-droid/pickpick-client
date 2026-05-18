@@ -104,6 +104,13 @@ const Profile = () => {
 
   const gradeInfo = getGradeInfo(currentUser?.grade || "UnRanked");
 
+  const handleNotificationClick = async (notif) => {
+    if (!notif.is_read) {
+      await handleReadNotification(notif.id);
+    }
+    navigate(`/vote/${notif.post_id}`);
+  };
+
   return (
     <>
       <div className={styles.topSearchRow}>
@@ -178,17 +185,15 @@ const Profile = () => {
                   <div
                     key={notif.id}
                     className={notif.is_read ? styles.msgGray : styles.msgPink}
-                    onClick={() =>
-                      !notif.is_read && handleReadNotification(notif.id)
-                    }
-                    style={{ cursor: notif.is_read ? "default" : "pointer" }}
+                    onClick={() => handleNotificationClick(notif)}
+                    style={{ cursor: "pointer" }}
                   >
                     {notif.type === "COMMENT_ON_POST" &&
-                      `${notif.sender_name}님이 내 투표에 댓글을 남겼습니다: "${notif.comment_content}"`}
+                      `${notif.sender_name}님이 내 투표[${notif.post_title}]에 댓글을 남겼습니다: "${notif.comment_content}"`}
                     {notif.type === "REPLY_ON_COMMENT" && (
                       <>
                         <span className={styles.mIcon}>M</span> ↳{" "}
-                        {notif.sender_name}님이 내 댓글에 답글을 남겼습니다: "
+                        {notif.sender_name}님이 [${notif.post_title}] 투표의 내 댓글에 답글을 남겼습니다: "
                         {notif.comment_content}"
                       </>
                     )}

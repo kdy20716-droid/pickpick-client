@@ -242,9 +242,9 @@
 
 .win-badge {
   position: absolute;
-  bottom: 0;
+  top: -10px;
   left: 50%;
-  transform: translate(-50%, 50%);
+  transform: translateX(-50%);
   background: #f1a0c0;
   color: white;
   font-size: 11px;

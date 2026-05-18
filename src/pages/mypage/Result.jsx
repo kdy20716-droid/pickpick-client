@@ -138,7 +138,9 @@ const Result = () => {
                   <div className="result-row">
                     {/* ... (existing candidate elements) */}
                     <div className={`candidate ${isLeftWinner && isExpired ? 'winner' : ''}`}>
-                      {isLeftWinner && <div className="crown">👑</div>}
+                      {isLeftWinner && (
+                        isExpired ? <div className="win-badge">WIN</div> : <div className="crown">👑</div>
+                      )}
                       <div className="img-wrapper">
                         {vote.candidate_a_image ? (
                           <img
@@ -150,7 +152,6 @@ const Result = () => {
                             {vote.candidate_a_name?.slice(0, 1)}
                           </div>
                         )}
-                        {isLeftWinner && isExpired && <div className="win-badge">WIN</div>}
                       </div>
                       <span className="percent">{leftPercent}%</span>
                       <span className="candidate-name">{vote.candidate_a_name}</span>
@@ -174,7 +175,9 @@ const Result = () => {
 
                     {/* 오른쪽 후보 */}
                     <div className={`candidate ${isRightWinner && isExpired ? 'winner' : ''}`}>
-                      {isRightWinner && <div className="crown">👑</div>}
+                      {isRightWinner && (
+                        isExpired ? <div className="win-badge">WIN</div> : <div className="crown">👑</div>
+                      )}
                       <div className="img-wrapper">
                         {vote.candidate_b_image ? (
                           <img
@@ -186,7 +189,6 @@ const Result = () => {
                             {vote.candidate_b_name?.slice(0, 1)}
                           </div>
                         )}
-                        {isRightWinner && isExpired && <div className="win-badge">WIN</div>}
                       </div>
                       <span className="percent">{rightPercent}%</span>
                       <span className="candidate-name">{vote.candidate_b_name}</span>
