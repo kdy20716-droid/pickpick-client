@@ -1,5 +1,3 @@
-import { voteTemplates } from "../../data/votes.js";
-
 function makeVoteCard(template, index) {
   return {
     ...template,
@@ -52,4 +50,3 @@ export function createVoteCards(pinnedFeedId = "") {
 export function createVoteBatch(start, count) {
   return createVoteCards().slice(start, start + count);
 }
-

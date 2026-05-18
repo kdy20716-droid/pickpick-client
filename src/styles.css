@@ -39,81 +39,84 @@ a {
   z-index: auto; /* z-index를 auto로 설정하여 새로운 스태킹 컨텍스트를 만들지 않으면서도 DOM 순서상 빛(z-index: 0)보다 위에 오게 함 */
 }
 
-/* Profile Borders */
+/* Profile Borders - Global Styles */
 .profile-border-bronze {
-  box-shadow: 0 0 0 4px #CD7F32, 0 0 10px #CD7F32;
-  border-radius: 50%;
+  box-shadow: 0 0 0 4px #CD7F32, 0 0 10px #CD7F32 !important;
+  border-radius: 50% !important;
 }
 
 .profile-border-silver {
-  box-shadow: 0 0 0 4px #C0C0C0, 0 0 10px #C0C0C0;
-  border-radius: 50%;
+  box-shadow: 0 0 0 4px #C0C0C0, 0 0 10px #C0C0C0 !important;
+  border-radius: 50% !important;
 }
 
 .profile-border-gold {
-  box-shadow: 0 0 0 4px #FFD700, 0 0 10px #FFD700;
-  border-radius: 50%;
+  box-shadow: 0 0 0 4px #FFD700, 0 0 10px #FFD700 !important;
+  border-radius: 50% !important;
 }
 
 .profile-border-platinum {
-  box-shadow: 0 0 0 4px #B4C3D2, 0 0 15px #B4C3D2;
-  border-radius: 50%;
+  box-shadow: 0 0 0 4px #B4C3D2, 0 0 15px #B4C3D2 !important;
+  border-radius: 50% !important;
 }
 
 .profile-border-diamond {
-  box-shadow: 0 0 0 4px #70D1F4, 0 0 20px #70D1F4;
-  border-radius: 50%;
-  animation: border-glow 2s infinite alternate;
+  box-shadow: 0 0 0 4px #70D1F4, 0 0 20px #70D1F4 !important;
+  border-radius: 50% !important;
+  animation: border-glow 2s infinite alternate !important;
 }
 
+/* ===================================================================== */
+/* 🚨 DO NOT MODIFY BELOW STYLES (ADMIN / PICK ONLY) - SEE GEMINI.md 🚨 */
+/* ===================================================================== */
 .profile-border-pick {
-  box-shadow: 0 0 0 4px #ff4b8d, 0 0 25px #ff4b8d;
-  border-radius: 50%;
-  position: relative;
-  animation: pick-glow 1.5s infinite alternate;
+  box-shadow: 0 0 0 4px #ff4b8d, 0 0 25px #ff4b8d !important;
+  border-radius: 50% !important;
+  position: relative !important;
+  animation: pick-glow 1.5s infinite alternate !important;
 }
 
 .profile-border-pick::after {
-  content: "pick";
-  position: absolute;
-  bottom: -4px;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: #ff4b8d;
-  color: white;
-  font-size: 6.5px;
-  font-weight: 900;
-  padding: 0px 3px;
-  border-radius: 8px;
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
-  box-shadow: 0 0 8px #ff4b8d;
-  z-index: 10;
+  content: "pick" !important;
+  position: absolute !important;
+  bottom: -4px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  background-color: #ff4b8d !important;
+  color: white !important;
+  font-size: 6.5px !important;
+  font-weight: 900 !important;
+  padding: 0px 3px !important;
+  border-radius: 8px !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.3px !important;
+  box-shadow: 0 0 8px #ff4b8d !important;
+  z-index: 10 !important;
 }
 
 .profile-border-admin {
-  box-shadow: 0 0 0 4px #ff0000, 0 0 25px #ff0000;
-  border-radius: 50%;
-  position: relative;
-  animation: admin-glow 1.5s infinite alternate;
+  box-shadow: 0 0 0 4px #ff0000, 0 0 25px #ff0000 !important;
+  border-radius: 50% !important;
+  position: relative !important;
+  animation: admin-glow 1.5s infinite alternate !important;
 }
 
 .profile-border-admin::after {
-  content: "admin";
-  position: absolute;
-  bottom: -4px;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: #ff0000;
-  color: white;
-  font-size: 6.5px;
-  font-weight: 900;
-  padding: 0px 3px;
-  border-radius: 8px;
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
-  box-shadow: 0 0 8px #ff0000;
-  z-index: 10;
+  content: "admin" !important;
+  position: absolute !important;
+  bottom: -4px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  background-color: #ff0000 !important;
+  color: white !important;
+  font-size: 6.5px !important;
+  font-weight: 900 !important;
+  padding: 0px 3px !important;
+  border-radius: 8px !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.3px !important;
+  box-shadow: 0 0 8px #ff0000 !important;
+  z-index: 10 !important;
 }
 
 @keyframes border-glow {

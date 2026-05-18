@@ -396,9 +396,13 @@ export default function Comments({
     try {
       const res = await deleteComment(postDbId, commentId, currentUser.id);
       if (res.success) {
-        setComments((currentComments) =>
-          currentComments.filter((comment) => comment.id !== commentId),
-        );
+        setComments((currentComments) => {
+          const newComments = currentComments.filter((comment) => comment.id !== commentId);
+          return newComments.map((comment) => ({
+            ...comment,
+            replyItems: comment.replyItems.filter((reply) => reply.id !== commentId),
+          }));
+        });
         setOpenMenuId(null);
       }
     } catch (err) {
@@ -534,7 +538,7 @@ export default function Comments({
               comment={comment}
               isOpen={Boolean(openReplies[comment.id])}
               replyDraft={replyDrafts[comment.id] ?? ""}
-              isMenuOpen={openMenuId === comment.id}
+              openMenuId={openMenuId}
               onLike={handleLike}
               onDislike={handleDislike}
               onToggleReplies={handleToggleReplies}

@@ -58,15 +58,19 @@
 .account-link {
   display: grid;
   place-items: center;
-  padding: 4px; /* Space for border glow */
+  padding: 10px; /* Increased padding to show glow */
+  overflow: visible; /* Ensure glow is not clipped */
 }
 
 .header-profile-avatar {
-  width: clamp(38px, calc(var(--layout-vw) * 0.045), 46px);
-  height: clamp(38px, calc(var(--layout-vw) * 0.045), 46px);
+  width: clamp(34px, calc(var(--layout-vw) * 0.04), 42px); /* Slightly smaller to fit in header with glow */
+  height: clamp(34px, calc(var(--layout-vw) * 0.04), 42px);
   border-radius: 50%;
   position: relative;
   transition: transform 0.2s ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .header-profile-avatar:hover {
