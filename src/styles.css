@@ -76,6 +76,7 @@ a {
   background-repeat: no-repeat;
   background-position: center;
   background-size: contain;
+  transform: translate(2px, 5px);
   pointer-events: none;
 }
 
