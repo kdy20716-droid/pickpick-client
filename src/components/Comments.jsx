@@ -37,6 +37,8 @@ function normalizeReply(reply) {
 }
 
 function normalizeComment(comment, reaction = null) {
+  const serverDislikes = comment.dislikes ?? 0;
+
   return {
     ...comment,
     id: comment.id,
@@ -46,7 +48,7 @@ function normalizeComment(comment, reaction = null) {
     text: comment.text ?? comment.content ?? "",
     createdAt: comment.createdAt ?? toTimestamp(comment.created_at),
     likes: comment.likes ?? 0,
-    dislikes: comment.dislikes ?? 0,
+    dislikes: reaction === "dislike" ? serverDislikes + 1 : serverDislikes,
     author_border: comment.author_border ?? null,
     author_image: comment.author_image ?? null,
     reaction,
