@@ -305,7 +305,28 @@ function VoteCard({
                 onClick={() => onSelect(card.feedId, candidate.id)}
               >
                 {candidate.image ? (
-                  <img src={candidate.image} alt={candidate.name} />
+                  candidate.type === "video" ? (
+                    <video
+                      src={candidate.image}
+                      autoPlay
+                      loop
+                      muted
+                      playsInline
+                      className="vote-choice-media"
+                    />
+                  ) : candidate.type === "audio" ? (
+                    <div className="vote-choice-audio-container">
+                      <div className="audio-icon-large">🎵</div>
+                      <audio
+                        src={candidate.image}
+                        controls={hasVoted}
+                        className="vote-choice-audio-player"
+                        onClick={(e) => e.stopPropagation()}
+                      />
+                    </div>
+                  ) : (
+                    <img src={candidate.image} alt={candidate.name} />
+                  )
                 ) : (
                   <span
                     className="vote-choice-image-fallback"
@@ -493,12 +514,14 @@ export default function VotePage() {
             id: "a",
             name: item.candidate_a_name,
             image: item.candidate_a_image,
+            type: item.candidate_a_type || "image",
             tone: "light",
           },
           rightCandidate: {
             id: "b",
             name: item.candidate_b_name,
             image: item.candidate_b_image,
+            type: item.candidate_b_type || "image",
             tone: "dark",
           },
           shares: { left: leftShare, right: rightShare },

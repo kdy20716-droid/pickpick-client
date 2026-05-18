@@ -946,3 +946,60 @@
   }
 }
 
+/* Multi-Media Support Styles */
+.vote-choice-media {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+}
+
+.vote-choice-audio-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.03);
+  position: relative;
+  z-index: 1;
+}
+
+.audio-icon-large {
+  font-size: 4rem;
+  margin-bottom: 20px;
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.1));
+}
+
+.vote-choice-audio-player {
+  width: 80%;
+  height: 40px;
+  border-radius: 20px;
+}
+
+/* Create Page Media Preview Styles */
+.audio-preview-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #f9f9f9;
+  color: #888;
+}
+
+.audio-icon {
+  font-size: 3rem;
+  margin-bottom: 10px;
+}
+
+.audio-preview-player {
+  width: 90%;
+  margin-top: 15px;
+}
+
