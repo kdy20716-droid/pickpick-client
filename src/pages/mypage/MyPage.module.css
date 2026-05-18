@@ -680,16 +680,16 @@
 .supportButton {
   position: fixed;
   bottom: 40px;
-  left: -80px; /* Lengthened to hide more behind the edge */
-  width: 180px; /* Increased width */
+  left: -200px; /* Hidden much deeper to ensure the edge is never seen */
+  width: 320px; /* Extra long shape */
   height: 44px;
-  background-color: #f8bbd0; /* Lightened pink */
+  background-color: #f8bbd0;
   color: #fff;
   text-decoration: none;
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  padding-right: 25px;
+  padding-right: 30px;
   font-weight: 800;
   font-size: 14px;
   letter-spacing: 0.5px;
@@ -701,7 +701,7 @@
 }
 
 .supportButton:hover {
-  transform: translateX(85px); /* Slides out more naturally */
+  transform: translateX(180px); /* Slides out while keeping the left edge hidden at -20px */
   background-color: #f48fb1;
 }
 
