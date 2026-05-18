@@ -97,12 +97,23 @@ const Profile = () => {
     if (g === "GOLD" || g === "골드") return { color: "#FFD700", emoji: "🥇" };
     if (g === "PLATINUM" || g === "플래티넘")
       return { color: "#B4C3D2", emoji: "💎" };
-    if (g === "DIAMOND" || g === "다이아몬드")
-      return { color: "#70D1F4", emoji: "👑" };
+    if (
+      g === "MASTER" ||
+      g === "마스터" ||
+      g === "DIAMOND" ||
+      g === "다이아몬드"
+    )
+      return { color: "#8B5CF6", emoji: "👑" };
     return { color: "#999999", emoji: "⚪" }; // UnRanked
   };
 
-  const gradeInfo = getGradeInfo(currentUser?.grade || "UnRanked");
+  const getGradeDisplayName = (grade) => {
+    const normalized = grade?.toUpperCase() || "UNRANKED";
+    return normalized === "DIAMOND" ? "MASTER" : grade || "UnRanked";
+  };
+
+  const gradeDisplayName = getGradeDisplayName(currentUser?.grade);
+  const gradeInfo = getGradeInfo(gradeDisplayName);
 
   const handleNotificationClick = async (notif) => {
     if (!notif.is_read) {
@@ -155,7 +166,7 @@ const Profile = () => {
                 className={styles.lvBadge}
                 style={{ color: gradeInfo.color }}
               >
-                {gradeInfo.emoji} {currentUser?.grade || "UnRanked"}{" "}
+                {gradeInfo.emoji} {gradeDisplayName}{" "}
               </div>
               <h2 className={styles.nickname}>
                 {currentUser?.name || "게스트"} 님

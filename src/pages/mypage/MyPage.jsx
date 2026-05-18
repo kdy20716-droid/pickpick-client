@@ -13,8 +13,13 @@ const gradeOrder = [
   "SILVER",
   "GOLD",
   "PLATINUM",
-  "DIAMOND",
+  "MASTER",
 ];
+
+const normalizeGrade = (grade) => {
+  const normalized = grade?.toUpperCase() || "UNRANKED";
+  return normalized === "DIAMOND" ? "MASTER" : normalized;
+};
 
 const MyPage = () => {
   const navigate = useNavigate();
@@ -26,12 +31,12 @@ const MyPage = () => {
     useRouteAnimation();
 
   const getGradeEmoji = (grade) => {
-    const g = grade?.toUpperCase();
+    const g = normalizeGrade(grade);
     if (g === "BRONZE") return "🥉";
     if (g === "SILVER") return "🥈";
     if (g === "GOLD") return "🥇";
     if (g === "PLATINUM") return "💎";
-    if (g === "DIAMOND") return "👑";
+    if (g === "MASTER") return "👑";
     return "⚪";
   };
 
@@ -56,8 +61,9 @@ const MyPage = () => {
 
     // 등업 체크 로직
     if (currentUser) {
-      const storedGrade = localStorage.getItem(`prevGrade_${currentUser.id}`);
-      const currentGrade = currentUser.grade?.toUpperCase() || "UNRANKED";
+      const rawStoredGrade = localStorage.getItem(`prevGrade_${currentUser.id}`);
+      const storedGrade = rawStoredGrade ? normalizeGrade(rawStoredGrade) : null;
+      const currentGrade = normalizeGrade(currentUser.grade);
 
       if (storedGrade && storedGrade !== currentGrade) {
         const oldIndex = gradeOrder.indexOf(storedGrade);
