@@ -6,19 +6,64 @@ import { useAuth } from "../../contexts/AuthContext";
 import instance from "../../api/instance";
 import { useRouteAnimation } from "../../hooks/useRouteAnimation";
 
+// 등급 순서 (비교용)
+const gradeOrder = [
+  "UNRANKED",
+  "BRONZE",
+  "SILVER",
+  "GOLD",
+  "PLATINUM",
+  "DIAMOND",
+];
+
 const MyPage = () => {
   const navigate = useNavigate();
   const { user: currentUser, token, logout } = useAuth();
   const [confirmModal, setConfirmModal] = useState(null); // 'logout', 'delete', or null
+  const [promotionInfo, setPromotionInfo] = useState(null); // { oldGrade, newGrade } or null
   const { displayOutlet, transitionStage, onTransitionEnd, activePath } =
     useRouteAnimation();
+
+  const getGradeEmoji = (grade) => {
+    const g = grade?.toUpperCase();
+    if (g === "BRONZE") return "🥉";
+    if (g === "SILVER") return "🥈";
+    if (g === "GOLD") return "🥇";
+    if (g === "PLATINUM") return "💎";
+    if (g === "DIAMOND") return "👑";
+    return "⚪";
+  };
 
   useEffect(() => {
     if (!token) {
       alert("로그인이 필요한 페이지입니다.");
       navigate("/login");
+      return;
     }
-  }, [token, navigate]);
+
+    // 등업 체크 로직
+    if (currentUser) {
+      const storedGrade = localStorage.getItem(`prevGrade_${currentUser.id}`);
+      const currentGrade = currentUser.grade?.toUpperCase() || "UNRANKED";
+
+      if (storedGrade && storedGrade !== currentGrade) {
+        const oldIndex = gradeOrder.indexOf(storedGrade);
+        const newIndex = gradeOrder.indexOf(currentGrade);
+
+        // 등급이 상승했을 때만 축하 (UnRanked -> BRONZE 등)
+        if (newIndex > oldIndex && oldIndex !== -1) {
+          setTimeout(() => {
+            setPromotionInfo({
+              oldGrade: storedGrade,
+              newGrade: currentGrade,
+            });
+          }, 0);
+        }
+      }
+      // 현재 등급을 저장 (다음 비교를 위해)
+      localStorage.setItem(`prevGrade_${currentUser.id}`, currentGrade);
+    }
+  }, [token, navigate, currentUser, gradeOrder]);
 
   const executeLogout = async () => {
     setConfirmModal(null);
@@ -113,6 +158,42 @@ const MyPage = () => {
                 확인
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {promotionInfo && (
+        <div
+          className={styles.promoOverlay}
+          onClick={() => setPromotionInfo(null)}
+        >
+          <div className={styles.confettiContainer}>
+            {[...Array(20)].map((_, i) => (
+              <div key={i} className={styles.confetti} />
+            ))}
+          </div>
+          <div
+            className={styles.promoContent}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className={styles.promoEmoji}>
+              {getGradeEmoji(promotionInfo.newGrade)}
+            </div>
+            <h2 className={styles.promoTitle}>등급 상승 축하드려요!</h2>
+            <p className={styles.promoText}>
+              <span className={styles.oldGrade}>{promotionInfo.oldGrade}</span>
+              <span className={styles.arrow}>→</span>
+              <span className={styles.newGrade}>{promotionInfo.newGrade}</span>
+            </p>
+            <p className={styles.promoSubText}>
+              꾸준한 활동으로 다음 등급에도 도전해보세요!
+            </p>
+            <button
+              className={styles.promoBtn}
+              onClick={() => setPromotionInfo(null)}
+            >
+              확인
+            </button>
           </div>
         </div>
       )}
