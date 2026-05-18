@@ -310,7 +310,7 @@ function VoteCard({
                        <iframe
                         width="100%"
                         height="100%"
-                        src={`https://www.youtube.com/embed/${candidate.image}?autoplay=1&mute=1&controls=0&loop=1&playlist=${candidate.image}&rel=0&playsinline=1&enablejsapi=1`}
+                        src={`https://www.youtube-nocookie.com/embed/${candidate.image}?autoplay=1&mute=1&controls=0&loop=1&playlist=${candidate.image}&rel=0&playsinline=1&enablejsapi=1`}
                         title={candidate.name}
                         frameBorder="0"
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
