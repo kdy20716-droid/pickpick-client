@@ -31,6 +31,8 @@ const Create = () => {
   const [previewImage2, setPreviewImage2] = useState(null);
   const [file1, setFile1] = useState(null);
   const [file2, setFile2] = useState(null);
+  const [mediaType1, setMediaType1] = useState("image"); // 'image', 'video', 'audio'
+  const [mediaType2, setMediaType2] = useState("image");
 
   useEffect(() => {
     if (isEditing) {
@@ -40,6 +42,8 @@ const Create = () => {
       setCandidate2(editData.candidate_b_name);
       setPreviewImage1(editData.candidate_a_image);
       setPreviewImage2(editData.candidate_b_image);
+      setMediaType1(editData.candidate_a_type || "image");
+      setMediaType2(editData.candidate_b_type || "image");
     }
   }, [isEditing, editData]);
 
@@ -72,21 +76,29 @@ const Create = () => {
     "기타",
   ];
 
-  const handleImageChange = (e, setPreview, setFile, setZoom) => {
+  const handleFileChange = (e, setPreview, setFile, setZoom, setMediaType) => {
     const file = e.target.files[0];
     if (file) {
+      const type = file.type.split("/")[0];
+      const finalType = type === "video" || type === "audio" ? type : "image";
+      
       setFile(file);
+      setMediaType(finalType);
       processFile(file, setPreview);
-      setZoom(1); // Reset zoom on new image
+      setZoom(1);
     }
   };
 
-  const handlePaste = (e, setPreview, setFile, setZoom) => {
+  const handlePaste = (e, setPreview, setFile, setZoom, setMediaType) => {
     const items = (e.clipboardData || e.originalEvent.clipboardData).items;
     for (const item of items) {
-      if (item.kind === "file" && item.type.startsWith("image/")) {
+      if (item.kind === "file") {
         const file = item.getAsFile();
+        const type = file.type.split("/")[0];
+        const finalType = type === "video" || type === "audio" ? type : "image";
+
         setFile(file);
+        setMediaType(finalType);
         processFile(file, setPreview);
         setZoom(1);
         break;
@@ -98,15 +110,17 @@ const Create = () => {
     e.preventDefault();
   };
 
-  const handleDrop = (e, setPreview, setFile, setZoom) => {
+  const handleDrop = (e, setPreview, setFile, setZoom, setMediaType) => {
     e.preventDefault();
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
       const file = e.dataTransfer.files[0];
-      if (file.type.startsWith("image/")) {
-        setFile(file);
-        processFile(file, setPreview);
-        setZoom(1);
-      }
+      const type = file.type.split("/")[0];
+      const finalType = type === "video" || type === "audio" ? type : "image";
+
+      setFile(file);
+      setMediaType(finalType);
+      processFile(file, setPreview);
+      setZoom(1);
     }
   };
 
@@ -118,10 +132,11 @@ const Create = () => {
     reader.readAsDataURL(file);
   };
 
-  const handleRemoveImage = (setPreview, setFile, setZoom, setShowEdit) => {
+  const handleRemoveFile = (setPreview, setFile, setZoom, setShowEdit, setMediaType) => {
     setPreview(null);
     setFile(null);
     setZoom(1);
+    setMediaType("image");
     setShowEdit(false);
   };
 
@@ -152,6 +167,8 @@ const Create = () => {
           file1,
           candidate2,
           file2,
+          mediaType1,
+          mediaType2
         );
         alert("투표 게시글이 성공적으로 수정되었습니다!");
       } else {
@@ -163,6 +180,8 @@ const Create = () => {
           file1,
           candidate2,
           file2,
+          mediaType1,
+          mediaType2
         );
         alert("투표 게시글이 성공적으로 등록되었습니다!");
       }
@@ -204,20 +223,38 @@ const Create = () => {
                 type="file"
                 ref={fileInputRef1}
                 style={{ display: "none" }}
-                accept="image/*"
+                accept="image/*,video/*,audio/*"
                 onChange={(e) =>
-                  handleImageChange(e, setPreviewImage1, setFile1, setZoom1)
+                  handleFileChange(e, setPreviewImage1, setFile1, setZoom1, setMediaType1)
                 }
               />
               {previewImage1 ? (
                 <>
                   <div className="image-wrapper">
-                    <img
-                      src={previewImage1}
-                      alt="Preview 1"
-                      className="candidate-box__img"
-                      style={{ transform: `scale(${zoom1})` }}
-                    />
+                    {mediaType1 === "video" ? (
+                      <video
+                        src={previewImage1}
+                        className="candidate-box__img"
+                        autoPlay
+                        loop
+                        muted
+                        playsInline
+                        style={{ transform: `scale(${zoom1})`, objectFit: "cover" }}
+                      />
+                    ) : mediaType1 === "audio" ? (
+                      <div className="audio-preview-placeholder">
+                        <div className="audio-icon">🎵</div>
+                        <span>음원 파일 업로드됨</span>
+                        <audio src={previewImage1} controls className="audio-preview-player" />
+                      </div>
+                    ) : (
+                      <img
+                        src={previewImage1}
+                        alt="Preview 1"
+                        className="candidate-box__img"
+                        style={{ transform: `scale(${zoom1})` }}
+                      />
+                    )}
                   </div>
                   <button
                     className="image-edit-trigger"
@@ -230,42 +267,45 @@ const Create = () => {
                       <div className="edit-controls">
                         <button
                           onClick={() => fileInputRef1.current.click()}
-                          title="이미지 교체"
+                          title="교체"
                         >
                           <Maximize size={16} /> <span>교체</span>
                         </button>
                         <button
                           onClick={() =>
-                            handleRemoveImage(
+                            handleRemoveFile(
                               setPreviewImage1,
                               setFile1,
                               setZoom1,
                               setShowEdit1,
+                              setMediaType1
                             )
                           }
-                          title="이미지 삭제"
+                          title="삭제"
                         >
                           <Trash2 size={16} /> <span>삭제</span>
                         </button>
                       </div>
-                      <div className="zoom-control">
-                        <Minus
-                          size={14}
-                          onClick={() => setZoom1(Math.max(0.5, zoom1 - 0.1))}
-                        />
-                        <input
-                          type="range"
-                          min="0.5"
-                          max="3"
-                          step="0.1"
-                          value={zoom1}
-                          onChange={(e) => setZoom1(parseFloat(e.target.value))}
-                        />
-                        <Plus
-                          size={14}
-                          onClick={() => setZoom1(Math.min(3, zoom1 + 0.1))}
-                        />
-                      </div>
+                      {mediaType1 === "image" || mediaType1 === "video" ? (
+                        <div className="zoom-control">
+                          <Minus
+                            size={14}
+                            onClick={() => setZoom1(Math.max(0.5, zoom1 - 0.1))}
+                          />
+                          <input
+                            type="range"
+                            min="0.5"
+                            max="3"
+                            step="0.1"
+                            value={zoom1}
+                            onChange={(e) => setZoom1(parseFloat(e.target.value))}
+                          />
+                          <Plus
+                            size={14}
+                            onClick={() => setZoom1(Math.min(3, zoom1 + 0.1))}
+                          />
+                        </div>
+                      ) : null}
                     </div>
                   )}
                 </>
@@ -275,9 +315,9 @@ const Create = () => {
                     className="upload-button"
                     onClick={() => fileInputRef1.current.click()}
                   >
-                    이미지 삽입
+                    미디어 삽입
                   </button>
-                  <h5>붙여넣기 및 드래그 앤 드롭 지원</h5>
+                  <h5>이미지, 영상, 음원 지원</h5>
                 </div>
               )}
               <div className="candidate-box__label">
@@ -292,11 +332,11 @@ const Create = () => {
             <div
               className="candidate-box"
               onPaste={(e) =>
-                handlePaste(e, setPreviewImage2, setFile2, setZoom2)
+                handlePaste(e, setPreviewImage2, setFile2, setZoom2, setMediaType2)
               }
               onDragOver={handleDragOver}
               onDrop={(e) =>
-                handleDrop(e, setPreviewImage2, setFile2, setZoom2)
+                handleDrop(e, setPreviewImage2, setFile2, setZoom2, setMediaType2)
               }
               tabIndex="0"
             >
@@ -304,20 +344,38 @@ const Create = () => {
                 type="file"
                 ref={fileInputRef2}
                 style={{ display: "none" }}
-                accept="image/*"
+                accept="image/*,video/*,audio/*"
                 onChange={(e) =>
-                  handleImageChange(e, setPreviewImage2, setFile2, setZoom2)
+                  handleFileChange(e, setPreviewImage2, setFile2, setZoom2, setMediaType2)
                 }
               />
               {previewImage2 ? (
                 <>
                   <div className="image-wrapper">
-                    <img
-                      src={previewImage2}
-                      alt="Preview 2"
-                      className="candidate-box__img"
-                      style={{ transform: `scale(${zoom2})` }}
-                    />
+                    {mediaType2 === "video" ? (
+                      <video
+                        src={previewImage2}
+                        className="candidate-box__img"
+                        autoPlay
+                        loop
+                        muted
+                        playsInline
+                        style={{ transform: `scale(${zoom2})`, objectFit: "cover" }}
+                      />
+                    ) : mediaType2 === "audio" ? (
+                      <div className="audio-preview-placeholder">
+                        <div className="audio-icon">🎵</div>
+                        <span>음원 파일 업로드됨</span>
+                        <audio src={previewImage2} controls className="audio-preview-player" />
+                      </div>
+                    ) : (
+                      <img
+                        src={previewImage2}
+                        alt="Preview 2"
+                        className="candidate-box__img"
+                        style={{ transform: `scale(${zoom2})` }}
+                      />
+                    )}
                   </div>
                   <button
                     className="image-edit-trigger"
@@ -330,42 +388,45 @@ const Create = () => {
                       <div className="edit-controls">
                         <button
                           onClick={() => fileInputRef2.current.click()}
-                          title="이미지 교체"
+                          title="교체"
                         >
                           <Maximize size={16} /> <span>교체</span>
                         </button>
                         <button
                           onClick={() =>
-                            handleRemoveImage(
+                            handleRemoveFile(
                               setPreviewImage2,
                               setFile2,
                               setZoom2,
                               setShowEdit2,
+                              setMediaType2
                             )
                           }
-                          title="이미지 삭제"
+                          title="삭제"
                         >
                           <Trash2 size={16} /> <span>삭제</span>
                         </button>
                       </div>
-                      <div className="zoom-control">
-                        <Minus
-                          size={14}
-                          onClick={() => setZoom2(Math.max(0.5, zoom2 - 0.1))}
-                        />
-                        <input
-                          type="range"
-                          min="0.5"
-                          max="3"
-                          step="0.1"
-                          value={zoom2}
-                          onChange={(e) => setZoom2(parseFloat(e.target.value))}
-                        />
-                        <Plus
-                          size={14}
-                          onClick={() => setZoom2(Math.min(3, zoom2 + 0.1))}
-                        />
-                      </div>
+                      {mediaType2 === "image" || mediaType2 === "video" ? (
+                        <div className="zoom-control">
+                          <Minus
+                            size={14}
+                            onClick={() => setZoom2(Math.max(0.5, zoom2 - 0.1))}
+                          />
+                          <input
+                            type="range"
+                            min="0.5"
+                            max="3"
+                            step="0.1"
+                            value={zoom2}
+                            onChange={(e) => setZoom2(parseFloat(e.target.value))}
+                          />
+                          <Plus
+                            size={14}
+                            onClick={() => setZoom2(Math.min(3, zoom2 + 0.1))}
+                          />
+                        </div>
+                      ) : null}
                     </div>
                   )}
                 </>
@@ -375,9 +436,9 @@ const Create = () => {
                     className="upload-button"
                     onClick={() => fileInputRef2.current.click()}
                   >
-                    이미지 삽입
+                    미디어 삽입
                   </button>
-                  <h5>붙여넣기 및 드래그 앤 드롭 지원</h5>
+                  <h5>이미지, 영상, 음원 지원</h5>
                 </div>
               )}
               <div className="candidate-box__label">

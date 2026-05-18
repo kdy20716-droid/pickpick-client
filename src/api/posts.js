@@ -40,6 +40,8 @@ export const addVote = async (
   candidate_a_image,
   candidate_b_name,
   candidate_b_image,
+  candidate_a_type = "image",
+  candidate_b_type = "image",
 ) => {
   // 이미지가 포함된 데이터를 보낼 때는 FormData를 사용합니다.
   const formData = new FormData();
@@ -48,8 +50,10 @@ export const addVote = async (
   formData.append("title", title);
   formData.append("candidate_a_name", candidate_a_name);
   formData.append("candidate_a_image", candidate_a_image); // 파일 객체
+  formData.append("candidate_a_type", candidate_a_type);
   formData.append("candidate_b_name", candidate_b_name);
   formData.append("candidate_b_image", candidate_b_image); // 파일 객체
+  formData.append("candidate_b_type", candidate_b_type);
 
   const response = await instance.post(VOTE_LIST_PATH, formData);
   return response.data;
@@ -65,6 +69,8 @@ export const updateVote = async (
   candidate_a_image,
   candidate_b_name,
   candidate_b_image,
+  candidate_a_type,
+  candidate_b_type,
 ) => {
   const formData = new FormData();
   formData.append("author_id", author_id);
@@ -72,8 +78,10 @@ export const updateVote = async (
   if (title) formData.append("title", title);
   if (candidate_a_name) formData.append("candidate_a_name", candidate_a_name);
   if (candidate_a_image) formData.append("candidate_a_image", candidate_a_image);
+  if (candidate_a_type) formData.append("candidate_a_type", candidate_a_type);
   if (candidate_b_name) formData.append("candidate_b_name", candidate_b_name);
   if (candidate_b_image) formData.append("candidate_b_image", candidate_b_image);
+  if (candidate_b_type) formData.append("candidate_b_type", candidate_b_type);
 
   const response = await instance.put(`${VOTE_LIST_PATH}/${postId}`, formData);
   return response.data;
