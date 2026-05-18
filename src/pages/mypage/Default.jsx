@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useState } from "react";
 import "./Default.css";
 import { Eye, EyeOff } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -22,7 +22,6 @@ const TEXT = {
     profileChange: "프로필 변경",
     profileChangeDesc: "프로필 사진 변경 옵션 선택",
     change: "변경",
-    choosePhoto: "사진에서 찾기",
     defaultImage: "기본이미지로 바꾸기",
     profileUpdated: "프로필 사진이 변경되었습니다.",
     profileUpdateFail: "프로필 사진 변경에 실패했습니다.",
@@ -68,7 +67,6 @@ const TEXT = {
     profileChange: "Edit Profile",
     profileChangeDesc: "Choose a profile photo option",
     change: "Change",
-    choosePhoto: "Choose Photo",
     defaultImage: "Use Default Image",
     profileUpdated: "Profile photo has been updated.",
     profileUpdateFail: "Failed to update profile photo.",
@@ -104,7 +102,6 @@ const TEXT = {
 const AccountSettings = () => {
   const navigate = useNavigate();
   const { user: currentUser, updateUser, logout } = useAuth();
-  const profileFileInputRef = useRef(null);
   const [isCurrentPasswordVisible, setIsCurrentPasswordVisible] =
     useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
@@ -169,16 +166,6 @@ const AccountSettings = () => {
       console.error("프로필 이미지 변경 실패:", error);
       alert(error.response?.data?.message || text.profileUpdateFail);
     }
-  };
-
-  const handleProfileFileChange = async (event) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    const formData = new FormData();
-    formData.append("profile_image", file);
-    await applyProfileUpdate(formData);
-    event.target.value = "";
   };
 
   const handleResetProfileImage = async () => {
@@ -360,24 +347,10 @@ const AccountSettings = () => {
               <button
                 type="button"
                 className="profile-image-option"
-                onClick={() => profileFileInputRef.current?.click()}
-              >
-                {text.choosePhoto}
-              </button>
-              <button
-                type="button"
-                className="profile-image-option"
                 onClick={handleResetProfileImage}
               >
                 {text.defaultImage}
               </button>
-              <input
-                ref={profileFileInputRef}
-                type="file"
-                accept="image/*"
-                className="profile-image-file-input"
-                onChange={handleProfileFileChange}
-              />
             </div>
           </section>
         </div>
