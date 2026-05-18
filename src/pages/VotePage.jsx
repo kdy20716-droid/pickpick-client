@@ -305,7 +305,20 @@ function VoteCard({
                 onClick={() => onSelect(card.feedId, candidate.id)}
               >
                 {candidate.image ? (
-                  candidate.type === "video" ? (
+                  candidate.type === "youtube" ? (
+                    <div className="vote-choice-media youtube-embed">
+                       <iframe
+                        width="100%"
+                        height="100%"
+                        src={`https://www.youtube.com/embed/${candidate.image}?autoplay=1&mute=1&controls=0&loop=1&playlist=${candidate.image}&rel=0`}
+                        title={candidate.name}
+                        frameBorder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                        style={{ pointerEvents: "none" }}
+                      />
+                    </div>
+                  ) : candidate.type === "video" ? (
                     <video
                       src={candidate.image}
                       autoPlay
