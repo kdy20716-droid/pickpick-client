@@ -4,7 +4,7 @@ import styles from "./MyPage.module.css";
 import { useAuth } from "../../contexts/AuthContext";
 import { getVote, toggleLike } from "../../api/posts";
 import Comments from "../../components/Comments.jsx";
-import { getImageUrl } from "../../utils/image";
+import { getImageUrl, getCandidateThumbnail } from "../../utils/image";
 
 const Like = () => {
   const [likedVotes, setLikedVotes] = useState([]);
@@ -136,7 +136,7 @@ const Like = () => {
                     <div className="thumb-img">
                       {vote.candidate_a_image ? (
                         <img
-                          src={getImageUrl(vote.candidate_a_image)}
+                          src={getCandidateThumbnail(vote.candidate_a_image, vote.candidate_a_type)}
                           alt="candidate a"
                         />
                       ) : (
@@ -160,7 +160,7 @@ const Like = () => {
                     <div className="thumb-img">
                       {vote.candidate_b_image ? (
                         <img
-                          src={getImageUrl(vote.candidate_b_image)}
+                          src={getCandidateThumbnail(vote.candidate_b_image, vote.candidate_b_type)}
                           alt="candidate b"
                         />
                       ) : (

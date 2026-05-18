@@ -4,6 +4,7 @@ import styles from "./MyPage.module.css";
 import "./MyCreate.css";
 import { useAuth } from "../../contexts/AuthContext";
 import { getVote, deleteVote } from "../../api/posts";
+import { getCandidateThumbnail } from "../../utils/image";
 
 const MyCreate = () => {
   const [myVotes, setMyVotes] = useState([]);
@@ -103,13 +104,13 @@ const MyCreate = () => {
                   </div>
                   <div className="vote-preview">
                     {vote.candidate_a_image ? (
-                      <img src={vote.candidate_a_image} alt="a" />
+                      <img src={getCandidateThumbnail(vote.candidate_a_image, vote.candidate_a_type)} alt="a" />
                     ) : (
                       <div className="no-img">No Img</div>
                     )}
                     <span className="vs-text">VS</span>
                     {vote.candidate_b_image ? (
-                      <img src={vote.candidate_b_image} alt="b" />
+                      <img src={getCandidateThumbnail(vote.candidate_b_image, vote.candidate_b_type)} alt="b" />
                     ) : (
                       <div className="no-img">No Img</div>
                     )}
