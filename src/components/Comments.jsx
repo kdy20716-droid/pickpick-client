@@ -427,28 +427,27 @@ export default function Comments({
         ...prev,
         [commentId]: res.liked ? "like" : null,
       }));
-      setComments((current) =>
-        current.map((comment) => {
-          if (comment.id !== commentId) {
-            return comment;
-          }
 
-          const hadDislike = comment.reaction === "dislike";
+      setComments((current) => {
+        const updateItem = (item) => {
+          if (item.id !== commentId) return item;
+          const hadDislike = item.reaction === "dislike";
+          return {
+            ...item,
+            reaction: res.liked ? "like" : null,
+            likes: res.likes ?? (res.liked ? (item.likes || 0) + 1 : Math.max(0, (item.likes || 0) - 1)),
+            dislikes: hadDislike ? Math.max(0, (item.dislikes || 0) - 1) : item.dislikes,
+          };
+        };
 
+        return current.map((comment) => {
+          if (comment.id === commentId) return updateItem(comment);
           return {
             ...comment,
-            reaction: res.liked ? "like" : null,
-            likes:
-              res.likes ??
-              (res.liked
-                ? (comment.likes || 0) + 1
-                : Math.max(0, (comment.likes || 0) - 1)),
-            dislikes: hadDislike
-              ? Math.max(0, (comment.dislikes || 0) - 1)
-              : comment.dislikes,
+            replyItems: comment.replyItems.map(updateItem),
           };
-        }),
-      );
+        });
+      });
     } catch (error) {
       console.error(error);
       alert("좋아요 처리에 실패했습니다.");
@@ -461,40 +460,53 @@ export default function Comments({
       return;
     }
 
-    const targetComment = comments.find((comment) => comment.id === commentId);
-    const hadLike = targetComment?.reaction === "like";
-    const hadDislike = targetComment?.reaction === "dislike";
-    const willDislike = !hadDislike;
-
-    if (hadLike && willDislike) {
-      toggleCommentLike(postDbId, commentId, currentUser.id).catch(
-        console.error,
-      );
-    }
-
-    setCommentReactions((prev) => ({
-      ...prev,
-      [commentId]: willDislike ? "dislike" : null,
-    }));
-    setComments((current) =>
-      current.map((comment) => {
-        if (comment.id !== commentId) {
-          return comment;
+    setComments((current) => {
+      let targetItem = null;
+      for (const c of current) {
+        if (c.id === commentId) {
+          targetItem = c;
+          break;
         }
+        const r = c.replyItems.find((reply) => reply.id === commentId);
+        if (r) {
+          targetItem = r;
+          break;
+        }
+      }
 
+      if (!targetItem) return current;
+
+      const hadLike = targetItem.reaction === "like";
+      const hadDislike = targetItem.reaction === "dislike";
+      const willDislike = !hadDislike;
+
+      if (hadLike && willDislike) {
+        toggleCommentLike(postDbId, commentId, currentUser.id).catch(console.error);
+      }
+
+      setCommentReactions((prev) => ({
+        ...prev,
+        [commentId]: willDislike ? "dislike" : null,
+      }));
+
+      const updateItem = (item) => {
+        if (item.id !== commentId) return item;
+        return {
+          ...item,
+          reaction: willDislike ? "dislike" : null,
+          likes: hadLike ? Math.max(0, (item.likes || 0) - 1) : item.likes,
+          dislikes: Math.max(0, (item.dislikes || 0) + (willDislike ? 1 : -1)),
+        };
+      };
+
+      return current.map((comment) => {
+        if (comment.id === commentId) return updateItem(comment);
         return {
           ...comment,
-          reaction: willDislike ? "dislike" : null,
-          likes: hadLike
-            ? Math.max(0, (comment.likes || 0) - 1)
-            : comment.likes,
-          dislikes: Math.max(
-            0,
-            (comment.dislikes || 0) + (willDislike ? 1 : -1),
-          ),
+          replyItems: comment.replyItems.map(updateItem),
         };
-      }),
-    );
+      });
+    });
   };
 
   return createPortal(
