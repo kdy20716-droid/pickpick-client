@@ -443,14 +443,14 @@ const Admin = () => {
                         <td>{user.nickname} ({user.name})</td>
                         <td>
                           <select 
-                            value={user.tier} 
+                            value={user.tier === "diamond" ? "master" : user.tier}
                             onChange={(e) => handleUpdateUserStatus(user.id, { tier: e.target.value })}
                           >
                             <option value="bronze">BRONZE</option>
                             <option value="silver">SILVER</option>
                             <option value="gold">GOLD</option>
                             <option value="platinum">PLATINUM</option>
-                            <option value="diamond">DIAMOND</option>
+                            <option value="master">MASTER</option>
                           </select>
                         </td>
                         <td>
