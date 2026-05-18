@@ -231,7 +231,6 @@ export default function CommentItem({
               onClick={() => onDislike(comment.id)}
             >
               <DislikeIcon isActive={comment.reaction === "dislike"} />
-              <span>{comment.dislikes || 0}</span>
             </button>
             <button
               type="button"

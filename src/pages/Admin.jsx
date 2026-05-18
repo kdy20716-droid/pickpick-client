@@ -14,7 +14,6 @@ const Admin = () => {
   const [deleteModal, setDeleteModal] = useState(null); // null, 'vote', 'comment'
   const [itemToDelete, setItemToDelete] = useState(null);
   const [users, setUsers] = useState([]);
-  const [editingUser, setEditingUser] = useState(null);
 
   // 2차 인증 상태
   const [isVerified, setIsVerified] = useState(false);
