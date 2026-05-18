@@ -155,16 +155,29 @@ img {
   will-change: transform;
 }
 
-.candidate-name {
+.main-page .candidate-name {
   --candidate-name-outline-size: 2px;
   --candidate-name-outline-negative-size: -2px;
+  --candidate-name-accent-shadow: 0 3px 12px rgba(255, 255, 255, 0.28);
   position: absolute;
   right: 0;
-  bottom: 22px;
+  bottom: 14px;
   left: 0;
+  box-sizing: border-box;
+  width: auto;
+  padding: 0 18px;
+  display: -webkit-box;
+  max-height: calc(100% - 36px);
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
   text-align: center;
-  font-size: 2.2rem;
-  font-weight: 700;
+  overflow-wrap: anywhere;
+  word-break: normal;
+  white-space: normal;
+  font-size: 2.65rem;
+  font-weight: 900;
+  line-height: 1.08;
   color: #ffffff;
   text-shadow:
     var(--candidate-name-outline-negative-size)
@@ -179,7 +192,7 @@ img {
     var(--candidate-name-outline-negative-size)
       var(--candidate-name-outline-size) 0 #111111,
     var(--candidate-name-outline-negative-size) 0 0 #111111,
-    0 3px 10px rgba(0, 0, 0, 0.75);
+    var(--candidate-name-accent-shadow);
 }
 
 .vs-mark {

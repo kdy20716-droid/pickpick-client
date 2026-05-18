@@ -411,7 +411,12 @@
 }
 
 .vote-choice:hover {
+  background: var(--vote-choice-bg);
   transform: translateY(-3px);
+}
+
+.vote-choice:hover .vote-choice-overlay {
+  background: transparent;
 }
 
 .vote-sheet.has-results .vote-choice:hover {
