@@ -21,6 +21,7 @@ const MyPage = () => {
   const { user: currentUser, token, logout } = useAuth();
   const [confirmModal, setConfirmModal] = useState(null); // 'logout', 'delete', or null
   const [promotionInfo, setPromotionInfo] = useState(null); // { oldGrade, newGrade } or null
+  const [isSupportModalOpen, setIsSupportModalOpen] = useState(false);
   const { displayOutlet, transitionStage, onTransitionEnd, activePath } =
     useRouteAnimation();
 
@@ -32,6 +33,18 @@ const MyPage = () => {
     if (g === "PLATINUM") return "💎";
     if (g === "DIAMOND") return "👑";
     return "⚪";
+  };
+
+  const copyEmailToClipboard = () => {
+    navigator.clipboard.writeText("support@pickpick.dev");
+    alert("이메일 주소가 복사되었습니다.");
+  };
+
+  const openInGmail = () => {
+    window.open(
+      "https://mail.google.com/mail/?view=cm&fs=1&to=support@pickpick.dev",
+      "_blank"
+    );
   };
 
   useEffect(() => {
@@ -119,9 +132,59 @@ const MyPage = () => {
         </div>
       </main>
 
-      <a href="mailto:support@pickpick.dev" className={styles.supportButton}>
+      <button
+        type="button"
+        className={styles.supportButton}
+        onClick={() => setIsSupportModalOpen(true)}
+      >
         Support
-      </a>
+      </button>
+
+      {isSupportModalOpen && (
+        <div
+          className={styles.modalOverlay}
+          onClick={() => setIsSupportModalOpen(false)}
+        >
+          <div
+            className={styles.modalContent}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 className={styles.modalTitle}>문의하기</h3>
+            <p className={styles.modalText}>
+              서비스 이용 중 궁금한 점이나 불편한 사항이 있으신가요? 아래 이메일로
+              문의해 주시면 친절하게 답변해 드리겠습니다.
+              <br />
+              <strong
+                style={{
+                  color: "#f1a0c0",
+                  fontSize: "17px",
+                  display: "block",
+                  marginTop: "10px",
+                }}
+              >
+                support@pickpick.dev
+              </strong>
+            </p>
+            <div className={styles.modalActions}>
+              <button
+                className={styles.modalCancelBtn}
+                onClick={copyEmailToClipboard}
+              >
+                이메일 복사
+              </button>
+              <button className={styles.modalConfirmBtn} onClick={openInGmail}>
+                Gmail로 보내기
+              </button>
+            </div>
+            <button
+              className={styles.modalCloseBtn}
+              onClick={() => setIsSupportModalOpen(false)}
+            >
+              닫기
+            </button>
+          </div>
+        </div>
+      )}
 
       {confirmModal && (
         <div

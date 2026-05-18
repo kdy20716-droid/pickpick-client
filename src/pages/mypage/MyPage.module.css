@@ -680,31 +680,51 @@
 .supportButton {
   position: fixed;
   bottom: 40px;
-  left: -20px; /* Sticking out slightly */
-  width: 120px;
+  left: -200px; /* Hidden much deeper to ensure the edge is never seen */
+  width: 320px; /* Extra long shape */
   height: 44px;
-  background-color: #ff4b8d;
+  background-color: #f8bbd0;
   color: #fff;
   text-decoration: none;
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  padding-right: 25px;
+  padding-right: 30px;
   font-weight: 800;
   font-size: 14px;
   letter-spacing: 0.5px;
   border-radius: 0 12px 12px 0;
-  box-shadow: 4px 0 15px rgba(255, 75, 141, 0.25);
+  box-shadow: 4px 0 15px rgba(248, 187, 208, 0.3);
   transition:
     transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275),
     background-color 0.3s ease;
   z-index: 9999;
   text-transform: uppercase;
+  border: none;
+  cursor: pointer;
+  outline: none;
 }
 
 .supportButton:hover {
-  transform: translateX(35px); /* Slide out to the right */
-  background-color: #ff609a;
+  transform: translateX(180px); /* Slides out while keeping the left edge hidden at -20px */
+  background-color: #f48fb1;
+}
+
+.modalCloseBtn {
+  margin-top: 20px;
+  padding: 8px 20px;
+  background: transparent;
+  border: 1px solid #eee;
+  color: #aaa;
+  border-radius: 20px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.modalCloseBtn:hover {
+  background: #f9f9f9;
+  color: #888;
 }
 
 /* 등업 축하 모달 및 애니메이션 */
