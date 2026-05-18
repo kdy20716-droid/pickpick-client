@@ -439,6 +439,9 @@ const Create = () => {
                     미디어 삽입
                   </button>
                   <h5>이미지, 영상, 음원 지원</h5>
+                  <p style={{ fontSize: "11px", color: "#f589b4", marginTop: "5px", textAlign: "center" }}>
+                    * 복사/붙여넣기 시 GIF 애니메이션이<br/>정지될 수 있습니다.
+                  </p>
                 </div>
               )}
               <div className="candidate-box__label">
