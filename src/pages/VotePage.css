@@ -946,7 +946,7 @@
   }
 }
 
-/* Multi-Media Support Styles */
+/* YouTube & Media Support Styles */
 .vote-choice-media {
   width: 100%;
   height: 100%;
@@ -957,49 +957,18 @@
   z-index: 1;
 }
 
-.vote-choice-audio-container {
+.youtube-embed {
+  background: #000;
+  overflow: hidden;
+  pointer-events: none; /* 클릭 방해 금지 */
+}
+
+.youtube-embed iframe {
+  position: absolute;
+  top: 50%;
+  left: 50%;
   width: 100%;
   height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background: rgba(0, 0, 0, 0.03);
-  position: relative;
-  z-index: 1;
-}
-
-.audio-icon-large {
-  font-size: 4rem;
-  margin-bottom: 20px;
-  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.1));
-}
-
-.vote-choice-audio-player {
-  width: 80%;
-  height: 40px;
-  border-radius: 20px;
-}
-
-/* Create Page Media Preview Styles */
-.audio-preview-placeholder {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background: #f9f9f9;
-  color: #888;
-}
-
-.audio-icon {
-  font-size: 3rem;
-  margin-bottom: 10px;
-}
-
-.audio-preview-player {
-  width: 90%;
-  margin-top: 15px;
+  transform: translate(-50%, -50%) scale(1.5); /* 여백 제거를 위해 확대 */
 }
 
