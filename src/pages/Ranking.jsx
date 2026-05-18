@@ -8,7 +8,8 @@ import vsImage from "../assets/vs.png";
 import { getRanking } from "../api/posts.js";
 import { getVoteHash } from "./vote/voteCards.js";
 
-const API_ORIGIN = "http://localhost:4000";
+const API_ORIGIN = "https://dolphin-app-onqn2.ondigitalocean.app";
+// "http://localhost:4000";
 
 function getUploadUrl(image, type = "image") {
   if (!image) {

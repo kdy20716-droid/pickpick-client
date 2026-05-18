@@ -947,20 +947,153 @@
 }
 
 /* YouTube & Media Support Styles */
-.vote-choice-media {
+/* YouTube Custom Player Styles */
+.custom-youtube-container {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  position: relative;
+  background: #000;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.youtube-iframe-target {
+  width: 100%;
+  height: 100%;
+  pointer-events: none; /* 아이프레임 직접 클릭 방지 */
+}
+
+.youtube-iframe-target iframe {
+  width: 100%;
+  height: 100%;
+  transform: scale(1.5); /* 여백 제거를 위해 확대 */
+}
+
+.player-controls {
   position: absolute;
   top: 0;
   left: 0;
-  z-index: 1;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+  background: rgba(0,0,0,0.1);
+  transition: background 0.3s;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
+.player-controls:hover {
+  background: rgba(0,0,0,0.3);
+}
+
+.center-play-btn {
+  opacity: 0;
+  transition: opacity 0.3s, transform 0.3s;
+  transform: scale(0.8);
+}
+
+.player-controls.is-paused .center-play-btn,
+.player-controls:hover .center-play-btn {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.play-icon {
+  width: 60px;
+  height: 60px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+  position: relative;
+}
+
+.play-icon::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 55%;
+  transform: translate(-50%, -50%);
+  border-left: 20px solid #f7a1c4;
+  border-top: 12px solid transparent;
+  border-bottom: 12px solid transparent;
+}
+
+.pause-icon {
+  width: 60px;
+  height: 60px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+  position: relative;
+}
+
+.pause-icon::before, .pause-icon::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 6px;
+  height: 24px;
+  background: #f7a1c4;
+  transform: translateY(-50%);
+}
+
+.pause-icon::before { left: 38%; }
+.pause-icon::after { right: 38%; }
+
+.bottom-controls {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 15px;
+  background: linear-gradient(transparent, rgba(0,0,0,0.7));
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.3s, transform 0.3s;
+}
+
+.player-controls:hover .bottom-controls {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.control-btn {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 18px;
+  cursor: pointer;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+}
+
+.volume-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  max-width: 120px;
+}
+
+.volume-slider {
+  width: 100%;
+  height: 4px;
+  accent-color: #f7a1c4;
+  cursor: pointer;
+}
+
+.video-loading {
+  position: absolute;
+  color: white;
+  font-size: 14px;
+}
+
+/* 기존 유튜브 관련 스타일 제거/수정 */
 .youtube-embed {
   background: #000;
   overflow: hidden;
-  pointer-events: none; /* 클릭 방해 금지 */
 }
 
 .youtube-embed iframe {
@@ -969,6 +1102,6 @@
   left: 50%;
   width: 100%;
   height: 100%;
-  transform: translate(-50%, -50%) scale(1.5); /* 여백 제거를 위해 확대 */
+  transform: translate(-50%, -50%) scale(1.5);
 }
 
