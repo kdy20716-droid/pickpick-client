@@ -58,16 +58,46 @@
 .account-link {
   display: grid;
   place-items: center;
+  padding: 10px; /* Increased padding to show glow */
+  overflow: visible; /* Ensure glow is not clipped */
 }
 
-.account-link img {
-  width: clamp(40px, calc(var(--layout-vw) * 0.06), 54px);
-  height: clamp(40px, calc(var(--layout-vw) * 0.06), 54px);
+.header-profile-avatar {
+  width: clamp(34px, calc(var(--layout-vw) * 0.04), 42px); /* Slightly smaller to fit in header with glow */
+  height: clamp(34px, calc(var(--layout-vw) * 0.04), 42px);
+  border-radius: 50%;
+  position: relative;
+  transition: transform 0.2s ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.header-profile-avatar:hover {
+  transform: scale(1.05);
+}
+
+.header-profile-inner {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f1f3f5;
 }
 
 .profile-img-small {
-  border-radius: 50%;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
+}
+
+.profile-img-small.default-icon {
+  width: 24px;
+  height: 24px;
+  opacity: 0.6;
 }
 
 .background-glow {

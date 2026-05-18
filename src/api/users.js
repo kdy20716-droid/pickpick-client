@@ -51,11 +51,13 @@ export const markAllNotificationsRead = async (userId) => {
 
 // 프로필 수정 API (이미지 포함 시 FormData 사용)
 export const updateProfile = async (userId, data) => {
-  const response = await instance.put(`/users/profile/${userId}`, data, {
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
-  });
+  const response = await instance.put(`/users/profile/${userId}`, data);
+  return response.data;
+};
+
+// 프로필 테두리 변경 API
+export const updateBorder = async (userId, border) => {
+  const response = await instance.put(`/users/border/${userId}`, { border });
   return response.data;
 };
 

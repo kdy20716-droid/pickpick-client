@@ -9,6 +9,7 @@ import {
   toggleCommentLike,
 } from "../api/posts.js";
 import { useAuth } from "../contexts/AuthContext";
+import { getImageUrl } from "../utils/image";
 
 const COMMENT_OVERLAY_BREAKPOINT = 950;
 const COMMENT_SIDE_BY_SIDE_MARGIN = 24;
@@ -30,6 +31,8 @@ function normalizeReply(reply) {
     text: reply.text ?? reply.content ?? "",
     createdAt: reply.createdAt ?? toTimestamp(reply.created_at),
     likes: reply.likes ?? 0,
+    author_border: reply.author_border ?? null,
+    author_image: reply.author_image ?? null,
   };
 }
 
@@ -44,6 +47,8 @@ function normalizeComment(comment, reaction = null) {
     createdAt: comment.createdAt ?? toTimestamp(comment.created_at),
     likes: comment.likes ?? 0,
     dislikes: comment.dislikes ?? 0,
+    author_border: comment.author_border ?? null,
+    author_image: comment.author_image ?? null,
     reaction,
     replyItems: (comment.replyItems ?? comment.replies ?? []).map(
       normalizeReply,
@@ -542,10 +547,10 @@ export default function Comments({
         </div>
 
         <footer className="comment-input">
-          <div className="comment-avatar is-small" aria-hidden="true">
+          <div className={`comment-avatar comment-avatar-small ${currentUser?.selected_border ? `profile-border-${currentUser.selected_border}` : ""}`} aria-hidden="true">
             {currentUser?.profile_image ? (
               <img
-                src={currentUser.profile_image}
+                src={getImageUrl(currentUser.profile_image)}
                 alt=""
                 style={{
                   width: "100%",

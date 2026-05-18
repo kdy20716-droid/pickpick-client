@@ -1,3 +1,5 @@
+import { getImageUrl } from "../utils/image";
+
 function formatRelativeTime(createdAt) {
   const diffMinutes = Math.max(0, Math.floor((Date.now() - createdAt) / 60000));
 
@@ -100,7 +102,17 @@ function TrashIcon() {
 function ReplyItem({ reply }) {
   return (
     <div className="reply-item">
-      <div className="comment-avatar comment-avatar-small" aria-hidden="true" />
+      <div className={`comment-avatar comment-avatar-small ${reply.author_border ? `profile-border-${reply.author_border}` : ""}`} aria-hidden="true">
+        <div style={{ width: "100%", height: "100%", borderRadius: "50%", overflow: "hidden" }}>
+          {reply.author_image ? (
+            <img
+              src={getImageUrl(reply.author_image)}
+              alt=""
+              style={{ width: "100%", height: "100%", objectFit: "cover" }}
+            />
+          ) : null}
+        </div>
+      </div>
       <div className="reply-content">
         <div className="name-row">
           <span className="comment-name">{reply.name}</span>
@@ -131,7 +143,17 @@ export default function CommentItem({
 
   return (
     <article className="comment-item">
-      <div className="comment-avatar" aria-hidden="true" />
+      <div className={`comment-avatar ${comment.author_border ? `profile-border-${comment.author_border}` : ""}`} aria-hidden="true">
+        <div style={{ width: "100%", height: "100%", borderRadius: "50%", overflow: "hidden" }}>
+          {comment.author_image ? (
+            <img
+              src={getImageUrl(comment.author_image)}
+              alt=""
+              style={{ width: "100%", height: "100%", objectFit: "cover" }}
+            />
+          ) : null}
+        </div>
+      </div>
       <div className="comment-body">
         <div className="comment-top">
           <div className="name-row">

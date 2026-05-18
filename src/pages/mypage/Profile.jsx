@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./MyPage.module.css";
 import { useAuth } from "../../contexts/AuthContext";
@@ -7,8 +7,9 @@ import {
   markNotificationRead,
   markAllNotificationsRead,
   updateProfile,
+  updateBorder,
 } from "../../api/users";
-import ImageCropper from "../../components/ImageCropper";
+import ProfileEditor from "../../components/ProfileEditor";
 import Grade from "./Grade";
 
 import { getImageUrl } from "../../utils/image";
@@ -18,10 +19,8 @@ const Profile = () => {
   const { user: currentUser, updateUser } = useAuth();
   const navigate = useNavigate();
 
-  // 프로필 이미지 관련 상태
-  const fileInputRef = useRef(null);
-  const [selectedImage, setSelectedImage] = useState(null);
-  const [isCropping, setIsCropping] = useState(false);
+  // 프로필 편집 관련 상태
+  const [isEditingProfile, setIsEditingProfile] = useState(false);
 
   const fetchNotifications = useCallback(async () => {
     if (!currentUser) return;
@@ -62,45 +61,32 @@ const Profile = () => {
     }
   };
 
-  // 이미지 선택 핸들러
-  const handleImageClick = () => {
-    fileInputRef.current.click();
-  };
-
-  const onSelectFile = (e) => {
-    if (e.target.files && e.target.files.length > 0) {
-      const reader = new FileReader();
-      reader.addEventListener("load", () => {
-        setSelectedImage(reader.result);
-        setIsCropping(true);
-      });
-      reader.readAsDataURL(e.target.files[0]);
-    }
-  };
-
-  // 크롭 완료 핸들러
-  const handleCropComplete = async (croppedBlob) => {
-    setIsCropping(false);
-    setSelectedImage(null);
-
+  // 프로필 편집 저장
+  const handleProfileSave = async (imageBlob, borderId) => {
     try {
-      const formData = new FormData();
-      formData.append("profile_image", croppedBlob, "profile.jpg");
-
-      const res = await updateProfile(currentUser.id, formData);
-      if (res.success) {
-        updateUser(res.user);
-        alert("프로필 사진이 변경되었습니다.");
+      // 1. 테두리 변경 (선택된 테두리가 현재와 다를 때만)
+      if (borderId !== currentUser.selected_border) {
+        await updateBorder(currentUser.id, borderId);
       }
-    } catch (error) {
-      console.error("프로필 이미지 업로드 실패:", error);
-      alert("프로필 사진 변경에 실패했습니다.");
-    }
-  };
 
-  const handleCropCancel = () => {
-    setIsCropping(false);
-    setSelectedImage(null);
+      // 2. 이미지 변경 (이미지 블롭이 있을 때만)
+      if (imageBlob) {
+        const formData = new FormData();
+        formData.append("profile_image", imageBlob, "profile.jpg");
+        const res = await updateProfile(currentUser.id, formData);
+        if (res.success) {
+          updateUser({ ...res.user, selected_border: borderId });
+        }
+      } else {
+        updateUser({ ...currentUser, selected_border: borderId });
+      }
+
+      alert("프로필이 성공적으로 변경되었습니다.");
+      setIsEditingProfile(false);
+    } catch (error) {
+      console.error("프로필 저장 실패:", error);
+      alert("프로필 저장에 실패했습니다.");
+    }
   };
 
   const getGradeInfo = (grade) => {
@@ -131,34 +117,29 @@ const Profile = () => {
           <div className={styles.profileHeader}>
             <div
               className={`${styles.card} ${styles.profileImgCard}`}
-              onClick={handleImageClick}
+              onClick={() => setIsEditingProfile(true)}
               style={{ cursor: "pointer" }}
             >
-              <div className={styles.circleBig}>
-                {currentUser?.profile_image ? (
-                  <img
-                    src={getImageUrl(currentUser.profile_image)}
-                    alt="Profile"
-                    style={{
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "cover",
-                    }}
-                  />
-                ) : (
-                  <div className={styles.silhouette}></div>
-                )}
+              <div className={`${styles.circleBig} ${currentUser?.selected_border ? `profile-border-${currentUser.selected_border}` : ""}`}>
+                <div style={{ width: "100%", height: "100%", borderRadius: "50%", overflow: "hidden" }}>
+                  {currentUser?.profile_image ? (
+                    <img
+                      src={getImageUrl(currentUser.profile_image)}
+                      alt="Profile"
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                      }}
+                    />
+                  ) : (
+                    <div className={styles.silhouette}></div>
+                  )}
+                </div>
               </div>
               <div className={styles.camIconWrapper}>
                 <div className={styles.camIcon}>📷</div>
               </div>
-              <input
-                type="file"
-                ref={fileInputRef}
-                onChange={onSelectFile}
-                accept="image/*"
-                style={{ display: "none" }}
-              />
             </div>
             <div className={`${styles.card} ${styles.nicknameCard}`}>
               <div
@@ -227,11 +208,15 @@ const Profile = () => {
         </div>
       </section>
 
-      {isCropping && (
-        <ImageCropper
-          image={selectedImage}
-          onCropComplete={handleCropComplete}
-          onCancel={handleCropCancel}
+      {isEditingProfile && (
+        <ProfileEditor
+          initialImage={currentUser?.profile_image}
+          initialBorder={currentUser?.selected_border}
+          userTier={currentUser?.tier}
+          unlockedBorders={currentUser?.unlocked_borders}
+          isAdmin={currentUser?.role === "admin"}
+          onSave={handleProfileSave}
+          onCancel={() => setIsEditingProfile(false)}
         />
       )}
     </>
