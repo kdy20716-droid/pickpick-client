@@ -264,6 +264,39 @@ function VoteChoiceName({ children }) {
   );
 }
 
+function YouTubePlayer({ videoId, title, isActive }) {
+  if (!isActive) {
+    return (
+      <div className="custom-youtube-container">
+        <img
+          src={`https://img.youtube.com/vi/${videoId}/0.jpg`}
+          alt={title}
+          style={{ width: "100%", height: "100%", objectFit: "cover" }}
+        />
+        <div className="player-controls">
+          <div className="play-icon" />
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="custom-youtube-container">
+      <div className="youtube-iframe-target">
+        <iframe
+          width="100%"
+          height="100%"
+          src={`https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&mute=1&controls=0&loop=1&playlist=${videoId}&rel=0&playsinline=1&enablejsapi=1`}
+          title={title}
+          frameBorder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+        />
+      </div>
+    </div>
+  );
+}
+
 function VoteCard({
   card,
   selectedCandidateId,
