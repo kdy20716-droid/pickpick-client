@@ -966,7 +966,48 @@
 .youtube-iframe-target iframe {
   width: 100%;
   height: 100%;
-  transform: scale(1.5); /* 여백 제거를 위해 확대 */
+  border: none;
+}
+
+.vote-pick-badge {
+  position: absolute;
+  top: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 20;
+  background: rgba(255, 255, 255, 0.9);
+  color: #f7a1c4;
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-weight: 800;
+  font-size: 1.1rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  border: 2px solid #f7a1c4;
+  transition: all 0.2s;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.vote-pick-badge:hover {
+  background: #f7a1c4;
+  color: white;
+  transform: translateX(-50%) scale(1.1);
+}
+
+.vote-choice.is-selected .vote-pick-badge {
+  background: #f7a1c4;
+  color: white;
+}
+
+.vote-choice-media {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #000;
+  overflow: hidden;
 }
 
 .player-controls {
