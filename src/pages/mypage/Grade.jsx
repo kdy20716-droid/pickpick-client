@@ -19,7 +19,9 @@ const Grade = () => {
               🥉
             </div>
             <span className="gradeName">BRONZE</span>
-            <span className="gradeRequirement">가입 시 기본 제공</span>
+            <div className="gradeRequirements">
+              <span className="gradeRequirement">투표 참여 10회 이상</span>
+            </div>
           </div>
           <div className="gradeItem">
             <div
@@ -29,7 +31,10 @@ const Grade = () => {
               🥈
             </div>
             <span className="gradeName">SILVER</span>
-            <span className="gradeRequirement">투표 참여 10회 이상</span>
+            <div className="gradeRequirements">
+              <span className="gradeRequirement">투표 참여 100회 이상</span>
+              <span className="gradeRequirement">게시글 생성 10회 이상</span>
+            </div>
           </div>
           <div className="gradeItem">
             <div
@@ -39,7 +44,10 @@ const Grade = () => {
               🥇
             </div>
             <span className="gradeName">GOLD</span>
-            <span className="gradeRequirement">투표 참여 100회 이상</span>
+            <div className="gradeRequirements">
+              <span className="gradeRequirement">투표 우승 100회 이상</span>
+              <span className="gradeRequirement">게시글 생성 100회 이상</span>
+            </div>
           </div>
           <div className="gradeItem">
             <div
@@ -49,8 +57,10 @@ const Grade = () => {
               💎
             </div>
             <span className="gradeName">PLATINUM</span>
-            <span className="gradeRequirement">투표 참여 1000회 이상</span>
-            <span className="gradeRequirement">투표 우승 100회 이상</span>
+            <div className="gradeRequirements">
+              <span className="gradeRequirement">투표 우승 500회 이상</span>
+              <span className="gradeRequirement">게시글 생성 200회 이상</span>
+            </div>
           </div>
           <div className="gradeItem">
             <div
@@ -60,8 +70,10 @@ const Grade = () => {
               👑
             </div>
             <span className="gradeName">DIAMOND</span>
-            <span className="gradeRequirement">투표 참여 5000회 이상</span>
-            <span className="gradeRequirement">투표 우승 1000회 이상</span>
+            <div className="gradeRequirements">
+              <span className="gradeRequirement">투표 우승 1000회 이상</span>
+              <span className="gradeRequirement">게시글 생성 500회 이상</span>
+            </div>
           </div>
         </div>
       </div>
