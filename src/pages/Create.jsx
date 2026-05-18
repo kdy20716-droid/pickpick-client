@@ -211,11 +211,11 @@ const Create = () => {
             <div
               className="candidate-box"
               onPaste={(e) =>
-                handlePaste(e, setPreviewImage1, setFile1, setZoom1)
+                handlePaste(e, setPreviewImage1, setFile1, setZoom1, setMediaType1)
               }
               onDragOver={handleDragOver}
               onDrop={(e) =>
-                handleDrop(e, setPreviewImage1, setFile1, setZoom1)
+                handleDrop(e, setPreviewImage1, setFile1, setZoom1, setMediaType1)
               }
               tabIndex="0"
             >
@@ -439,6 +439,9 @@ const Create = () => {
                     미디어 삽입
                   </button>
                   <h5>이미지, 영상, 음원 지원</h5>
+                  <p style={{ fontSize: "11px", color: "#f589b4", marginTop: "5px", textAlign: "center" }}>
+                    * 복사/붙여넣기 시 GIF 애니메이션이<br/>정지될 수 있습니다.
+                  </p>
                 </div>
               )}
               <div className="candidate-box__label">
