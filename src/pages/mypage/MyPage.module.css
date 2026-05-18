@@ -680,10 +680,10 @@
 .supportButton {
   position: fixed;
   bottom: 40px;
-  left: -20px; /* Sticking out slightly */
-  width: 120px;
+  left: -80px; /* Lengthened to hide more behind the edge */
+  width: 180px; /* Increased width */
   height: 44px;
-  background-color: #ff4b8d;
+  background-color: #f8bbd0; /* Lightened pink */
   color: #fff;
   text-decoration: none;
   display: flex;
@@ -694,17 +694,15 @@
   font-size: 14px;
   letter-spacing: 0.5px;
   border-radius: 0 12px 12px 0;
-  box-shadow: 4px 0 15px rgba(255, 75, 141, 0.25);
-  transition:
-    transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275),
-    background-color 0.3s ease;
+  box-shadow: 4px 0 15px rgba(248, 187, 208, 0.3);
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), background-color 0.3s ease;
   z-index: 9999;
   text-transform: uppercase;
 }
 
 .supportButton:hover {
-  transform: translateX(35px); /* Slide out to the right */
-  background-color: #ff609a;
+  transform: translateX(85px); /* Slides out more naturally */
+  background-color: #f48fb1;
 }
 
 /* 등업 축하 모달 및 애니메이션 */
