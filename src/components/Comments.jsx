@@ -431,12 +431,10 @@ export default function Comments({
       setComments((current) => {
         const updateItem = (item) => {
           if (item.id !== commentId) return item;
-          const hadDislike = item.reaction === "dislike";
           return {
             ...item,
             reaction: res.liked ? "like" : null,
             likes: res.likes ?? (res.liked ? (item.likes || 0) + 1 : Math.max(0, (item.likes || 0) - 1)),
-            dislikes: hadDislike ? Math.max(0, (item.dislikes || 0) - 1) : item.dislikes,
           };
         };
 
@@ -454,48 +452,58 @@ export default function Comments({
     }
   };
 
-  const handleDislike = (commentId) => {
+  const handleDislike = async (commentId) => {
     if (!currentUser) {
       alert("로그인이 필요합니다.");
       return;
     }
 
+    let targetItem = null;
+    for (const c of comments) {
+      if (c.id === commentId) {
+        targetItem = c;
+        break;
+      }
+      const r = c.replyItems.find((reply) => reply.id === commentId);
+      if (r) {
+        targetItem = r;
+        break;
+      }
+    }
+
+    if (!targetItem) return;
+
+    const hadLike = targetItem.reaction === "like";
+    const hadDislike = targetItem.reaction === "dislike";
+    const willDislike = !hadDislike;
+
+    // 1. 좋아요 상태였는데 싫어요를 누른 경우, 서버에서 좋아요를 먼저 취소
+    let serverLikes = null;
+    if (hadLike && willDislike) {
+      try {
+        const res = await toggleCommentLike(postDbId, commentId, currentUser.id);
+        if (res.success) {
+          serverLikes = res.likes;
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    // 2. 리액션 상태 업데이트
+    setCommentReactions((prev) => ({
+      ...prev,
+      [commentId]: willDislike ? "dislike" : null,
+    }));
+
+    // 3. 전체 댓글 목록 상태 업데이트
     setComments((current) => {
-      let targetItem = null;
-      for (const c of current) {
-        if (c.id === commentId) {
-          targetItem = c;
-          break;
-        }
-        const r = c.replyItems.find((reply) => reply.id === commentId);
-        if (r) {
-          targetItem = r;
-          break;
-        }
-      }
-
-      if (!targetItem) return current;
-
-      const hadLike = targetItem.reaction === "like";
-      const hadDislike = targetItem.reaction === "dislike";
-      const willDislike = !hadDislike;
-
-      if (hadLike && willDislike) {
-        toggleCommentLike(postDbId, commentId, currentUser.id).catch(console.error);
-      }
-
-      setCommentReactions((prev) => ({
-        ...prev,
-        [commentId]: willDislike ? "dislike" : null,
-      }));
-
       const updateItem = (item) => {
         if (item.id !== commentId) return item;
         return {
           ...item,
           reaction: willDislike ? "dislike" : null,
-          likes: hadLike ? Math.max(0, (item.likes || 0) - 1) : item.likes,
-          dislikes: Math.max(0, (item.dislikes || 0) + (willDislike ? 1 : -1)),
+          likes: serverLikes !== null ? serverLikes : (hadLike ? Math.max(0, (item.likes || 0) - 1) : item.likes),
         };
       };
 
