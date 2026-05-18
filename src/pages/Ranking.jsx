@@ -7,24 +7,10 @@ import bronzeMedal from "../assets/3위 메달.png";
 import vsImage from "../assets/vs.png";
 import { getRanking } from "../api/posts.js";
 import { getVoteHash } from "./vote/voteCards.js";
+import { getCandidateThumbnail } from "../utils/image.js";
 
 const API_ORIGIN = "https://dolphin-app-onqn2.ondigitalocean.app";
 // "http://localhost:4000";
-
-function getUploadUrl(image, type = "image") {
-  if (!image) {
-    return null;
-  }
-  
-  if (type === "youtube" || (!image.startsWith("http") && !image.includes("cloudinary"))) {
-    // 유튜브 ID인 경우 썸네일 반환
-    if (image.length === 11) {
-      return `https://img.youtube.com/vi/${image}/0.jpg`;
-    }
-  }
-
-  return image.startsWith("http") ? image : `${API_ORIGIN}/uploads/${image}`;
-}
 
 function Ranking() {
   const [topRankings, setTopRankings] = useState([]);
@@ -49,10 +35,10 @@ function Ranking() {
         const formatted = data.map((item) => ({
           id: item.id,
           title: item.title,
-          topImage: getUploadUrl(item.candidate_a_image, item.candidate_a_type),
-          bottomImage: getUploadUrl(item.candidate_b_image, item.candidate_b_type),
-          leftImage: getUploadUrl(item.candidate_a_image, item.candidate_a_type),
-          rightImage: getUploadUrl(item.candidate_b_image, item.candidate_b_type),
+          topImage: getCandidateThumbnail(item.candidate_a_image, item.candidate_a_type),
+          bottomImage: getCandidateThumbnail(item.candidate_b_image, item.candidate_b_type),
+          leftImage: getCandidateThumbnail(item.candidate_a_image, item.candidate_a_type),
+          rightImage: getCandidateThumbnail(item.candidate_b_image, item.candidate_b_type),
         }));
 
         // 1, 2, 3위 분리 (순서: 2위, 1위, 3위로 화면에 배치됨)
