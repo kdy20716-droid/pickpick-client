@@ -211,11 +211,11 @@ const Create = () => {
             <div
               className="candidate-box"
               onPaste={(e) =>
-                handlePaste(e, setPreviewImage1, setFile1, setZoom1)
+                handlePaste(e, setPreviewImage1, setFile1, setZoom1, setMediaType1)
               }
               onDragOver={handleDragOver}
               onDrop={(e) =>
-                handleDrop(e, setPreviewImage1, setFile1, setZoom1)
+                handleDrop(e, setPreviewImage1, setFile1, setZoom1, setMediaType1)
               }
               tabIndex="0"
             >
