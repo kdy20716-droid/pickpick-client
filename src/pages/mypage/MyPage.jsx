@@ -6,6 +6,9 @@ import { useAuth } from "../../contexts/AuthContext";
 import instance from "../../api/instance";
 import { useRouteAnimation } from "../../hooks/useRouteAnimation";
 
+// 등급 순서 (비교용)
+const gradeOrder = ["UNRANKED", "BRONZE", "SILVER", "GOLD", "PLATINUM", "DIAMOND"];
+
 const MyPage = () => {
   const navigate = useNavigate();
   const { user: currentUser, token, logout } = useAuth();
@@ -13,8 +16,6 @@ const MyPage = () => {
   const [promotionInfo, setPromotionInfo] = useState(null); // { oldGrade, newGrade } or null
   const { displayOutlet, transitionStage, onTransitionEnd, activePath } = useRouteAnimation();
 
-  // 등급 순서 (비교용)
-  const gradeOrder = ["UNRANKED", "BRONZE", "SILVER", "GOLD", "PLATINUM", "DIAMOND"];
   const getGradeEmoji = (grade) => {
     const g = grade?.toUpperCase();
     if (g === "BRONZE") return "🥉";
@@ -43,16 +44,18 @@ const MyPage = () => {
 
         // 등급이 상승했을 때만 축하 (UnRanked -> BRONZE 등)
         if (newIndex > oldIndex && oldIndex !== -1) {
-          setPromotionInfo({
-            oldGrade: storedGrade,
-            newGrade: currentGrade,
-          });
+          setTimeout(() => {
+            setPromotionInfo({
+              oldGrade: storedGrade,
+              newGrade: currentGrade,
+            });
+          }, 0);
         }
       }
       // 현재 등급을 저장 (다음 비교를 위해)
       localStorage.setItem(`prevGrade_${currentUser.id}`, currentGrade);
     }
-  }, [token, navigate, currentUser?.grade, currentUser?.id]);
+  }, [token, navigate, currentUser, gradeOrder]);
 
   const executeLogout = async () => {
     setConfirmModal(null);

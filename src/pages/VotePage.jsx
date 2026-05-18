@@ -13,6 +13,7 @@ import { useActiveVoteCard } from "./vote/useActiveVoteCard.js";
 import { useActiveVoteHash } from "./vote/useActiveVoteHash.js";
 import { useVotePageScrollSnap } from "./vote/useVotePageScrollSnap.js";
 import { getVoteFeedIdFromHash, getVoteHash } from "./vote/voteCards.js";
+
 import {
   getVote,
   submitVote,
@@ -103,8 +104,7 @@ function getCandidateNameStyle(name) {
   );
   const sizeRem = Math.max(
     CANDIDATE_NAME_MIN_SIZE_REM,
-    CANDIDATE_NAME_MAX_SIZE_REM -
-      overflowLength * CANDIDATE_NAME_SHRINK_RATE,
+    CANDIDATE_NAME_MAX_SIZE_REM - overflowLength * CANDIDATE_NAME_SHRINK_RATE,
   );
 
   return {
