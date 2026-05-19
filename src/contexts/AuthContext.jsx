@@ -5,7 +5,7 @@ import React, {
   useEffect,
   useMemo,
 } from "react";
-import { logout as apiLogout } from "../api/users";
+import { logout as apiLogout, getMe } from "../api/users";
 
 const AuthContext = createContext(null);
 
@@ -32,6 +32,29 @@ export const AuthProvider = ({ children }) => {
     window.addEventListener("storage", handleStorageChange);
     return () => window.removeEventListener("storage", handleStorageChange);
   }, []);
+
+  // 최신 사용자 정보 가져오기
+  useEffect(() => {
+    const fetchLatestUser = async () => {
+      if (token) {
+        try {
+          const res = await getMe();
+          if (res.success) {
+            setUser(res.user);
+            localStorage.setItem("user", JSON.stringify(res.user));
+          }
+        } catch (error) {
+          console.error("최신 사용자 정보 조회 실패:", error);
+          // 토큰이 만료되었거나 유효하지 않은 경우 로그아웃 처리할 수도 있음
+          if (error.response?.status === 401) {
+             // logout(); // 자동 로그아웃을 원할 경우 활성화
+          }
+        }
+      }
+    };
+
+    fetchLatestUser();
+  }, [token]);
 
   // Monitor user changes and verify admin role
   useEffect(() => {
