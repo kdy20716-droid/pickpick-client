@@ -98,11 +98,11 @@ const Profile = () => {
     if (g === "PLATINUM" || g === "플래티넘")
       return { color: "#B4C3D2" };
     if (g === "DIAMOND" || g === "다이아몬드")
-      return { color: "#70D1F4" };
-    if (g === "MASTER" || g === "마스터")
       return { color: "#8B5CF6" };
-    if (g === "CHALLENGER" || g === "챌린저")
+    if (g === "MASTER" || g === "마스터")
       return { color: "#FF4B8D" };
+    if (g === "CHALLENGER" || g === "챌린저")
+      return { color: "#70D1F4" };
     return { color: "#999999" }; // UnRanked
   };
 
