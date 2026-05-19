@@ -66,3 +66,9 @@ export const getLoginHistory = async (userId) => {
   const response = await instance.get(`/users/login-history/${userId}`);
   return response.data;
 };
+
+// 비밀번호 변경 API
+export const changePassword = async (data) => {
+  const response = await instance.post("/users/change-password", data);
+  return response.data;
+};
