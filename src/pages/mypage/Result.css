@@ -240,6 +240,13 @@
   box-shadow: 0 0 15px rgba(241, 160, 192, 0.3);
 }
 
+.candidate.is-user-pick .img-wrapper {
+  border: 3px solid var(--point, #fc92c7);
+  box-shadow:
+    0 4px 10px rgba(0, 0, 0, 0.05),
+    0 0 0 1px rgba(252, 146, 199, 0.18);
+}
+
 .win-badge {
   position: absolute;
   top: -10px;

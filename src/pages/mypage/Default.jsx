@@ -1,10 +1,9 @@
 import { useRef, useState } from "react";
 import "./Default.css";
-import { Eye, EyeOff } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import instance from "../../api/instance";
-import { updateProfile, getLoginHistory } from "../../api/users";
+import { updateProfile, getLoginHistory, changePassword } from "../../api/users";
 
 const TEXT = {
   한국어: {
@@ -105,10 +104,9 @@ const AccountSettings = () => {
   const navigate = useNavigate();
   const { user: currentUser, updateUser, logout } = useAuth();
   const profileFileInputRef = useRef(null);
-  const [isCurrentPasswordVisible, setIsCurrentPasswordVisible] =
-    useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isSecurityOpen, setIsSecurityOpen] = useState(false);
+  const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
   const [passwordForm, setPasswordForm] = useState({
     currentPassword: "",
     newPassword: "",
@@ -195,7 +193,7 @@ const AccountSettings = () => {
     }));
   };
 
-  const handleSavePassword = () => {
+  const handleSavePassword = async () => {
     if (!passwordForm.currentPassword || !passwordForm.newPassword) {
       alert(text.passwordRequired);
       return;
@@ -206,12 +204,26 @@ const AccountSettings = () => {
       return;
     }
 
-    alert(text.passwordSaved);
-    setPasswordForm({
-      currentPassword: "",
-      newPassword: "",
-      confirmPassword: "",
-    });
+    try {
+      const res = await changePassword({
+        userId: currentUser.id,
+        currentPassword: passwordForm.currentPassword,
+        newPassword: passwordForm.newPassword,
+      });
+
+      if (res.success) {
+        alert(text.passwordSaved);
+        setPasswordForm({
+          currentPassword: "",
+          newPassword: "",
+          confirmPassword: "",
+        });
+        setIsPasswordModalOpen(false);
+      }
+    } catch (error) {
+      console.error("비밀번호 변경 실패:", error);
+      alert(error.response?.data?.message || "비밀번호 변경에 실패했습니다.");
+    }
   };
 
   const handleDisplaySettingChange = (key, value) => {
@@ -247,24 +259,17 @@ const AccountSettings = () => {
                 <div className="account-info-item">
                   <div>
                     <strong>{text.currentPassword}</strong>
-                    <span>
-                      {isCurrentPasswordVisible
-                        ? text.passwordUnavailable
-                        : "••••••••"}
-                    </span>
+                    <span>••••••••</span>
                   </div>
-                  <button
-                    type="button"
-                    className="password-eye-btn"
-                    onClick={() => setIsCurrentPasswordVisible((prev) => !prev)}
-                    aria-label={text.currentPassword}
-                  >
-                    {isCurrentPasswordVisible ? (
-                      <EyeOff size={18} strokeWidth={2} />
-                    ) : (
-                      <Eye size={18} strokeWidth={2} />
-                    )}
-                  </button>
+                  <div className="account-info-actions">
+                    <button
+                      type="button"
+                      className="change-btn"
+                      onClick={() => setIsPasswordModalOpen(true)}
+                    >
+                      {text.change}
+                    </button>
+                  </div>
                 </div>
               </div>
 
@@ -411,6 +416,53 @@ const AccountSettings = () => {
 
             <div className="security-panel">
               <div className="security-section">
+                <strong>{text.loginHistory}</strong>
+                <div className="login-history-item">
+                  <span>{text.currentSession}</span>
+                  <em>{text.currentSessionDesc}</em>
+                </div>
+                <div className="login-history-item">
+                  <span>{text.recentLogin}</span>
+                  <em>
+                    {loginHistory
+                      ? new Date(loginHistory).toLocaleString()
+                      : text.noHistory}
+                  </em>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      )}
+
+      {isPasswordModalOpen && (
+        <div
+          className="settings-modal-layer"
+          onClick={() => setIsPasswordModalOpen(false)}
+        >
+          <button
+            type="button"
+            className="settings-modal-backdrop"
+            aria-label={text.close}
+            onClick={() => setIsPasswordModalOpen(false)}
+          />
+          <section
+            className="settings-modal password-settings-modal"
+            aria-label={text.changePassword}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <header className="settings-modal-header">
+              <div>
+                <span>{text.security}</span>
+                <h2>{text.changePassword}</h2>
+              </div>
+              <button type="button" onClick={() => setIsPasswordModalOpen(false)}>
+                {text.close}
+              </button>
+            </header>
+
+            <div className="security-panel">
+              <div className="security-section">
                 <strong>{text.changePassword}</strong>
                 <input
                   type="password"
@@ -436,22 +488,6 @@ const AccountSettings = () => {
                 <button type="button" onClick={handleSavePassword}>
                   {text.saveChange}
                 </button>
-              </div>
-
-              <div className="security-section">
-                <strong>{text.loginHistory}</strong>
-                <div className="login-history-item">
-                  <span>{text.currentSession}</span>
-                  <em>{text.currentSessionDesc}</em>
-                </div>
-                <div className="login-history-item">
-                  <span>{text.recentLogin}</span>
-                  <em>
-                    {loginHistory
-                      ? new Date(loginHistory).toLocaleString()
-                      : text.noHistory}
-                  </em>
-                </div>
               </div>
             </div>
           </section>

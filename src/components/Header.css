@@ -73,8 +73,13 @@
   align-items: center;
 }
 
-.header-profile-avatar:hover {
-  transform: scale(1.05);
+.header-profile-avatar.profile-border-bronze::before,
+.header-profile-avatar.profile-border-silver::before,
+.header-profile-avatar.profile-border-gold::before,
+.header-profile-avatar.profile-border-platinum::before,
+.header-profile-avatar.profile-border-diamond::before,
+.header-profile-avatar.profile-border-master::before {
+  transform: translate(0, 3px);
 }
 
 .header-profile-inner {
