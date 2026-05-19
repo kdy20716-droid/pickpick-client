@@ -7,23 +7,49 @@ import instance from "../../api/instance";
 import { useRouteAnimation } from "../../hooks/useRouteAnimation";
 
 // 등급 순서 (비교용)
-const gradeOrder = ["UNRANKED", "BRONZE", "SILVER", "GOLD", "PLATINUM", "DIAMOND"];
+const gradeOrder = [
+  "UNRANKED",
+  "BRONZE",
+  "SILVER",
+  "GOLD",
+  "PLATINUM",
+  "MASTER",
+];
+
+const normalizeGrade = (grade) => {
+  const normalized = grade?.toUpperCase() || "UNRANKED";
+  return normalized === "DIAMOND" ? "MASTER" : normalized;
+};
 
 const MyPage = () => {
   const navigate = useNavigate();
   const { user: currentUser, token, logout } = useAuth();
   const [confirmModal, setConfirmModal] = useState(null); // 'logout', 'delete', or null
   const [promotionInfo, setPromotionInfo] = useState(null); // { oldGrade, newGrade } or null
-  const { displayOutlet, transitionStage, onTransitionEnd, activePath } = useRouteAnimation();
+  const [isSupportModalOpen, setIsSupportModalOpen] = useState(false);
+  const { displayOutlet, transitionStage, onTransitionEnd, activePath } =
+    useRouteAnimation();
 
   const getGradeEmoji = (grade) => {
-    const g = grade?.toUpperCase();
+    const g = normalizeGrade(grade);
     if (g === "BRONZE") return "🥉";
     if (g === "SILVER") return "🥈";
     if (g === "GOLD") return "🥇";
     if (g === "PLATINUM") return "💎";
-    if (g === "DIAMOND") return "👑";
+    if (g === "MASTER") return "👑";
     return "⚪";
+  };
+
+  const copyEmailToClipboard = () => {
+    navigator.clipboard.writeText("support@pickpick.dev");
+    alert("이메일 주소가 복사되었습니다.");
+  };
+
+  const openInGmail = () => {
+    window.open(
+      "https://mail.google.com/mail/?view=cm&fs=1&to=support@pickpick.dev",
+      "_blank"
+    );
   };
 
   useEffect(() => {
@@ -35,8 +61,9 @@ const MyPage = () => {
 
     // 등업 체크 로직
     if (currentUser) {
-      const storedGrade = localStorage.getItem(`prevGrade_${currentUser.id}`);
-      const currentGrade = currentUser.grade?.toUpperCase() || "UNRANKED";
+      const rawStoredGrade = localStorage.getItem(`prevGrade_${currentUser.id}`);
+      const storedGrade = rawStoredGrade ? normalizeGrade(rawStoredGrade) : null;
+      const currentGrade = normalizeGrade(currentUser.grade);
 
       if (storedGrade && storedGrade !== currentGrade) {
         const oldIndex = gradeOrder.indexOf(storedGrade);
@@ -99,13 +126,71 @@ const MyPage = () => {
       <main className={styles.mainContent}>
         <div
           key={activePath}
-          className={transitionStage === "enter" ? styles.animateEnter : styles.animateExit}
+          className={
+            transitionStage === "enter"
+              ? styles.animateEnter
+              : styles.animateExit
+          }
           onAnimationEnd={onTransitionEnd}
           style={{ width: "100%" }}
         >
           {displayOutlet}
         </div>
       </main>
+
+      <button
+        type="button"
+        className={styles.supportButton}
+        onClick={() => setIsSupportModalOpen(true)}
+      >
+        Support
+      </button>
+
+      {isSupportModalOpen && (
+        <div
+          className={styles.modalOverlay}
+          onClick={() => setIsSupportModalOpen(false)}
+        >
+          <div
+            className={styles.modalContent}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 className={styles.modalTitle}>문의하기</h3>
+            <p className={styles.modalText}>
+              서비스 이용 중 궁금한 점이나 불편한 사항이 있으신가요? 아래 이메일로
+              문의해 주시면 친절하게 답변해 드리겠습니다.
+              <br />
+              <strong
+                style={{
+                  color: "#f1a0c0",
+                  fontSize: "17px",
+                  display: "block",
+                  marginTop: "10px",
+                }}
+              >
+                support@pickpick.dev
+              </strong>
+            </p>
+            <div className={styles.modalActions}>
+              <button
+                className={styles.modalCancelBtn}
+                onClick={copyEmailToClipboard}
+              >
+                이메일 복사
+              </button>
+              <button className={styles.modalConfirmBtn} onClick={openInGmail}>
+                Gmail로 보내기
+              </button>
+            </div>
+            <button
+              className={styles.modalCloseBtn}
+              onClick={() => setIsSupportModalOpen(false)}
+            >
+              닫기
+            </button>
+          </div>
+        </div>
+      )}
 
       {confirmModal && (
         <div
@@ -147,22 +232,35 @@ const MyPage = () => {
       )}
 
       {promotionInfo && (
-        <div className={styles.promoOverlay} onClick={() => setPromotionInfo(null)}>
+        <div
+          className={styles.promoOverlay}
+          onClick={() => setPromotionInfo(null)}
+        >
           <div className={styles.confettiContainer}>
             {[...Array(20)].map((_, i) => (
               <div key={i} className={styles.confetti} />
             ))}
           </div>
-          <div className={styles.promoContent} onClick={(e) => e.stopPropagation()}>
-            <div className={styles.promoEmoji}>{getGradeEmoji(promotionInfo.newGrade)}</div>
+          <div
+            className={styles.promoContent}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className={styles.promoEmoji}>
+              {getGradeEmoji(promotionInfo.newGrade)}
+            </div>
             <h2 className={styles.promoTitle}>등급 상승 축하드려요!</h2>
             <p className={styles.promoText}>
               <span className={styles.oldGrade}>{promotionInfo.oldGrade}</span>
               <span className={styles.arrow}>→</span>
               <span className={styles.newGrade}>{promotionInfo.newGrade}</span>
             </p>
-            <p className={styles.promoSubText}>꾸준한 활동으로 다음 등급에도 도전해보세요!</p>
-            <button className={styles.promoBtn} onClick={() => setPromotionInfo(null)}>
+            <p className={styles.promoSubText}>
+              꾸준한 활동으로 다음 등급에도 도전해보세요!
+            </p>
+            <button
+              className={styles.promoBtn}
+              onClick={() => setPromotionInfo(null)}
+            >
               확인
             </button>
           </div>

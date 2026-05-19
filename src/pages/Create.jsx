@@ -31,6 +31,10 @@ const Create = () => {
   const [previewImage2, setPreviewImage2] = useState(null);
   const [file1, setFile1] = useState(null);
   const [file2, setFile2] = useState(null);
+  const [mediaType1, setMediaType1] = useState("image"); // 'image', 'youtube'
+  const [mediaType2, setMediaType2] = useState("image");
+  const [youtubeUrl1, setYoutubeUrl1] = useState("");
+  const [youtubeUrl2, setYoutubeUrl2] = useState("");
 
   useEffect(() => {
     if (isEditing) {
@@ -40,6 +44,12 @@ const Create = () => {
       setCandidate2(editData.candidate_b_name);
       setPreviewImage1(editData.candidate_a_image);
       setPreviewImage2(editData.candidate_b_image);
+      const type1 = editData.candidate_a_type || "image";
+      const type2 = editData.candidate_b_type || "image";
+      setMediaType1(type1 === "video" || type1 === "audio" ? "youtube" : type1);
+      setMediaType2(type2 === "video" || type2 === "audio" ? "youtube" : type2);
+      if (type1 === "youtube") setYoutubeUrl1(editData.candidate_a_image);
+      if (type2 === "youtube") setYoutubeUrl2(editData.candidate_b_image);
     }
   }, [isEditing, editData]);
 
@@ -72,21 +82,42 @@ const Create = () => {
     "기타",
   ];
 
-  const handleImageChange = (e, setPreview, setFile, setZoom) => {
+  const getYouTubeId = (url) => {
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=|shorts\/)([^#\&\?]*).*/;
+    const match = url.match(regExp);
+    return (match && match[2].length === 11) ? match[2] : null;
+  };
+
+  const handleFileChange = (e, setPreview, setFile, setZoom, setMediaType) => {
     const file = e.target.files[0];
     if (file) {
       setFile(file);
+      setMediaType("image");
       processFile(file, setPreview);
-      setZoom(1); // Reset zoom on new image
+      setZoom(1);
     }
   };
 
-  const handlePaste = (e, setPreview, setFile, setZoom) => {
+  const handlePaste = (e, setPreview, setFile, setZoom, setMediaType) => {
+    const text = e.clipboardData.getData("text");
+    const youtubeId = getYouTubeId(text);
+
+    if (youtubeId) {
+      setMediaType("youtube");
+      setPreview(`https://img.youtube.com/vi/${youtubeId}/0.jpg`);
+      setFile(null);
+      if (setPreview === setPreviewImage1) setYoutubeUrl1(youtubeId);
+      else setYoutubeUrl2(youtubeId);
+      setZoom(1);
+      return;
+    }
+
     const items = (e.clipboardData || e.originalEvent.clipboardData).items;
     for (const item of items) {
-      if (item.kind === "file" && item.type.startsWith("image/")) {
+      if (item.kind === "file") {
         const file = item.getAsFile();
         setFile(file);
+        setMediaType("image");
         processFile(file, setPreview);
         setZoom(1);
         break;
@@ -98,15 +129,25 @@ const Create = () => {
     e.preventDefault();
   };
 
-  const handleDrop = (e, setPreview, setFile, setZoom) => {
+  const handleDrop = (e, setPreview, setFile, setZoom, setMediaType) => {
     e.preventDefault();
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
       const file = e.dataTransfer.files[0];
-      if (file.type.startsWith("image/")) {
-        setFile(file);
-        processFile(file, setPreview);
-        setZoom(1);
-      }
+      setFile(file);
+      setMediaType("image");
+      processFile(file, setPreview);
+      setZoom(1);
+    }
+  };
+
+  const handleYoutubeInput = (url, setPreview, setFile, setZoom, setMediaType, setYoutubeUrl) => {
+    const youtubeId = getYouTubeId(url);
+    if (youtubeId) {
+      setMediaType("youtube");
+      setPreview(`https://img.youtube.com/vi/${youtubeId}/0.jpg`);
+      setFile(null);
+      setYoutubeUrl(youtubeId);
+      setZoom(1);
     }
   };
 
@@ -118,10 +159,12 @@ const Create = () => {
     reader.readAsDataURL(file);
   };
 
-  const handleRemoveImage = (setPreview, setFile, setZoom, setShowEdit) => {
+  const handleRemoveFile = (setPreview, setFile, setZoom, setShowEdit, setMediaType, setYoutubeUrl) => {
     setPreview(null);
     setFile(null);
     setZoom(1);
+    setMediaType("image");
+    setYoutubeUrl("");
     setShowEdit(false);
   };
 
@@ -142,6 +185,9 @@ const Create = () => {
     setIsSubmitting(true);
 
     try {
+      const f1 = mediaType1 === "youtube" ? youtubeUrl1 : file1;
+      const f2 = mediaType2 === "youtube" ? youtubeUrl2 : file2;
+
       if (isEditing) {
         await updateVote(
           editData.id,
@@ -149,9 +195,11 @@ const Create = () => {
           selectedTag,
           title,
           candidate1,
-          file1,
+          f1,
           candidate2,
-          file2,
+          f2,
+          mediaType1,
+          mediaType2
         );
         alert("투표 게시글이 성공적으로 수정되었습니다!");
       } else {
@@ -160,9 +208,11 @@ const Create = () => {
           selectedTag,
           title,
           candidate1,
-          file1,
+          f1,
           candidate2,
-          file2,
+          f2,
+          mediaType1,
+          mediaType2
         );
         alert("투표 게시글이 성공적으로 등록되었습니다!");
       }
@@ -192,11 +242,11 @@ const Create = () => {
             <div
               className="candidate-box"
               onPaste={(e) =>
-                handlePaste(e, setPreviewImage1, setFile1, setZoom1)
+                handlePaste(e, setPreviewImage1, setFile1, setZoom1, setMediaType1)
               }
               onDragOver={handleDragOver}
               onDrop={(e) =>
-                handleDrop(e, setPreviewImage1, setFile1, setZoom1)
+                handleDrop(e, setPreviewImage1, setFile1, setZoom1, setMediaType1)
               }
               tabIndex="0"
             >
@@ -206,7 +256,7 @@ const Create = () => {
                 style={{ display: "none" }}
                 accept="image/*"
                 onChange={(e) =>
-                  handleImageChange(e, setPreviewImage1, setFile1, setZoom1)
+                  handleFileChange(e, setPreviewImage1, setFile1, setZoom1, setMediaType1)
                 }
               />
               {previewImage1 ? (
@@ -218,6 +268,9 @@ const Create = () => {
                       className="candidate-box__img"
                       style={{ transform: `scale(${zoom1})` }}
                     />
+                    {mediaType1 === "youtube" && (
+                      <div className="youtube-badge">YouTube</div>
+                    )}
                   </div>
                   <button
                     className="image-edit-trigger"
@@ -232,18 +285,20 @@ const Create = () => {
                           onClick={() => fileInputRef1.current.click()}
                           title="이미지 교체"
                         >
-                          <Maximize size={16} /> <span>교체</span>
+                          <Maximize size={16} /> <span>이미지</span>
                         </button>
                         <button
                           onClick={() =>
-                            handleRemoveImage(
+                            handleRemoveFile(
                               setPreviewImage1,
                               setFile1,
                               setZoom1,
                               setShowEdit1,
+                              setMediaType1,
+                              setYoutubeUrl1
                             )
                           }
-                          title="이미지 삭제"
+                          title="삭제"
                         >
                           <Trash2 size={16} /> <span>삭제</span>
                         </button>
@@ -271,13 +326,26 @@ const Create = () => {
                 </>
               ) : (
                 <div className="candidate-box__upload">
-                  <button
-                    className="upload-button"
-                    onClick={() => fileInputRef1.current.click()}
-                  >
-                    이미지 삽입
-                  </button>
-                  <h5>붙여넣기 및 드래그 앤 드롭 지원</h5>
+                  <div className="upload-buttons">
+                    <button
+                      className="upload-button"
+                      onClick={() => fileInputRef1.current.click()}
+                    >
+                      이미지 삽입
+                    </button>
+                  </div>
+                  <div className="youtube-input-group">
+                    <input 
+                      type="text" 
+                      placeholder="유튜브 링크 붙여넣기"
+                      onChange={(e) => handleYoutubeInput(e.target.value, setPreviewImage1, setFile1, setZoom1, setMediaType1, setYoutubeUrl1)}
+                      className="youtube-url-input"
+                    />
+                  </div>
+                  <p style={{ fontSize: "11px", color: "#f589b4", marginTop: "8px", textAlign: "center" }}>
+                    * 이미지 드래그/붙여넣기 지원<br/>
+                    * 유튜브 링크 입력 시 영상 자동 연결
+                  </p>
                 </div>
               )}
               <div className="candidate-box__label">
@@ -292,11 +360,11 @@ const Create = () => {
             <div
               className="candidate-box"
               onPaste={(e) =>
-                handlePaste(e, setPreviewImage2, setFile2, setZoom2)
+                handlePaste(e, setPreviewImage2, setFile2, setZoom2, setMediaType2)
               }
               onDragOver={handleDragOver}
               onDrop={(e) =>
-                handleDrop(e, setPreviewImage2, setFile2, setZoom2)
+                handleDrop(e, setPreviewImage2, setFile2, setZoom2, setMediaType2)
               }
               tabIndex="0"
             >
@@ -306,7 +374,7 @@ const Create = () => {
                 style={{ display: "none" }}
                 accept="image/*"
                 onChange={(e) =>
-                  handleImageChange(e, setPreviewImage2, setFile2, setZoom2)
+                  handleFileChange(e, setPreviewImage2, setFile2, setZoom2, setMediaType2)
                 }
               />
               {previewImage2 ? (
@@ -318,6 +386,9 @@ const Create = () => {
                       className="candidate-box__img"
                       style={{ transform: `scale(${zoom2})` }}
                     />
+                    {mediaType2 === "youtube" && (
+                      <div className="youtube-badge">YouTube</div>
+                    )}
                   </div>
                   <button
                     className="image-edit-trigger"
@@ -332,18 +403,20 @@ const Create = () => {
                           onClick={() => fileInputRef2.current.click()}
                           title="이미지 교체"
                         >
-                          <Maximize size={16} /> <span>교체</span>
+                          <Maximize size={16} /> <span>이미지</span>
                         </button>
                         <button
                           onClick={() =>
-                            handleRemoveImage(
+                            handleRemoveFile(
                               setPreviewImage2,
                               setFile2,
                               setZoom2,
                               setShowEdit2,
+                              setMediaType2,
+                              setYoutubeUrl2
                             )
                           }
-                          title="이미지 삭제"
+                          title="삭제"
                         >
                           <Trash2 size={16} /> <span>삭제</span>
                         </button>
@@ -371,13 +444,26 @@ const Create = () => {
                 </>
               ) : (
                 <div className="candidate-box__upload">
-                  <button
-                    className="upload-button"
-                    onClick={() => fileInputRef2.current.click()}
-                  >
-                    이미지 삽입
-                  </button>
-                  <h5>붙여넣기 및 드래그 앤 드롭 지원</h5>
+                  <div className="upload-buttons">
+                    <button
+                      className="upload-button"
+                      onClick={() => fileInputRef2.current.click()}
+                    >
+                      이미지 삽입
+                    </button>
+                  </div>
+                  <div className="youtube-input-group">
+                    <input 
+                      type="text" 
+                      placeholder="유튜브 링크 붙여넣기"
+                      onChange={(e) => handleYoutubeInput(e.target.value, setPreviewImage2, setFile2, setZoom2, setMediaType2, setYoutubeUrl2)}
+                      className="youtube-url-input"
+                    />
+                  </div>
+                  <p style={{ fontSize: "11px", color: "#f589b4", marginTop: "8px", textAlign: "center" }}>
+                    * 이미지 드래그/붙여넣기 지원<br/>
+                    * 유튜브 링크 입력 시 영상 자동 연결
+                  </p>
                 </div>
               )}
               <div className="candidate-box__label">

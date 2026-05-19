@@ -56,8 +56,8 @@ const ProfileEditor = ({ initialImage, initialBorder, userTier, unlockedBorders,
     { id: "silver", name: "실버", tier: "silver" },
     { id: "gold", name: "골드", tier: "gold" },
     { id: "platinum", name: "플래티넘", tier: "platinum" },
-    { id: "diamond", name: "다이아몬드", tier: "diamond" },
-    { id: "pick", name: "Pick", tier: "diamond" }, // Added pick border
+    { id: "diamond", name: "마스터", tier: "master" },
+    { id: "pick", name: "Pick", tier: "master" }, // Added pick border
     { id: "admin", name: "Admin", tier: "admin" }, // Special border
   ];
 
@@ -70,9 +70,22 @@ const ProfileEditor = ({ initialImage, initialBorder, userTier, unlockedBorders,
 
     // 3. 티어별 해금 확인
     if (borderTier === "admin") return false; // 어드민 테두리는 티어로 해금 불가
-    const tiers = ["bronze", "silver", "gold", "platinum", "diamond"];
-    const currentTier = userTier || "bronze";
-    return tiers.indexOf(currentTier) >= tiers.indexOf(borderTier);
+    
+    const tiers = ["bronze", "silver", "gold", "platinum", "master"];
+    
+    // 유저 티어 정규화 (소문자로 변환 및 diamond -> master 처리)
+    let normalizedUserTier = (userTier || "bronze").toLowerCase();
+    if (normalizedUserTier === "diamond") normalizedUserTier = "master";
+    if (normalizedUserTier === "unranked") normalizedUserTier = "bronze";
+    
+    // 테두리 티어 정규화
+    let normalizedBorderTier = (borderTier || "bronze").toLowerCase();
+    if (normalizedBorderTier === "diamond") normalizedBorderTier = "master";
+
+    const userTierIndex = tiers.indexOf(normalizedUserTier);
+    const borderTierIndex = tiers.indexOf(normalizedBorderTier);
+    
+    return userTierIndex >= borderTierIndex;
   };
 
   const handleSelectFile = (e) => {

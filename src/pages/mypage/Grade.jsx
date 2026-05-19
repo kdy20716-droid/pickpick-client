@@ -65,11 +65,11 @@ const Grade = () => {
           <div className="gradeItem">
             <div
               className="gradeIcon"
-              style={{ background: "#B9F2FF22", color: "#70D1F4" }}
+              style={{ background: "#8B5CF622", color: "#8B5CF6" }}
             >
               👑
             </div>
-            <span className="gradeName">DIAMOND</span>
+            <span className="gradeName">MASTER</span>
             <div className="gradeRequirements">
               <span className="gradeRequirement">투표 우승 1000회 이상</span>
               <span className="gradeRequirement">게시글 생성 500회 이상</span>

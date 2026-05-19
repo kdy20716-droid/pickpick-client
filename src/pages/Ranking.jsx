@@ -7,16 +7,10 @@ import bronzeMedal from "../assets/3위 메달.png";
 import vsImage from "../assets/vs.png";
 import { getRanking } from "../api/posts.js";
 import { getVoteHash } from "./vote/voteCards.js";
+import { getCandidateThumbnail } from "../utils/image.js";
 
-const API_ORIGIN = "http://localhost:4000";
-
-function getUploadUrl(image) {
-  if (!image) {
-    return null;
-  }
-
-  return image.startsWith("http") ? image : `${API_ORIGIN}/uploads/${image}`;
-}
+const API_ORIGIN = "https://dolphin-app-onqn2.ondigitalocean.app";
+// "http://localhost:4000";
 
 function Ranking() {
   const [topRankings, setTopRankings] = useState([]);
@@ -41,10 +35,10 @@ function Ranking() {
         const formatted = data.map((item) => ({
           id: item.id,
           title: item.title,
-          topImage: getUploadUrl(item.candidate_a_image),
-          bottomImage: getUploadUrl(item.candidate_b_image),
-          leftImage: getUploadUrl(item.candidate_a_image),
-          rightImage: getUploadUrl(item.candidate_b_image),
+          topImage: getCandidateThumbnail(item.candidate_a_image, item.candidate_a_type),
+          bottomImage: getCandidateThumbnail(item.candidate_b_image, item.candidate_b_type),
+          leftImage: getCandidateThumbnail(item.candidate_a_image, item.candidate_a_type),
+          rightImage: getCandidateThumbnail(item.candidate_b_image, item.candidate_b_type),
         }));
 
         // 1, 2, 3위 분리 (순서: 2위, 1위, 3위로 화면에 배치됨)

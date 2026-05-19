@@ -93,7 +93,7 @@ export default function MainPage() {
                   >
                     {featuredVote.leftCandidate.image && (
                       <img
-                        src={featuredVote.leftCandidate.image}
+                        src={featuredVote.leftCandidate.image.startsWith('http') ? featuredVote.leftCandidate.image : `https://img.youtube.com/vi/${featuredVote.leftCandidate.image}/0.jpg`}
                         alt={featuredVote.leftCandidate.name}
                       />
                     )}
@@ -114,7 +114,7 @@ export default function MainPage() {
                   >
                     {featuredVote.rightCandidate.image && (
                       <img
-                        src={featuredVote.rightCandidate.image}
+                        src={featuredVote.rightCandidate.image.startsWith('http') ? featuredVote.rightCandidate.image : `https://img.youtube.com/vi/${featuredVote.rightCandidate.image}/0.jpg`}
                         alt={featuredVote.rightCandidate.name}
                       />
                     )}

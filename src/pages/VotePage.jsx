@@ -264,6 +264,66 @@ function VoteChoiceName({ children }) {
   );
 }
 
+function YouTubePlayer({ videoId, title, isActive }) {
+  const [isPaused, setIsPaused] = useState(true);
+  const iframeRef = useRef(null);
+
+  // 화면에서 벗어나면(비활성화되면) 상태 초기화
+  useEffect(() => {
+    if (!isActive) {
+      setIsPaused(true);
+    }
+  }, [isActive]);
+
+  const togglePlayback = (e) => {
+    e.stopPropagation();
+    if (!isActive) return;
+
+    const nextPaused = !isPaused;
+    setIsPaused(nextPaused);
+
+    if (iframeRef.current?.contentWindow) {
+      const command = nextPaused ? "pauseVideo" : "playVideo";
+      iframeRef.current.contentWindow.postMessage(
+        JSON.stringify({ event: "command", func: command, args: [] }),
+        "*",
+      );
+    }
+  };
+
+  if (!isActive) {
+    return (
+      <div className="custom-youtube-container">
+        <img
+          src={`https://img.youtube.com/vi/${videoId}/0.jpg`}
+          alt={title}
+          style={{ width: "100%", height: "100%", objectFit: "cover" }}
+        />
+        <div className="player-controls is-paused">
+          <div className="play-icon" />
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="custom-youtube-container">
+      <div className="youtube-iframe-target">
+        <iframe
+          ref={iframeRef}
+          width="100%"
+          height="100%"
+          src={`https://www.youtube-nocookie.com/embed/${videoId}?autoplay=0&mute=0&controls=1&loop=1&playlist=${videoId}&rel=0&playsinline=1&enablejsapi=1`}
+          title={title}
+          frameBorder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+        />
+      </div>
+    </div>
+  );
+}
+
 function VoteCard({
   card,
   selectedCandidateId,
@@ -278,7 +338,7 @@ function VoteCard({
   isActive,
   registerCardRef,
 }) {
-  const hasVoted = Boolean(selectedCandidateId);
+  const hasVoted = Boolean(selectedCandidateId) || card.isExpired;
 
   return (
     <article
@@ -292,36 +352,92 @@ function VoteCard({
         <div className="vote-sheet-match">
           {[card.leftCandidate, card.rightCandidate].map((candidate) => {
             const isSelected = selectedCandidateId === candidate.id;
+            const isVideo =
+              candidate.type === "youtube" || candidate.type === "video";
 
             return (
-              <button
+              <div
                 key={candidate.id}
-                type="button"
                 className={`vote-choice tone-${candidate.tone}${
                   isSelected ? " is-selected" : ""
                 }`}
                 aria-pressed={isSelected}
-                disabled={hasVoted}
-                onClick={() => onSelect(card.feedId, candidate.id)}
               >
-                {candidate.image ? (
-                  <img src={candidate.image} alt={candidate.name} />
-                ) : (
-                  <span
-                    className="vote-choice-image-fallback"
-                    aria-hidden="true"
+                {!hasVoted && isVideo && (
+                  <button
+                    type="button"
+                    className="vote-pick-badge"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onSelect(card.feedId, candidate.id);
+                    }}
                   >
-                    {candidate.name?.slice(0, 1) || "?"}
-                  </span>
+                    PICK
+                  </button>
                 )}
-                <span className="vote-choice-overlay" aria-hidden="true" />
-                <p
-                  className="vote-choice-name"
-                  style={getCandidateNameStyle(candidate.name)}
+
+                <div
+                  className="vote-choice-inner"
+                  style={{ width: "100%", height: "100%" }}
+                  onClick={
+                    !isVideo && !hasVoted
+                      ? () => onSelect(card.feedId, candidate.id)
+                      : undefined
+                  }
                 >
-                  {candidate.name}
-                </p>
-              </button>
+                  {candidate.image ? (
+                    candidate.type === "youtube" ? (
+                      <div className="vote-choice-media">
+                        <YouTubePlayer
+                          videoId={candidate.image}
+                          title={candidate.name}
+                          isActive={isActive}
+                        />
+                      </div>
+                    ) : candidate.type === "video" ? (
+                      <video
+                        src={candidate.image}
+                        autoPlay
+                        loop
+                        muted
+                        playsInline
+                        className="vote-choice-media"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (e.currentTarget.paused) e.currentTarget.play();
+                          else e.currentTarget.pause();
+                        }}
+                      />
+                    ) : candidate.type === "audio" ? (
+                      <div className="vote-choice-audio-container">
+                        <div className="audio-icon-large">🎵</div>
+                        <audio
+                          src={candidate.image}
+                          controls={hasVoted}
+                          className="vote-choice-audio-player"
+                          onClick={(e) => e.stopPropagation()}
+                        />
+                      </div>
+                    ) : (
+                      <img src={candidate.image} alt={candidate.name} />
+                    )
+                  ) : (
+                    <span
+                      className="vote-choice-image-fallback"
+                      aria-hidden="true"
+                    >
+                      {candidate.name?.slice(0, 1) || "?"}
+                    </span>
+                  )}
+                  <span className="vote-choice-overlay" aria-hidden="true" />
+                  <p
+                    className="vote-choice-name"
+                    style={getCandidateNameStyle(candidate.name)}
+                  >
+                    {candidate.name}
+                  </p>
+                </div>
+              </div>
             );
           })}
 
@@ -494,16 +610,19 @@ export default function VotePage() {
           id: cardId,
           feedId: cardId,
           title: item.title,
+          isExpired: item.expires_at ? new Date(item.expires_at) <= new Date() : false,
           leftCandidate: {
             id: "a",
             name: item.candidate_a_name,
             image: item.candidate_a_image,
+            type: item.candidate_a_type || "image",
             tone: "light",
           },
           rightCandidate: {
             id: "b",
             name: item.candidate_b_name,
             image: item.candidate_b_image,
+            type: item.candidate_b_type || "image",
             tone: "dark",
           },
           shares: { left: leftShare, right: rightShare },
