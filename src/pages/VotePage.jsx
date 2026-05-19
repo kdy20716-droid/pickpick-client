@@ -371,9 +371,7 @@ function VoteCard({
                       e.stopPropagation();
                       onSelect(card.feedId, candidate.id);
                     }}
-                  >
-                    PICK
-                  </button>
+                  >PICK</button>
                 )}
 
                 <div

@@ -877,14 +877,14 @@
   }
 }
 
-@media (max-width: 0px) {
+@media (max-width: 768px) {
   .vote-page.has-comment-modal .vote-layout {
     --vote-side-balance: var(--vote-action-space);
     transform: none;
   }
 }
 
-@media (max-width: 0px) {
+@media (max-width: 768px) {
   .vote-page {
     --vote-page-gutter: 16px;
     --vote-min-height: 540px;
