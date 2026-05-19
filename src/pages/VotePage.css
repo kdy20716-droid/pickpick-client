@@ -483,6 +483,7 @@
   position: absolute;
   inset: 0;
   background: transparent;
+  pointer-events: none;
 }
 
 .vote-choice-name {
@@ -492,12 +493,13 @@
   margin: 0;
   position: absolute;
   right: 0;
-  bottom: 14px;
+  bottom: 44px; /* 14px에서 30px 올려서 44px로 수정 */
   left: 0;
   box-sizing: border-box;
   width: auto;
   padding: 0 18px;
   display: -webkit-box;
+  pointer-events: none;
   max-height: calc(100% - 36px);
   overflow: hidden;
   -webkit-box-orient: vertical;
@@ -875,14 +877,14 @@
   }
 }
 
-@media (max-width: 0px) {
+@media (max-width: 768px) {
   .vote-page.has-comment-modal .vote-layout {
     --vote-side-balance: var(--vote-action-space);
     transform: none;
   }
 }
 
-@media (max-width: 0px) {
+@media (max-width: 768px) {
   .vote-page {
     --vote-page-gutter: 16px;
     --vote-min-height: 540px;
@@ -895,8 +897,16 @@
     --vote-filter-panel-height: calc(
       100dvh - var(--vote-filter-panel-top) - 20px
     );
-    --vote-sheet-title-size: clamp(1.5rem, calc(var(--layout-vw) * 0.054), 2.2rem);
-    --vote-choice-name-size: clamp(1.35rem, calc(var(--layout-vw) * 0.05), 2rem);
+    --vote-sheet-title-size: clamp(
+      1.5rem,
+      calc(var(--layout-vw) * 0.054),
+      2.2rem
+    );
+    --vote-choice-name-size: clamp(
+      1.35rem,
+      calc(var(--layout-vw) * 0.05),
+      2rem
+    );
   }
 
   .vote-layout {
@@ -960,7 +970,11 @@
 .youtube-iframe-target {
   width: 100%;
   height: 100%;
-  pointer-events: none; /* 아이프레임 직접 클릭 방지 */
+  pointer-events: auto; /* 아이프레임 클릭 허용 (음량 조절 등) */
+}
+
+.youtube-iframe-target + .player-controls {
+  height: calc(100% - 45px); /* 하단 유튜브 컨트롤 바 영역 확보 */
 }
 
 .youtube-iframe-target iframe {
@@ -970,33 +984,41 @@
 }
 
 .vote-pick-badge {
-  position: absolute;
-  top: 15px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 20;
-  background: rgba(255, 255, 255, 0.9);
-  color: #f7a1c4;
-  padding: 6px 16px;
-  border-radius: 20px;
-  font-weight: 800;
-  font-size: 1.1rem;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-  border: 2px solid #f7a1c4;
-  transition: all 0.2s;
-  cursor: pointer;
-  pointer-events: auto;
+  position: absolute !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(
+    -50%,
+    calc(-50% - 200px)
+  ) !important; /* 중앙에서 200px 위로 */
+  width: 92px !important;
+  height: 42px !important;
+  z-index: 25 !important;
+  background: #f7a1c4 !important;
+  color: white !important;
+  padding: 0 !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  border-radius: 12px !important;
+  font-weight: 900 !important;
+  font-size: 1.1rem !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25) !important;
+  border: 2px solid white !important;
+  transition: all 0.2s !important;
+  cursor: pointer !important;
+  pointer-events: auto !important;
+  margin: 0 !important;
 }
 
 .vote-pick-badge:hover {
-  background: #f7a1c4;
-  color: white;
-  transform: translateX(-50%) scale(1.1);
+  background: white;
+  color: #f7a1c4;
+  transform: scale(1.05);
 }
 
 .vote-choice.is-selected .vote-pick-badge {
-  background: #f7a1c4;
-  color: white;
+  display: none; /* 투표 후에는 숨김 */
 }
 
 .vote-choice-media {
@@ -1010,47 +1032,13 @@
   overflow: hidden;
 }
 
+/* 커스텀 플레이어 컨트롤 제거 (네이티브 유튜브 컨트롤 사용) */
 .player-controls {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 10;
-  background: rgba(0,0,0,0.1);
-  transition: background 0.3s;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
-
-.player-controls:hover {
-  background: rgba(0,0,0,0.3);
-}
-
-.center-play-btn {
-  opacity: 0;
-  transition: opacity 0.3s, transform 0.3s;
-  transform: scale(0.8);
-}
-
-.player-controls.is-paused .center-play-btn,
-.player-controls:hover .center-play-btn {
-  opacity: 1;
-  transform: scale(1);
-}
-
-.play-icon {
-  width: 60px;
-  height: 60px;
-  background: rgba(255, 255, 255, 0.9);
-  border-radius: 50%;
-  position: relative;
+  display: none;
 }
 
 .play-icon::after {
-  content: '';
+  content: "";
   position: absolute;
   top: 50%;
   left: 55%;
@@ -1068,8 +1056,9 @@
   position: relative;
 }
 
-.pause-icon::before, .pause-icon::after {
-  content: '';
+.pause-icon::before,
+.pause-icon::after {
+  content: "";
   position: absolute;
   top: 50%;
   width: 6px;
@@ -1078,8 +1067,12 @@
   transform: translateY(-50%);
 }
 
-.pause-icon::before { left: 38%; }
-.pause-icon::after { right: 38%; }
+.pause-icon::before {
+  left: 38%;
+}
+.pause-icon::after {
+  right: 38%;
+}
 
 .bottom-controls {
   position: absolute;
@@ -1087,13 +1080,15 @@
   left: 0;
   width: 100%;
   padding: 15px;
-  background: linear-gradient(transparent, rgba(0,0,0,0.7));
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
   display: flex;
   align-items: center;
   gap: 15px;
   opacity: 0;
   transform: translateY(10px);
-  transition: opacity 0.3s, transform 0.3s;
+  transition:
+    opacity 0.3s,
+    transform 0.3s;
 }
 
 .player-controls:hover .bottom-controls {
@@ -1107,7 +1102,7 @@
   color: white;
   font-size: 18px;
   cursor: pointer;
-  text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
 }
 
 .volume-group {
@@ -1145,4 +1140,3 @@
   height: 100%;
   transform: translate(-50%, -50%) scale(1.5);
 }
-

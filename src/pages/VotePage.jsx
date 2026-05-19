@@ -330,23 +330,18 @@ function YouTubePlayer({ videoId, title, isActive }) {
   }
 
   return (
-    <div className="custom-youtube-container" onClick={togglePlayback}>
+    <div className="custom-youtube-container">
       <div className="youtube-iframe-target">
         <iframe
           ref={iframeRef}
           width="100%"
           height="100%"
-          src={`https://www.youtube-nocookie.com/embed/${videoId}?autoplay=0&mute=1&controls=0&loop=1&playlist=${videoId}&rel=0&playsinline=1&enablejsapi=1`}
+          src={`https://www.youtube-nocookie.com/embed/${videoId}?autoplay=0&mute=0&controls=1&loop=1&playlist=${videoId}&rel=0&playsinline=1&enablejsapi=1`}
           title={title}
           frameBorder="0"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
           allowFullScreen
         />
-      </div>
-      <div className={`player-controls ${isPaused ? "is-paused" : ""}`}>
-        <div className="center-play-btn">
-          <div className={isPaused ? "play-icon" : "pause-icon"} />
-        </div>
       </div>
     </div>
   );
@@ -399,9 +394,7 @@ function VoteCard({
                       e.stopPropagation();
                       onSelect(card.feedId, candidate.id);
                     }}
-                  >
-                    PICK
-                  </button>
+                  >PICK</button>
                 )}
 
                 <div

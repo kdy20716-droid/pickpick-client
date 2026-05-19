@@ -15,6 +15,12 @@ export const logout = async () => {
   return response.data;
 };
 
+// 내 정보 조회 API
+export const getMe = async () => {
+  const response = await instance.get("/users/me");
+  return response.data;
+};
+
 // 이메일 인증 코드 발송 API
 export const sendEmailCode = async (email) => {
   const response = await instance.post("/users/send-email-code", { email });

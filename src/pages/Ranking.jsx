@@ -35,6 +35,7 @@ function Ranking() {
         const formatted = data.map((item) => ({
           id: item.id,
           title: item.title,
+          totalVotes: item.total_votes,
           topImage: getCandidateThumbnail(item.candidate_a_image, item.candidate_a_type),
           bottomImage: getCandidateThumbnail(item.candidate_b_image, item.candidate_b_type),
           leftImage: getCandidateThumbnail(item.candidate_a_image, item.candidate_a_type),
@@ -127,6 +128,9 @@ function Ranking() {
               >
                 {ranking.title}
               </Link>
+              <div className="ranking-total-votes">
+                총 {ranking.totalVotes?.toLocaleString() || 0}표
+              </div>
             </div>
           ))}
         </div>
@@ -186,6 +190,10 @@ function Ranking() {
                     >
                       {item.title}
                     </Link>
+
+                    <div className="list-total-votes">
+                      총 {item.totalVotes?.toLocaleString() || 0}표
+                    </div>
                   </>
                 )}
               </div>
