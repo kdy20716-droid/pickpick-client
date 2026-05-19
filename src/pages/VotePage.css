@@ -483,6 +483,7 @@
   position: absolute;
   inset: 0;
   background: transparent;
+  pointer-events: none;
 }
 
 .vote-choice-name {
@@ -498,6 +499,7 @@
   width: auto;
   padding: 0 18px;
   display: -webkit-box;
+  pointer-events: none;
   max-height: calc(100% - 36px);
   overflow: hidden;
   -webkit-box-orient: vertical;
@@ -975,27 +977,26 @@
 
 .vote-pick-badge {
   position: absolute;
-  bottom: 60px; /* 유튜브 컨트롤 바 바로 위로 이동 */
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 20;
-  background: rgba(255, 255, 255, 0.9);
-  color: #f7a1c4;
-  padding: 6px 20px;
-  border-radius: 20px;
+  top: 15px;
+  right: 15px; /* 상단 오른쪽으로 이동하여 하단 컨트롤 바 방해 금지 */
+  z-index: 25;
+  background: #f7a1c4;
+  color: white;
+  padding: 8px 18px;
+  border-radius: 12px;
   font-weight: 800;
-  font-size: 1.2rem;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.25);
-  border: 2px solid #f7a1c4;
+  font-size: 1rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  border: 2px solid white;
   transition: all 0.2s;
   cursor: pointer;
   pointer-events: auto;
 }
 
 .vote-pick-badge:hover {
-  background: #f7a1c4;
-  color: white;
-  transform: translateX(-50%) scale(1.1);
+  background: white;
+  color: #f7a1c4;
+  transform: scale(1.05);
 }
 
 .vote-choice.is-selected .vote-pick-badge {
