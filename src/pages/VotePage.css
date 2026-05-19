@@ -975,17 +975,17 @@
 
 .vote-pick-badge {
   position: absolute;
-  top: 15px;
+  bottom: 60px; /* 유튜브 컨트롤 바 바로 위로 이동 */
   left: 50%;
   transform: translateX(-50%);
   z-index: 20;
   background: rgba(255, 255, 255, 0.9);
   color: #f7a1c4;
-  padding: 6px 16px;
+  padding: 6px 20px;
   border-radius: 20px;
   font-weight: 800;
-  font-size: 1.1rem;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  font-size: 1.2rem;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.25);
   border: 2px solid #f7a1c4;
   transition: all 0.2s;
   cursor: pointer;
@@ -999,8 +999,7 @@
 }
 
 .vote-choice.is-selected .vote-pick-badge {
-  background: #f7a1c4;
-  color: white;
+  display: none; /* 투표 후에는 숨김 */
 }
 
 .vote-choice-media {
@@ -1014,43 +1013,9 @@
   overflow: hidden;
 }
 
+/* 커스텀 플레이어 컨트롤 제거 (네이티브 유튜브 컨트롤 사용) */
 .player-controls {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 10;
-  background: rgba(0,0,0,0.1);
-  transition: background 0.3s;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
-
-.player-controls:hover {
-  background: rgba(0,0,0,0.3);
-}
-
-.center-play-btn {
-  opacity: 0;
-  transition: opacity 0.3s, transform 0.3s;
-  transform: scale(0.8);
-}
-
-.player-controls.is-paused .center-play-btn,
-.player-controls:hover .center-play-btn {
-  opacity: 1;
-  transform: scale(1);
-}
-
-.play-icon {
-  width: 60px;
-  height: 60px;
-  background: rgba(255, 255, 255, 0.9);
-  border-radius: 50%;
-  position: relative;
+  display: none;
 }
 
 .play-icon::after {

@@ -307,7 +307,7 @@ function YouTubePlayer({ videoId, title, isActive }) {
   }
 
   return (
-    <div className="custom-youtube-container" onClick={togglePlayback}>
+    <div className="custom-youtube-container">
       <div className="youtube-iframe-target">
         <iframe
           ref={iframeRef}
@@ -319,11 +319,6 @@ function YouTubePlayer({ videoId, title, isActive }) {
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
           allowFullScreen
         />
-      </div>
-      <div className={`player-controls ${isPaused ? "is-paused" : ""}`}>
-        <div className="center-play-btn">
-          <div className={isPaused ? "play-icon" : "pause-icon"} />
-        </div>
       </div>
     </div>
   );
