@@ -977,21 +977,21 @@
 
 .vote-pick-badge {
   position: absolute;
-  top: 25px; /* 15px에서 10px 더 내림 */
+  top: 35px; /* 25px에서 10px 더 내림 */
   right: 15px;
   z-index: 25;
   background: #f7a1c4;
   color: white;
-  padding: 8px 15px; /* 좌우 패딩을 동일하게 맞추고 길이를 살짝 줄임 */
-  min-width: 60px; /* 최소 너비 설정으로 균형 잡음 */
+  padding: 6px 10px; /* 좌우 길이를 확 줄임 */
+  min-width: 45px; /* 최소 너비를 줄여서 더 콤팩트하게 만듦 */
   display: flex;
   justify-content: center;
   align-items: center;
-  border-radius: 12px;
-  font-weight: 800;
-  font-size: 0.95rem; /* 글자 크기 아주 살짝 줄임 */
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-  border: 2px solid white;
+  border-radius: 10px; /* 버튼이 작아진 만큼 라운드도 살짝 조절 */
+  font-weight: 850; /* 글자가 작아져도 잘 보이게 굵기 강화 */
+  font-size: 0.85rem; /* 버튼 크기에 맞춰 폰트도 조금 더 축소 */
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  border: 1.5px solid white;
   transition: all 0.2s;
   cursor: pointer;
   pointer-events: auto;
