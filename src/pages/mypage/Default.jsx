@@ -9,6 +9,12 @@ const TEXT = {
   한국어: {
     breadcrumb: "마이페이지 > 내 프로필 > 계정 설정",
     nickname: "닉네임",
+    changeNickname: "닉네임 변경",
+    enterNickname: "새 닉네임 입력 (최대 5글자)",
+    nicknameUpdated: "닉네임이 변경되었습니다.",
+    nicknameUpdateFail: "닉네임 변경에 실패했습니다.",
+    nicknameRequired: "닉네임을 입력해주세요.",
+    nicknameTooLong: "닉네임은 5글자 이하로 입력해주세요.",
     currentEmail: "현재 이메일",
     currentPassword: "현재 비밀번호",
     passwordUnavailable: "보안상 표시할 수 없습니다",
@@ -55,6 +61,12 @@ const TEXT = {
   English: {
     breadcrumb: "My Page > Profile > Account Settings",
     nickname: "Nickname",
+    changeNickname: "Change Nickname",
+    enterNickname: "Enter new nickname (Max 5 chars)",
+    nicknameUpdated: "Nickname has been updated.",
+    nicknameUpdateFail: "Failed to update nickname.",
+    nicknameRequired: "Please enter a nickname.",
+    nicknameTooLong: "Nickname must be 5 characters or less.",
     currentEmail: "Current Email",
     currentPassword: "Current Password",
     passwordUnavailable: "Cannot be shown for security",
@@ -105,6 +117,8 @@ const AccountSettings = () => {
   const { user: currentUser, updateUser, logout } = useAuth();
   const profileFileInputRef = useRef(null);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isNicknameModalOpen, setIsNicknameModalOpen] = useState(false);
+  const [newNickname, setNewNickname] = useState("");
   const [isSecurityOpen, setIsSecurityOpen] = useState(false);
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
   const [passwordForm, setPasswordForm] = useState({
@@ -226,6 +240,31 @@ const AccountSettings = () => {
     }
   };
 
+  const handleNicknameSave = async () => {
+    if (!newNickname.trim()) {
+      alert(text.nicknameRequired);
+      return;
+    }
+
+    if (newNickname.length > 5) {
+      alert(text.nicknameTooLong);
+      return;
+    }
+
+    try {
+      const res = await updateProfile(currentUser.id, { name: newNickname });
+      if (res.success) {
+        updateUser(res.user);
+        alert(text.nicknameUpdated);
+        setIsNicknameModalOpen(false);
+        setNewNickname("");
+      }
+    } catch (error) {
+      console.error("닉네임 변경 실패:", error);
+      alert(error.response?.data?.message || text.nicknameUpdateFail);
+    }
+  };
+
   const handleDisplaySettingChange = (key, value) => {
     setDisplaySettings((prev) => ({
       ...prev,
@@ -246,6 +285,18 @@ const AccountSettings = () => {
                   <div>
                     <strong>{text.nickname}</strong>
                     <span>{displayNickname}</span>
+                  </div>
+                  <div className="account-info-actions">
+                    <button
+                      type="button"
+                      className="change-btn"
+                      onClick={() => {
+                        setNewNickname(displayNickname);
+                        setIsNicknameModalOpen(true);
+                      }}
+                    >
+                      {text.change}
+                    </button>
                   </div>
                 </div>
 
@@ -486,6 +537,54 @@ const AccountSettings = () => {
                   onChange={handlePasswordChange}
                 />
                 <button type="button" onClick={handleSavePassword}>
+                  {text.saveChange}
+                </button>
+              </div>
+            </div>
+          </section>
+        </div>
+      )}
+
+      {isNicknameModalOpen && (
+        <div
+          className="settings-modal-layer"
+          onClick={() => setIsNicknameModalOpen(false)}
+        >
+          <button
+            type="button"
+            className="settings-modal-backdrop"
+            aria-label={text.close}
+            onClick={() => setIsNicknameModalOpen(false)}
+          />
+          <section
+            className="settings-modal nickname-settings-modal"
+            aria-label={text.changeNickname}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <header className="settings-modal-header">
+              <div>
+                <span>{text.nickname}</span>
+                <h2>{text.changeNickname}</h2>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsNicknameModalOpen(false)}
+              >
+                {text.close}
+              </button>
+            </header>
+
+            <div className="security-panel">
+              <div className="security-section">
+                <strong>{text.changeNickname}</strong>
+                <input
+                  type="text"
+                  placeholder={text.enterNickname}
+                  value={newNickname}
+                  onChange={(e) => setNewNickname(e.target.value)}
+                  maxLength={5}
+                />
+                <button type="button" onClick={handleNicknameSave}>
                   {text.saveChange}
                 </button>
               </div>

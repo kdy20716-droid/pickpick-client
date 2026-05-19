@@ -74,13 +74,16 @@ a {
 .profile-border-master::before {
   content: "";
   position: absolute;
-  inset: -14%;
+  top: 50%;
+  left: 50%;
+  width: 124%;
+  height: 124%;
+  transform: translate(-50%, -48%); /* Slight upward shift for better visual centering */
   z-index: 2;
   background-image: var(--profile-border-image);
   background-repeat: no-repeat;
   background-position: center;
   background-size: contain;
-  transform: translate(2px, 5px);
   pointer-events: none;
 }
 
@@ -123,13 +126,16 @@ a {
 .profile-border-challenger::before {
   content: "";
   position: absolute;
-  inset: -14%;
+  top: 50%;
+  left: 50%;
+  width: 124%;
+  height: 124%;
+  transform: translate(-50%, -48%);
   z-index: 2;
   background-image: url("./assets/챌린저.png");
   background-repeat: no-repeat;
   background-position: center;
   background-size: contain;
-  transform: translate(2px, 5px);
   pointer-events: none;
 }
 
@@ -146,13 +152,16 @@ a {
 .profile-border-pick::before {
   content: "";
   position: absolute;
-  inset: -14%;
+  top: 50%;
+  left: 50%;
+  width: 124%;
+  height: 124%;
+  transform: translate(-50%, -48%);
   z-index: 2;
   background-image: url("./assets/pick.png");
   background-repeat: no-repeat;
   background-position: center;
   background-size: contain;
-  transform: translate(2px, 5px);
   pointer-events: none;
 }
 
@@ -166,29 +175,22 @@ a {
 .profile-border-admin::before {
   content: "";
   position: absolute;
-  inset: -14%;
+  top: 50%;
+  left: 50%;
+  width: 124%;
+  height: 124%;
+  transform: translate(-50%, -48%);
   z-index: 2;
   background-image: url("./assets/admin.png");
   background-repeat: no-repeat;
   background-position: center;
   background-size: contain;
-  transform: translate(2px, 5px);
   pointer-events: none;
 }
 
 @keyframes border-glow {
   from { box-shadow: 0 0 0 4px #70D1F4, 0 0 10px #70D1F4; }
   to { box-shadow: 0 0 0 4px #70D1F4, 0 0 30px #70D1F4; }
-}
-
-@keyframes pick-glow {
-  from { box-shadow: 0 0 0 4px #ff4b8d, 0 0 15px #ff4b8d; }
-  to { box-shadow: 0 0 0 4px #ff4b8d, 0 0 35px #ff4b8d; }
-}
-
-@keyframes admin-glow {
-  from { box-shadow: 0 0 0 4px #ff0000, 0 0 15px #ff0000; }
-  to { box-shadow: 0 0 0 4px #ff0000, 0 0 35px #ff0000; }
 }
 
 .challenger-shine {

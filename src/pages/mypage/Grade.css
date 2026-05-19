@@ -117,3 +117,13 @@
   gap: 4px;
   align-items: center;
 }
+
+/* Tier Specific Colors */
+.grade-bronze { color: #CD7F32 !important; }
+.grade-silver { color: #C0C0C0 !important; }
+.grade-gold { color: #FFD700 !important; }
+.grade-platinum { color: #26C6DA !important; }
+.grade-diamond { color: #8B5CF6 !important; }
+.grade-master { color: #FF4B8D !important; }
+.grade-challenger { color: #70D1F4 !important; }
+

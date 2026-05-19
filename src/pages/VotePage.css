@@ -568,6 +568,7 @@
   transform: translateY(-3px);
   border-color: var(--vote-choice-selected-border);
   box-shadow:
+    0 0 20px rgba(252, 146, 199, 0.45),
     0 22px 48px rgba(17, 17, 17, 0.16),
     0 0 0 1px rgba(252, 146, 199, 0.2);
 }
@@ -575,6 +576,7 @@
 .tone-blue.is-selected {
   border-color: var(--vote-choice-selected-border);
   box-shadow:
+    0 0 20px rgba(252, 146, 199, 0.45),
     0 22px 48px rgba(17, 17, 17, 0.14),
     0 0 0 1px rgba(252, 146, 199, 0.2);
 }
@@ -582,6 +584,7 @@
 .tone-pink.is-selected {
   border-color: var(--vote-choice-selected-border);
   box-shadow:
+    0 0 20px rgba(252, 146, 199, 0.45),
     0 22px 48px rgba(17, 17, 17, 0.14),
     0 0 0 1px rgba(252, 146, 199, 0.2);
 }
