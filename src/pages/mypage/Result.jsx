@@ -124,6 +124,9 @@ const Result = () => {
               const isLeftWinner = vote.winner_side === 'A' || (vote.winner_side === null && leftVotes > rightVotes);
               const isRightWinner = vote.winner_side === 'B' || (vote.winner_side === null && rightVotes > leftVotes);
               const isExpired = new Date(vote.expires_at) <= new Date();
+              const userVotedSide = vote.user_voted_side?.toUpperCase();
+              const isLeftPicked = isHistory && userVotedSide === "A";
+              const isRightPicked = isHistory && userVotedSide === "B";
 
               return (
                 <div
@@ -137,7 +140,7 @@ const Result = () => {
                   </h3>
                   <div className="result-row">
                     {/* ... (existing candidate elements) */}
-                    <div className={`candidate ${isLeftWinner && isExpired ? 'winner' : ''}`}>
+                    <div className={`candidate ${isLeftWinner && isExpired ? 'winner' : ''}${isLeftPicked ? ' is-user-pick' : ''}`}>
                       {isLeftWinner && (
                         isExpired ? <div className="win-badge">WIN</div> : <div className="crown">👑</div>
                       )}
@@ -174,7 +177,7 @@ const Result = () => {
                     </div>
 
                     {/* 오른쪽 후보 */}
-                    <div className={`candidate ${isRightWinner && isExpired ? 'winner' : ''}`}>
+                    <div className={`candidate ${isRightWinner && isExpired ? 'winner' : ''}${isRightPicked ? ' is-user-pick' : ''}`}>
                       {isRightWinner && (
                         isExpired ? <div className="win-badge">WIN</div> : <div className="crown">👑</div>
                       )}

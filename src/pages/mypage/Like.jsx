@@ -159,7 +159,13 @@ const Like = () => {
                     onClick={() => navigate(`/vote/${vote.id}`)}
                     style={{ cursor: "pointer" }}
                   >
-                    <div className="thumb-img">
+                    <div
+                      className={`thumb-img${
+                        vote.user_voted_side?.toUpperCase() === "A"
+                          ? " is-user-pick"
+                          : ""
+                      }`}
+                    >
                       {vote.candidate_a_image ? (
                         <img
                           src={getCandidateThumbnail(vote.candidate_a_image, vote.candidate_a_type)}
@@ -183,7 +189,13 @@ const Like = () => {
                       )}
                     </div>
                     <h3 className="vote-title">{vote.title}</h3>
-                    <div className="thumb-img">
+                    <div
+                      className={`thumb-img${
+                        vote.user_voted_side?.toUpperCase() === "B"
+                          ? " is-user-pick"
+                          : ""
+                      }`}
+                    >
                       {vote.candidate_b_image ? (
                         <img
                           src={getCandidateThumbnail(vote.candidate_b_image, vote.candidate_b_type)}
