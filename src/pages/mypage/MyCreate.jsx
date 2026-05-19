@@ -100,12 +100,6 @@ const MyCreate = () => {
                     </div>
                     <div className="vote-actions">
                       <button
-                        className="edit-btn"
-                        onClick={(e) => handleEdit(e, vote)}
-                      >
-                        수정
-                      </button>
-                      <button
                         className="delete-btn"
                         onClick={(e) => handleDelete(e, vote.id)}
                       >
@@ -143,6 +137,15 @@ const MyCreate = () => {
             ) : (
               <div className="empty-state">생성한 투표가 없습니다.</div>
             )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default MyCreate;
+   )}
           </div>
         )}
       </div>
