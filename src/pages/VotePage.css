@@ -584,7 +584,8 @@
   transform: translateY(-3px);
   border-color: var(--vote-choice-selected-border);
   box-shadow:
-    0 0 20px rgba(252, 146, 199, 0.45),
+    0 0 35px rgba(252, 146, 199, 0.65),
+    0 0 15px rgba(252, 146, 199, 0.4),
     0 22px 48px rgba(17, 17, 17, 0.16),
     0 0 0 1px rgba(252, 146, 199, 0.2);
   z-index: 5; /* Ensure selected winner stays on top and glow is visible */
@@ -593,7 +594,8 @@
 .tone-blue.is-selected {
   border-color: var(--vote-choice-selected-border);
   box-shadow:
-    0 0 20px rgba(252, 146, 199, 0.45),
+    0 0 35px rgba(252, 146, 199, 0.65),
+    0 0 15px rgba(252, 146, 199, 0.4),
     0 22px 48px rgba(17, 17, 17, 0.14),
     0 0 0 1px rgba(252, 146, 199, 0.2);
 }
@@ -601,7 +603,8 @@
 .tone-pink.is-selected {
   border-color: var(--vote-choice-selected-border);
   box-shadow:
-    0 0 20px rgba(252, 146, 199, 0.45),
+    0 0 35px rgba(252, 146, 199, 0.65),
+    0 0 15px rgba(252, 146, 199, 0.4),
     0 22px 48px rgba(17, 17, 17, 0.14),
     0 0 0 1px rgba(252, 146, 199, 0.2);
 }
@@ -617,7 +620,7 @@
   position: absolute;
   top: 52%;
   left: 50%;
-  z-index: 2;
+  z-index: 10; /* 투표 칸보다 위에 오도록 z-index 상향 */
   transform: translate(-50%, -50%);
   pointer-events: none;
 }
