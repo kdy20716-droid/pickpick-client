@@ -150,11 +150,21 @@ function pinTargetCard(cards, targetCardId) {
   ];
 }
 
-function updateCardActionState(currentActions, cardId, actionId) {
+function getLikeCountFromResponse(response, fallbackCount) {
+  const nextCount = Number(response?.like_count ?? response?.likes);
+  return Number.isFinite(nextCount) ? Math.max(0, nextCount) : fallbackCount;
+}
+
+function updateCardActionState(currentActions, cardId, actionId, options = {}) {
   const previousState = currentActions[cardId] ?? initialActionState;
 
   if (actionId === "like") {
-    const nextLike = !previousState.like;
+    const nextLike =
+      typeof options.like === "boolean" ? options.like : !previousState.like;
+    const fallbackLikeCount = Math.max(
+      0,
+      previousState.likeCount + (nextLike ? 1 : -1),
+    );
 
     return {
       ...currentActions,
@@ -162,19 +172,32 @@ function updateCardActionState(currentActions, cardId, actionId) {
         ...previousState,
         like: nextLike,
         dislike: false,
-        likeCount: Math.max(0, previousState.likeCount + (nextLike ? 1 : -1)),
+        likeCount:
+          typeof options.likeCount === "number"
+            ? Math.max(0, options.likeCount)
+            : fallbackLikeCount,
       },
     };
   }
 
   if (actionId === "dislike") {
+    const fallbackLikeCount = previousState.like
+      ? Math.max(0, previousState.likeCount - 1)
+      : previousState.likeCount;
+
     return {
       ...currentActions,
       [cardId]: {
         ...previousState,
         like: false,
-        dislike: !previousState.dislike,
-        likeCount: previousState.like ? 0 : previousState.likeCount,
+        dislike:
+          typeof options.dislike === "boolean"
+            ? options.dislike
+            : !previousState.dislike,
+        likeCount:
+          typeof options.likeCount === "number"
+            ? Math.max(0, options.likeCount)
+            : fallbackLikeCount,
       },
     };
   }
@@ -542,6 +565,42 @@ export default function VotePage() {
     localStorage.setItem(`cardActions_${userId}`, JSON.stringify(cardActions));
   }, [cardActions, userId]);
 
+  useEffect(() => {
+    const handleVoteLikeUpdated = (event) => {
+      const detail = event.detail ?? {};
+      if (String(detail.userId) !== String(userId)) {
+        return;
+      }
+
+      const cardId = String(detail.cardId ?? "");
+      if (!cardId) {
+        return;
+      }
+
+      setCardActions((currentActions) => {
+        const previousState = currentActions[cardId] ?? initialActionState;
+        const nextCount = Number(detail.likeCount);
+
+        return {
+          ...currentActions,
+          [cardId]: {
+            ...previousState,
+            like: Boolean(detail.liked),
+            dislike: detail.liked ? false : previousState.dislike,
+            likeCount: Number.isFinite(nextCount)
+              ? Math.max(0, nextCount)
+              : previousState.likeCount,
+          },
+        };
+      });
+    };
+
+    window.addEventListener("vote-like-updated", handleVoteLikeUpdated);
+    return () => {
+      window.removeEventListener("vote-like-updated", handleVoteLikeUpdated);
+    };
+  }, [userId]);
+
   const [copiedCardId, setCopiedCardId] = useState("");
   const [commentCardId, setCommentCardId] = useState("");
   const [selectedTag, setSelectedTag] = useState("전체");
@@ -780,29 +839,66 @@ export default function VotePage() {
   };
 
   const handleToggleAction = async (cardId, actionId) => {
-    if (actionId === "like") {
-      const card = cards.find((c) => c.feedId === cardId);
-      if (!card) return;
+    const card = cards.find((c) => c.feedId === cardId);
+    if (!card) return;
 
+    if (actionId === "like") {
       if (userId === "guest") {
         alert("로그인이 필요합니다.");
         return;
       }
 
       try {
-        const res = await toggleLike(card.id, userId);
+        const currentActionState = cardActions[cardId] ?? initialActionState;
+        const nextLike = !currentActionState.like;
+        const res = await toggleLike(card.id, userId, nextLike);
         if (res.success) {
-          setCardActions((currentActions) =>
-            updateCardActionState(currentActions, cardId, actionId),
-          );
+          setCardActions((currentActions) => {
+            const previousState = currentActions[cardId] ?? initialActionState;
+            const fallbackCount = Math.max(
+              0,
+              previousState.likeCount + (res.liked ? 1 : -1),
+            );
+            const likeCount = getLikeCountFromResponse(res, fallbackCount);
+
+            return updateCardActionState(currentActions, cardId, actionId, {
+              like: Boolean(res.liked),
+              likeCount,
+            });
+          });
         }
       } catch (error) {
         console.error(error);
         alert("좋아요 처리에 실패했습니다.");
       }
     } else {
+      const currentActionState = cardActions[cardId] ?? initialActionState;
+      const nextDislike = !currentActionState.dislike;
+      let serverLikeCount = null;
+
+      if (currentActionState.like) {
+        try {
+          const res = await toggleLike(card.id, userId, false);
+          if (!res.success) {
+            return;
+          }
+
+          serverLikeCount = getLikeCountFromResponse(
+            res,
+            Math.max(0, currentActionState.likeCount - 1),
+          );
+        } catch (error) {
+          console.error(error);
+          alert("좋아요 처리에 실패했습니다.");
+          return;
+        }
+      }
+
       setCardActions((currentActions) =>
-        updateCardActionState(currentActions, cardId, actionId),
+        updateCardActionState(currentActions, cardId, actionId, {
+          dislike: nextDislike,
+          likeCount: serverLikeCount,
+        }),
       );
     }
   };

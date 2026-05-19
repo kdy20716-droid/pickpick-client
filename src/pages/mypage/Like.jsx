@@ -4,7 +4,12 @@ import styles from "./MyPage.module.css";
 import { useAuth } from "../../contexts/AuthContext";
 import { getVote, toggleLike } from "../../api/posts";
 import Comments from "../../components/Comments.jsx";
-import { getImageUrl, getCandidateThumbnail } from "../../utils/image";
+import { getCandidateThumbnail } from "../../utils/image";
+
+function getLikeCountFromResponse(response, fallbackCount) {
+  const nextCount = Number(response?.like_count ?? response?.likes);
+  return Number.isFinite(nextCount) ? Math.max(0, nextCount) : fallbackCount;
+}
 
 const Like = () => {
   const [likedVotes, setLikedVotes] = useState([]);
@@ -39,36 +44,51 @@ const Like = () => {
     fetchLikedVotes();
   }, [fetchLikedVotes]);
 
-  const handleUnlike = async (postId) => {
+  const handleUnlike = async (vote) => {
     if (!currentUser) return;
 
+    const postId = vote.id;
+
     try {
-      const res = await toggleLike(postId, currentUser.id);
-      if (res.success) {
+      const res = await toggleLike(postId, currentUser.id, false);
+      if (res.success && res.liked === false) {
         // 성공적으로 취소되면 목록에서 해당 항목 제거
         setLikedVotes((prev) => prev.filter((vote) => vote.id !== postId));
 
         // VotePage와 좋아요 상태 동기화 (localStorage 업데이트)
         const userId = currentUser.id;
         const savedActions = localStorage.getItem(`cardActions_${userId}`);
-        if (savedActions) {
-          const actions = JSON.parse(savedActions);
-          const cardId = postId.toString();
-          if (actions[cardId]) {
-            actions[cardId].like = false;
-            // 로컬 카운트도 1 감소 (VotePage에서 표시용)
-            if (typeof actions[cardId].likeCount === "number") {
-              actions[cardId].likeCount = Math.max(
-                0,
-                actions[cardId].likeCount - 1,
-              );
-            }
-            localStorage.setItem(
-              `cardActions_${userId}`,
-              JSON.stringify(actions),
-            );
-          }
-        }
+        const actions = savedActions ? JSON.parse(savedActions) : {};
+        const cardId = postId.toString();
+        const previousAction = actions[cardId] ?? {};
+        const fallbackCount = Math.max(
+          0,
+          Number(previousAction.likeCount ?? vote.like_count ?? 1) - 1,
+        );
+        const likeCount = getLikeCountFromResponse(res, fallbackCount);
+
+        actions[cardId] = {
+          ...previousAction,
+          like: false,
+          likeCount,
+        };
+        localStorage.setItem(
+          `cardActions_${userId}`,
+          JSON.stringify(actions),
+        );
+
+        window.dispatchEvent(
+          new CustomEvent("vote-like-updated", {
+            detail: {
+              userId,
+              cardId,
+              liked: false,
+              likeCount,
+            },
+          }),
+        );
+      } else if (res.success) {
+        await fetchLikedVotes();
       }
     } catch (error) {
       console.error("좋아요 취소 실패:", error);
@@ -124,7 +144,7 @@ const Like = () => {
                   {/* 왼쪽 하트 아이콘 - 클릭 시 좋아요 취소 */}
                   <div
                     className="like-badge"
-                    onClick={() => handleUnlike(vote.id)}
+                    onClick={() => handleUnlike(vote)}
                     style={{ cursor: "pointer" }}
                     title="좋아요 취소"
                   >
