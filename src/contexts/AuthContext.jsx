@@ -45,9 +45,10 @@ export const AuthProvider = ({ children }) => {
           }
         } catch (error) {
           console.error("최신 사용자 정보 조회 실패:", error);
-          // 토큰이 만료되었거나 유효하지 않은 경우 로그아웃 처리할 수도 있음
+          // 토큰이 만료되었거나 유효하지 않은 경우 세션 정리
           if (error.response?.status === 401) {
-             // logout(); // 자동 로그아웃을 원할 경우 활성화
+             console.warn("세션이 만료되었습니다. 다시 로그인해주세요.");
+             logout(); 
           }
         }
       }
