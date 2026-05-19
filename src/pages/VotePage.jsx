@@ -459,19 +459,20 @@ function VoteCard({
                         />
                       </div>
                     ) : candidate.type === "video" ? (
-                      <video
-                        src={candidate.image}
-                        autoPlay
-                        loop
-                        muted
-                        playsInline
-                        className="vote-choice-media"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          if (e.currentTarget.paused) e.currentTarget.play();
-                          else e.currentTarget.pause();
-                        }}
-                      />
+                      <div className="vote-choice-media">
+                        <video
+                          src={candidate.image}
+                          autoPlay
+                          loop
+                          muted
+                          playsInline
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (e.currentTarget.paused) e.currentTarget.play();
+                            else e.currentTarget.pause();
+                          }}
+                        />
+                      </div>
                     ) : candidate.type === "audio" ? (
                       <div className="vote-choice-audio-container">
                         <div className="audio-icon-large">🎵</div>
