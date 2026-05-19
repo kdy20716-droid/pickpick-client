@@ -393,6 +393,32 @@
   box-shadow: 0 4px 10px rgba(247, 161, 196, 0.3);
 }
 
+.deadline-settings-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.deadline-input {
+  width: 100%;
+  height: 46px;
+  padding: 0 14px;
+  border: 1px solid #eee;
+  border-radius: 16px;
+  background: #fff;
+  color: #666;
+  font: inherit;
+  font-size: 14px;
+  outline: none;
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.deadline-input:focus {
+  border-color: #f7a1c4;
+  box-shadow: 0 8px 18px rgba(252, 146, 199, 0.16);
+}
+
 /* Floating Button */
 .fab-button {
   position: fixed; /* 화면에 고정 */
