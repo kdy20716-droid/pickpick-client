@@ -979,9 +979,9 @@
   position: absolute !important;
   top: 50% !important;
   left: 50% !important;
-  transform: translate(-50%, calc(-50% - 50px)) !important; /* 중앙에서 50px 위로 */
-  width: 62px !important; /* 좌우 10px 늘림 (52px -> 62px) */
-  height: 32px !important;
+  transform: translate(-50%, calc(-50% - 100px)) !important; /* 중앙에서 100px 위로 */
+  width: 92px !important; /* 62px에서 좌우 30px 늘림 */
+  height: 42px !important; /* 32px에서 상하 10px 늘림 */
   z-index: 25 !important;
   background: #f7a1c4 !important;
   color: white !important;
@@ -989,11 +989,11 @@
   display: flex !important;
   justify-content: center !important;
   align-items: center !important;
-  border-radius: 8px !important;
+  border-radius: 12px !important; /* 커진 크기에 맞춰 라운드 조절 */
   font-weight: 900 !important;
-  font-size: 0.8rem !important;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.2) !important;
-  border: 1.5px solid white !important;
+  font-size: 1.1rem !important; /* 버튼이 커진 만큼 폰트 크기도 확대 */
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25) !important;
+  border: 2px solid white !important;
   transition: all 0.2s !important;
   cursor: pointer !important;
   pointer-events: auto !important;
