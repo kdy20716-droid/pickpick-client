@@ -141,7 +141,7 @@ const Profile = () => {
               style={{ cursor: "pointer" }}
             >
               <div className={`${styles.circleBig} ${currentUser?.selected_border ? `profile-border-${currentUser.selected_border}` : ""}`}>
-                <div style={{ width: "100%", height: "100%", borderRadius: "50%", overflow: "hidden" }}>
+                <div style={{ width: "100%", height: "100%", borderRadius: "50%", overflow: "hidden", display: "flex", alignItems: "flex-end", justifyContent: "center" }}>
                   {currentUser?.profile_image ? (
                     <img
                       src={getImageUrl(currentUser.profile_image)}
