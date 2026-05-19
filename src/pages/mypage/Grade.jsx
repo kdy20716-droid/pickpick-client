@@ -12,11 +12,8 @@ const Grade = () => {
         </div>
         <div className="gradeContent">
           <div className="gradeItem">
-            <div
-              className="gradeIcon"
-              style={{ background: "#CD7F3222", color: "#CD7F32" }}
-            >
-              🥉
+            <div className="gradeIconWrapper profile-border-bronze">
+              <div className="gradeIconPlaceholder"></div>
             </div>
             <span className="gradeName">BRONZE</span>
             <div className="gradeRequirements">
@@ -24,11 +21,8 @@ const Grade = () => {
             </div>
           </div>
           <div className="gradeItem">
-            <div
-              className="gradeIcon"
-              style={{ background: "#C0C0C022", color: "#C0C0C0" }}
-            >
-              🥈
+            <div className="gradeIconWrapper profile-border-silver">
+              <div className="gradeIconPlaceholder"></div>
             </div>
             <span className="gradeName">SILVER</span>
             <div className="gradeRequirements">
@@ -37,11 +31,8 @@ const Grade = () => {
             </div>
           </div>
           <div className="gradeItem">
-            <div
-              className="gradeIcon"
-              style={{ background: "#FFD70022", color: "#FFD700" }}
-            >
-              🥇
+            <div className="gradeIconWrapper profile-border-gold">
+              <div className="gradeIconPlaceholder"></div>
             </div>
             <span className="gradeName">GOLD</span>
             <div className="gradeRequirements">
@@ -50,11 +41,8 @@ const Grade = () => {
             </div>
           </div>
           <div className="gradeItem">
-            <div
-              className="gradeIcon"
-              style={{ background: "#E5E4E222", color: "#4ae46b" }}
-            >
-              💎
+            <div className="gradeIconWrapper profile-border-platinum">
+              <div className="gradeIconPlaceholder"></div>
             </div>
             <span className="gradeName">PLATINUM</span>
             <div className="gradeRequirements">
@@ -63,11 +51,8 @@ const Grade = () => {
             </div>
           </div>
           <div className="gradeItem">
-            <div
-              className="gradeIcon"
-              style={{ background: "#8B5CF622", color: "#8B5CF6" }}
-            >
-              👑
+            <div className="gradeIconWrapper profile-border-master">
+              <div className="gradeIconPlaceholder"></div>
             </div>
             <span className="gradeName">MASTER</span>
             <div className="gradeRequirements">

@@ -75,15 +75,26 @@
   background: #fdf7f9;
 }
 
-.gradeIcon {
+.gradeIconWrapper {
   width: 60px;
   height: 60px;
   border-radius: 50%;
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 30px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  position: relative;
+  /* profile-border 클래스들이 내부에서 z-index를 사용하므로 overflow: visible 유지 */
+}
+
+.gradeIconPlaceholder {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background-color: #f1f3f5;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
 }
 
 .gradeName {
