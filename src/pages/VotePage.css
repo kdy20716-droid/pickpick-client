@@ -493,7 +493,7 @@
   margin: 0;
   position: absolute;
   right: 0;
-  bottom: 14px;
+  bottom: 44px; /* 14px에서 30px 올려서 44px로 수정 */
   left: 0;
   box-sizing: border-box;
   width: auto;
@@ -977,15 +977,15 @@
 
 .vote-pick-badge {
   position: absolute !important;
-  top: 45px !important; /* 더 확실하게 내림 */
-  right: 15px !important;
-  left: auto !important; /* 왼쪽 고정 해제하여 너비 늘어남 방지 */
-  width: 52px !important; /* 너비를 아예 고정 */
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, calc(-50% - 50px)) !important; /* 중앙에서 50px 위로 */
+  width: 62px !important; /* 좌우 10px 늘림 (52px -> 62px) */
   height: 32px !important;
   z-index: 25 !important;
   background: #f7a1c4 !important;
   color: white !important;
-  padding: 0 !important; /* 좌우 패딩 제거 */
+  padding: 0 !important;
   display: flex !important;
   justify-content: center !important;
   align-items: center !important;
