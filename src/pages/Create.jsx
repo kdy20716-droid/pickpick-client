@@ -6,17 +6,38 @@ import { Pencil, Trash2, Maximize, Minus, Plus } from "lucide-react";
 import vsLogo from "../assets/vs-logo.svg";
 import "./Create.css";
 
-const DEFAULT_DEADLINE_HOURS = 24;
+const DEFAULT_DEADLINE_MINUTES = 24 * 60;
+const DEADLINE_OPTIONS = [
+  { label: "30분", minutes: 30 },
+  { label: "1시간", minutes: 60 },
+  { label: "2시간", minutes: 2 * 60 },
+  { label: "4시간", minutes: 4 * 60 },
+  { label: "8시간", minutes: 8 * 60 },
+  { label: "12시간", minutes: 12 * 60 },
+  { label: "1일", minutes: 24 * 60 },
+  { label: "3일", minutes: 3 * 24 * 60 },
+  { label: "7일", minutes: 7 * 24 * 60 },
+  { label: "15일", minutes: 15 * 24 * 60 },
+  { label: "30일", minutes: 30 * 24 * 60 },
+];
 
-function toDatetimeLocalValue(value) {
-  const date = value ? new Date(value) : new Date();
-
-  if (Number.isNaN(date.getTime())) {
-    return toDatetimeLocalValue(new Date(Date.now() + DEFAULT_DEADLINE_HOURS * 60 * 60 * 1000));
+function getDeadlineMinutesFromExpiresAt(expiresAt) {
+  const expiresAtTime = new Date(expiresAt).getTime();
+  if (!expiresAt || Number.isNaN(expiresAtTime)) {
+    return DEFAULT_DEADLINE_MINUTES;
   }
 
-  const pad = (number) => String(number).padStart(2, "0");
-  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+  const remainingMinutes = Math.max(
+    1,
+    Math.round((expiresAtTime - Date.now()) / 60000),
+  );
+
+  return DEADLINE_OPTIONS.reduce((closest, option) => {
+    return Math.abs(option.minutes - remainingMinutes) <
+      Math.abs(closest - remainingMinutes)
+      ? option.minutes
+      : closest;
+  }, DEFAULT_DEADLINE_MINUTES);
 }
 
 const Create = () => {
@@ -48,11 +69,10 @@ const Create = () => {
   const [mediaType2, setMediaType2] = useState("image");
   const [youtubeUrl1, setYoutubeUrl1] = useState("");
   const [youtubeUrl2, setYoutubeUrl2] = useState("");
-  const [expiresAt, setExpiresAt] = useState(() =>
-    toDatetimeLocalValue(
-      new Date(Date.now() + DEFAULT_DEADLINE_HOURS * 60 * 60 * 1000),
-    ),
+  const [deadlineMinutes, setDeadlineMinutes] = useState(
+    DEFAULT_DEADLINE_MINUTES,
   );
+  const [isDeadlineUnlimited, setIsDeadlineUnlimited] = useState(false);
 
   useEffect(() => {
     if (isEditing) {
@@ -68,12 +88,8 @@ const Create = () => {
       setMediaType2(type2 === "video" || type2 === "audio" ? "youtube" : type2);
       if (type1 === "youtube") setYoutubeUrl1(editData.candidate_a_image);
       if (type2 === "youtube") setYoutubeUrl2(editData.candidate_b_image);
-      setExpiresAt(
-        toDatetimeLocalValue(
-          editData.expires_at ||
-            new Date(Date.now() + DEFAULT_DEADLINE_HOURS * 60 * 60 * 1000),
-        ),
-      );
+      setIsDeadlineUnlimited(!editData.expires_at);
+      setDeadlineMinutes(getDeadlineMinutesFromExpiresAt(editData.expires_at));
     }
   }, [isEditing, editData]);
 
@@ -206,17 +222,9 @@ const Create = () => {
       return;
     }
 
-    const expiresAtDate = new Date(expiresAt);
-    if (
-      !expiresAt ||
-      Number.isNaN(expiresAtDate.getTime()) ||
-      expiresAtDate <= new Date()
-    ) {
-      alert("마감시간은 현재 이후로 설정해주세요.");
-      return;
-    }
-
-    const expiresAtValue = expiresAtDate.toISOString();
+    const expiresAtValue = isDeadlineUnlimited
+      ? null
+      : new Date(Date.now() + deadlineMinutes * 60 * 1000).toISOString();
 
     setIsSubmitting(true);
 
@@ -236,7 +244,8 @@ const Create = () => {
           f2,
           mediaType1,
           mediaType2,
-          expiresAtValue
+          expiresAtValue,
+          isDeadlineUnlimited,
         );
         alert("투표 게시글이 성공적으로 수정되었습니다!");
       } else {
@@ -250,7 +259,8 @@ const Create = () => {
           f2,
           mediaType1,
           mediaType2,
-          expiresAtValue
+          expiresAtValue,
+          isDeadlineUnlimited,
         );
         alert("투표 게시글이 성공적으로 등록되었습니다!");
       }
@@ -555,13 +565,32 @@ const Create = () => {
 
           <div className="settings-group deadline-settings-group">
             <h3 className="settings-group__title">마감시간</h3>
-            <input
-              type="datetime-local"
-              className="deadline-input"
-              value={expiresAt}
-              min={toDatetimeLocalValue(new Date())}
-              onChange={(event) => setExpiresAt(event.target.value)}
-            />
+            <select
+              className="deadline-select"
+              value={deadlineMinutes}
+              onChange={(event) => {
+                setIsDeadlineUnlimited(false);
+                setDeadlineMinutes(Number(event.target.value));
+              }}
+            >
+              {DEADLINE_OPTIONS.map((option) => (
+                <option key={option.minutes} value={option.minutes}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+            <button
+              type="button"
+              className={`deadline-unlimited-button${
+                isDeadlineUnlimited ? " deadline-unlimited-button--active" : ""
+              }`}
+              onClick={() => {
+                setIsDeadlineUnlimited(true);
+                alert("무기한 선택 시 랭킹 진입은 불가합니다.");
+              }}
+            >
+              무기한
+            </button>
           </div>
 
           <button

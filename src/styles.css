@@ -193,16 +193,6 @@ a {
   to { box-shadow: 0 0 0 4px #70D1F4, 0 0 30px #70D1F4; }
 }
 
-@keyframes pick-glow {
-  from { box-shadow: 0 0 0 4px #ff4b8d, 0 0 15px #ff4b8d; }
-  to { box-shadow: 0 0 0 4px #ff4b8d, 0 0 35px #ff4b8d; }
-}
-
-@keyframes admin-glow {
-  from { box-shadow: 0 0 0 4px #ff0000, 0 0 15px #ff0000; }
-  to { box-shadow: 0 0 0 4px #ff0000, 0 0 35px #ff0000; }
-}
-
 .challenger-shine {
   background: linear-gradient(
     120deg,
