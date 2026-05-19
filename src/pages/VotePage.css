@@ -989,8 +989,8 @@
   left: 50% !important;
   transform: translate(
     -50%,
-    calc(-50% - 300px)
-  ) !important; /* 중앙에서 300px 위로 */
+    calc(-50% - 200px)
+  ) !important; /* 중앙에서 200px 위로 */
   width: 92px !important;
   height: 42px !important;
   z-index: 25 !important;
