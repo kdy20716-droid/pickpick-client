@@ -156,13 +156,13 @@ const Profile = () => {
                 </div>
               </div>
               <div className={styles.camIconWrapper}>
-                <div className={styles.camIcon}>📷</div>
+                {!currentUser?.selected_border && <div className={styles.camIcon}>📷</div>}
               </div>
             </div>
             <div className={`${styles.card} ${styles.nicknameCard}`}>
               <div
-                className={styles.lvBadge}
-                style={{ color: gradeInfo.color }}
+                className={`${styles.lvBadge} ${gradeDisplayName.toUpperCase() === "CHALLENGER" ? "challenger-shine" : ""}`}
+                style={gradeDisplayName.toUpperCase() === "CHALLENGER" ? {} : { color: gradeInfo.color }}
               >
                 {gradeDisplayName}{" "}
               </div>

@@ -190,3 +190,23 @@ a {
   from { box-shadow: 0 0 0 4px #ff0000, 0 0 15px #ff0000; }
   to { box-shadow: 0 0 0 4px #ff0000, 0 0 35px #ff0000; }
 }
+
+.challenger-shine {
+  background: linear-gradient(
+    120deg,
+    #70D1F4 30%,
+    rgba(255, 255, 255, 0.8) 50%,
+    #70D1F4 70%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: textShine 3s linear infinite;
+  display: inline-block;
+}
+
+@keyframes textShine {
+  to {
+    background-position: 200% center;
+  }
+}

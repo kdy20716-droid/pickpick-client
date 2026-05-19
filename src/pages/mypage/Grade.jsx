@@ -75,7 +75,7 @@ const Grade = () => {
             <div className="gradeIconWrapper profile-border-challenger">
               <div className="gradeIconPlaceholder"></div>
             </div>
-            <span className="gradeName">CHALLENGER</span>
+            <span className="gradeName challenger-shine">CHALLENGER</span>
             <div className="gradeRequirements">
               <span className="gradeRequirement">마스터 달성 후</span>
               <span className="gradeRequirement">랭킹 1위 3회 이상</span>
