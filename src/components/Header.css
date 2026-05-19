@@ -78,8 +78,11 @@
 .header-profile-avatar.profile-border-gold::before,
 .header-profile-avatar.profile-border-platinum::before,
 .header-profile-avatar.profile-border-diamond::before,
-.header-profile-avatar.profile-border-master::before {
-  transform: translate(0, 3px);
+.header-profile-avatar.profile-border-master::before,
+.header-profile-avatar.profile-border-challenger::before,
+.header-profile-avatar.profile-border-pick::before,
+.header-profile-avatar.profile-border-admin::before {
+  transform: translate(-1px, -1px);
 }
 
 .header-profile-inner {

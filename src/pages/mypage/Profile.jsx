@@ -96,7 +96,7 @@ const Profile = () => {
     if (g === "SILVER" || g === "실버") return { color: "#C0C0C0" };
     if (g === "GOLD" || g === "골드") return { color: "#FFD700" };
     if (g === "PLATINUM" || g === "플래티넘")
-      return { color: "#B4C3D2" };
+      return { color: "#26C6DA" };
     if (g === "DIAMOND" || g === "다이아몬드")
       return { color: "#8B5CF6" };
     if (g === "MASTER" || g === "마스터")
