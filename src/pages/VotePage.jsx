@@ -112,9 +112,9 @@ function getCandidateNameStyle(name) {
   };
 }
 
-function formatVoteDeadline(expiresAt) {
+function formatVoteDeadline(expiresAt, currentTime) {
   if (!expiresAt) {
-    return "";
+    return "무기한";
   }
 
   const date = new Date(expiresAt);
@@ -122,12 +122,20 @@ function formatVoteDeadline(expiresAt) {
     return "";
   }
 
-  if (date <= new Date()) {
+  const remainingMs = date.getTime() - currentTime;
+  if (remainingMs <= 0) {
     return "마감됨";
   }
 
+  const totalSeconds = Math.floor(remainingMs / 1000);
+  const days = Math.floor(totalSeconds / 86400);
+  const hours = Math.floor((totalSeconds % 86400) / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
   const pad = (number) => String(number).padStart(2, "0");
-  return `마감 ${pad(date.getMonth() + 1)}.${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
+  const time = `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+
+  return days > 0 ? `마감 ${days}일 ${time}` : `마감 ${time}`;
 }
 
 function getTargetVoteId(routePostId, search, hash) {
@@ -377,10 +385,14 @@ function VoteCard({
   onOpenComments,
   isCommentsOpen,
   isActive,
+  currentTime,
   registerCardRef,
 }) {
-  const hasVoted = Boolean(selectedCandidateId) || card.isExpired;
-  const deadlineLabel = formatVoteDeadline(card.expiresAt);
+  const expiresAtTime = card.expiresAt ? new Date(card.expiresAt).getTime() : NaN;
+  const isExpired =
+    Number.isFinite(expiresAtTime) && expiresAtTime <= currentTime;
+  const hasVoted = Boolean(selectedCandidateId) || isExpired;
+  const deadlineLabel = formatVoteDeadline(card.expiresAt, currentTime);
 
   return (
     <article
@@ -545,6 +557,7 @@ export default function VotePage() {
   const [cards, setCards] = useState([]);
   const [isVotesLoading, setIsVotesLoading] = useState(true);
   const [votesError, setVotesError] = useState("");
+  const [currentTime, setCurrentTime] = useState(() => Date.now());
 
   const { user: currentUser, isLoggedIn } = useAuth();
   const userId = currentUser?.id || "guest";
@@ -627,6 +640,16 @@ export default function VotePage() {
   const fetchSequenceRef = useRef(0);
   const { activeCardId, cardRefs, feedRef, registerCardRef } =
     useActiveVoteCard(cards, targetVoteId);
+
+  useEffect(() => {
+    const intervalId = window.setInterval(() => {
+      setCurrentTime(Date.now());
+    }, 1000);
+
+    return () => {
+      window.clearInterval(intervalId);
+    };
+  }, []);
 
   // 조회수 증가 로직
   useEffect(() => {
@@ -1036,6 +1059,7 @@ export default function VotePage() {
                   onOpenComments={handleOpenComments}
                   isCommentsOpen={commentCardId === card.feedId}
                   isActive={activeCardId === card.feedId}
+                  currentTime={currentTime}
                   registerCardRef={registerCardRef}
                 />
               );

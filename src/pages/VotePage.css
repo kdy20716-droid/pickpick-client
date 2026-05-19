@@ -381,13 +381,14 @@
   top: 20px;
   left: 22px;
   z-index: 4;
-  max-width: 132px;
+  min-width: 118px;
+  max-width: 170px;
   padding: 6px 10px;
   border: 1px solid rgba(252, 146, 199, 0.42);
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.86);
   color: #d94588;
-  font-size: 0.78rem;
+  font-size: 0.76rem;
   font-weight: 800;
   line-height: 1;
   white-space: nowrap;
@@ -978,7 +979,8 @@
   .vote-deadline-badge {
     top: 18px;
     left: 18px;
-    max-width: 96px;
+    min-width: 88px;
+    max-width: 122px;
     padding: 5px 8px;
     font-size: 0.68rem;
   }

@@ -396,27 +396,84 @@
 .deadline-settings-group {
   display: flex;
   flex-direction: column;
+  gap: 12px;
 }
 
-.deadline-input {
+.deadline-select,
+.deadline-unlimited-button {
   width: 100%;
-  height: 46px;
-  padding: 0 14px;
+  min-height: 42px;
+  padding: 9px 38px 9px 10px;
   border: 1px solid #eee;
-  border-radius: 16px;
+  border-radius: 14px;
   background: #fff;
-  color: #666;
+  color: #888;
   font: inherit;
-  font-size: 14px;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.1;
+  cursor: pointer;
   outline: none;
   transition:
+    color 180ms ease,
+    background-color 180ms ease,
     border-color 180ms ease,
-    box-shadow 180ms ease;
+    box-shadow 180ms ease,
+    transform 180ms ease;
 }
 
-.deadline-input:focus {
+.deadline-select {
+  appearance: none;
+  background:
+    linear-gradient(45deg, transparent 50%, #888 50%) calc(100% - 18px) 50% /
+      6px 6px no-repeat,
+    linear-gradient(135deg, #888 50%, transparent 50%) calc(100% - 12px) 50% /
+      6px 6px no-repeat,
+    #fff;
+}
+
+.deadline-select:hover {
+  transform: translateY(-1px);
+  border-color: #f7a1c4;
+  color: #f7a1c4;
+  box-shadow: 0 8px 18px rgba(252, 146, 199, 0.16);
+}
+
+.deadline-unlimited-button:not(.deadline-unlimited-button--active):hover {
+  transform: translateY(-2px);
+  border-color: #f7a1c4;
+  background-color: #fff;
+  color: #f7a1c4;
+  box-shadow: 0 16px 30px rgba(252, 146, 199, 0.22);
+}
+
+.deadline-select:focus {
   border-color: #f7a1c4;
   box-shadow: 0 8px 18px rgba(252, 146, 199, 0.16);
+}
+
+.deadline-select:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.deadline-unlimited-button--active {
+  border-color: #f7a1c4;
+  background: #f7a1c4;
+  color: #fff;
+  box-shadow: 0 8px 18px rgba(252, 146, 199, 0.22);
+}
+
+.deadline-unlimited-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 46px;
+  padding: 11px 14px;
+  border-style: solid;
+  border-radius: 18px;
 }
 
 /* Floating Button */
