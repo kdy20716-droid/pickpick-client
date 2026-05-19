@@ -74,13 +74,12 @@ a {
 .profile-border-master::before {
   content: "";
   position: absolute;
-  inset: -14%;
+  inset: -12%;
   z-index: 2;
   background-image: var(--profile-border-image);
   background-repeat: no-repeat;
   background-position: center;
   background-size: contain;
-  transform: translate(2px, 5px);
   pointer-events: none;
 }
 
@@ -123,13 +122,12 @@ a {
 .profile-border-challenger::before {
   content: "";
   position: absolute;
-  inset: -14%;
+  inset: -12%;
   z-index: 2;
   background-image: url("./assets/챌린저.png");
   background-repeat: no-repeat;
   background-position: center;
   background-size: contain;
-  transform: translate(2px, 5px);
   pointer-events: none;
 }
 
@@ -146,13 +144,12 @@ a {
 .profile-border-pick::before {
   content: "";
   position: absolute;
-  inset: -14%;
+  inset: -12%;
   z-index: 2;
   background-image: url("./assets/pick.png");
   background-repeat: no-repeat;
   background-position: center;
   background-size: contain;
-  transform: translate(2px, 5px);
   pointer-events: none;
 }
 
@@ -166,13 +163,12 @@ a {
 .profile-border-admin::before {
   content: "";
   position: absolute;
-  inset: -14%;
+  inset: -12%;
   z-index: 2;
   background-image: url("./assets/admin.png");
   background-repeat: no-repeat;
   background-position: center;
   background-size: contain;
-  transform: translate(2px, 5px);
   pointer-events: none;
 }
 

@@ -155,7 +155,7 @@
 .comment-avatar.profile-border-platinum::before,
 .comment-avatar.profile-border-diamond::before,
 .comment-avatar.profile-border-master::before {
-  transform: translate(0, 3px);
+  /* Removed transform to use global centered style */
 }
 
 .comment-body {

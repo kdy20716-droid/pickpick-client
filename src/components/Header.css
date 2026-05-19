@@ -82,7 +82,7 @@
 .header-profile-avatar.profile-border-challenger::before,
 .header-profile-avatar.profile-border-pick::before,
 .header-profile-avatar.profile-border-admin::before {
-  transform: translate(-1px, -1px);
+  /* Removed transform to use global centered style */
 }
 
 .header-profile-inner {
