@@ -96,13 +96,13 @@ const Profile = () => {
     if (g === "SILVER" || g === "실버") return { color: "#C0C0C0" };
     if (g === "GOLD" || g === "골드") return { color: "#FFD700" };
     if (g === "PLATINUM" || g === "플래티넘")
-      return { color: "#B4C3D2" };
+      return { color: "#26C6DA" };
     if (g === "DIAMOND" || g === "다이아몬드")
-      return { color: "#70D1F4" };
-    if (g === "MASTER" || g === "마스터")
       return { color: "#8B5CF6" };
-    if (g === "CHALLENGER" || g === "챌린저")
+    if (g === "MASTER" || g === "마스터")
       return { color: "#FF4B8D" };
+    if (g === "CHALLENGER" || g === "챌린저")
+      return { color: "#70D1F4" };
     return { color: "#999999" }; // UnRanked
   };
 
@@ -156,13 +156,13 @@ const Profile = () => {
                 </div>
               </div>
               <div className={styles.camIconWrapper}>
-                <div className={styles.camIcon}>📷</div>
+                {!currentUser?.selected_border && <div className={styles.camIcon}>📷</div>}
               </div>
             </div>
             <div className={`${styles.card} ${styles.nicknameCard}`}>
               <div
-                className={styles.lvBadge}
-                style={{ color: gradeInfo.color }}
+                className={`${styles.lvBadge} ${gradeDisplayName.toUpperCase() === "CHALLENGER" ? "challenger-shine" : ""}`}
+                style={gradeDisplayName.toUpperCase() === "CHALLENGER" ? {} : { color: gradeInfo.color }}
               >
                 {gradeDisplayName}{" "}
               </div>

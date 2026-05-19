@@ -443,24 +443,24 @@ const Admin = () => {
                         <td>{user.nickname} ({user.name})</td>
                         <td>
                           <select 
-                            value={user.tier === "diamond" ? "master" : user.tier}
+                            value={user.tier || "bronze"}
                             onChange={(e) => handleUpdateUserStatus(user.id, { tier: e.target.value })}
                           >
                             <option value="bronze">BRONZE</option>
                             <option value="silver">SILVER</option>
                             <option value="gold">GOLD</option>
                             <option value="platinum">PLATINUM</option>
+                            <option value="diamond">DIAMOND</option>
                             <option value="master">MASTER</option>
+                            <option value="challenger">CHALLENGER</option>
                           </select>
                         </td>
                         <td>
-                          <select 
-                            value={user.role} 
-                            onChange={(e) => handleUpdateUserStatus(user.id, { role: e.target.value })}
-                          >
-                            <option value="user">USER</option>
-                            <option value="admin">ADMIN</option>
-                          </select>
+                          {user.role === "admin" ? (
+                            <span style={{ color: "#ff4d4f", fontWeight: "bold" }}>ADMIN</span>
+                          ) : (
+                            <span>USER</span>
+                          )}
                         </td>
                         <td>
                           <div className="border-grant-cell">
@@ -468,16 +468,14 @@ const Admin = () => {
                             <button 
                               className="grant-btn"
                               onClick={() => {
-                                const border = prompt("지급할 테두리 코드 (admin, event 등):", "admin");
-                                if (border) {
-                                  const newList = user.unlocked_borders 
-                                    ? [...new Set([...user.unlocked_borders.split(','), border])].join(',')
-                                    : border;
-                                  handleUpdateUserStatus(user.id, { unlocked_borders: newList });
-                                }
+                                const border = "pick";
+                                const newList = user.unlocked_borders 
+                                  ? [...new Set([...user.unlocked_borders.split(','), border])].join(',')
+                                  : border;
+                                handleUpdateUserStatus(user.id, { unlocked_borders: newList });
                               }}
                             >
-                              지급
+                              Pick 지급
                             </button>
                             {user.unlocked_borders && (
                               <button 

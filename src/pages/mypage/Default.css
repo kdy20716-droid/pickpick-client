@@ -332,7 +332,9 @@
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.18);
 }
 
-.security-settings-modal {
+.security-settings-modal,
+.password-settings-modal,
+.nickname-settings-modal {
   transform: translateY(-44px);
 }
 
@@ -389,7 +391,9 @@
   transform: translateX(24px);
 }
 
-.profile-settings-modal .settings-modal-header button {
+.profile-settings-modal .settings-modal-header button,
+.password-settings-modal .settings-modal-header button,
+.nickname-settings-modal .settings-modal-header button {
   transform: translateX(24px);
 }
 

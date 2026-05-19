@@ -149,15 +149,6 @@
   height: 32px;
 }
 
-.comment-avatar.profile-border-bronze::before,
-.comment-avatar.profile-border-silver::before,
-.comment-avatar.profile-border-gold::before,
-.comment-avatar.profile-border-platinum::before,
-.comment-avatar.profile-border-diamond::before,
-.comment-avatar.profile-border-master::before {
-  transform: translate(0, 3px);
-}
-
 .comment-body {
   min-width: 0;
   flex: 1;

@@ -74,13 +74,16 @@ a {
 .profile-border-master::before {
   content: "";
   position: absolute;
-  inset: -14%;
+  top: 50%;
+  left: 50%;
+  width: 124%;
+  height: 124%;
+  transform: translate(-50%, -48%); /* Slight upward shift for better visual centering */
   z-index: 2;
   background-image: var(--profile-border-image);
   background-repeat: no-repeat;
   background-position: center;
   background-size: contain;
-  transform: translate(2px, 5px);
   pointer-events: none;
 }
 
@@ -123,13 +126,16 @@ a {
 .profile-border-challenger::before {
   content: "";
   position: absolute;
-  inset: -14%;
+  top: 50%;
+  left: 50%;
+  width: 124%;
+  height: 124%;
+  transform: translate(-50%, -48%);
   z-index: 2;
   background-image: url("./assets/챌린저.png");
   background-repeat: no-repeat;
   background-position: center;
   background-size: contain;
-  transform: translate(2px, 5px);
   pointer-events: none;
 }
 
@@ -137,53 +143,49 @@ a {
 /* 🚨 DO NOT MODIFY BELOW STYLES (ADMIN / PICK ONLY) - SEE GEMINI.md 🚨 */
 /* ===================================================================== */
 .profile-border-pick {
-  box-shadow: 0 0 0 4px #ff4b8d, 0 0 25px #ff4b8d !important;
-  border-radius: 50% !important;
   position: relative !important;
-  animation: pick-glow 1.5s infinite alternate !important;
+  border-radius: 50% !important;
+  box-shadow: none !important;
+  overflow: visible !important;
 }
 
-.profile-border-pick::after {
-  content: "pick" !important;
-  position: absolute !important;
-  bottom: -4px !important;
-  left: 50% !important;
-  transform: translateX(-50%) !important;
-  background-color: #ff4b8d !important;
-  color: white !important;
-  font-size: 6.5px !important;
-  font-weight: 900 !important;
-  padding: 0px 3px !important;
-  border-radius: 8px !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.3px !important;
-  box-shadow: 0 0 8px #ff4b8d !important;
-  z-index: 10 !important;
+.profile-border-pick::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 124%;
+  height: 124%;
+  transform: translate(-50%, -48%);
+  z-index: 2;
+  background-image: url("./assets/pick.png");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  pointer-events: none;
 }
 
 .profile-border-admin {
-  box-shadow: 0 0 0 4px #ff0000, 0 0 25px #ff0000 !important;
-  border-radius: 50% !important;
   position: relative !important;
-  animation: admin-glow 1.5s infinite alternate !important;
+  border-radius: 50% !important;
+  box-shadow: none !important;
+  overflow: visible !important;
 }
 
-.profile-border-admin::after {
-  content: "admin" !important;
-  position: absolute !important;
-  bottom: -4px !important;
-  left: 50% !important;
-  transform: translateX(-50%) !important;
-  background-color: #ff0000 !important;
-  color: white !important;
-  font-size: 6.5px !important;
-  font-weight: 900 !important;
-  padding: 0px 3px !important;
-  border-radius: 8px !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.3px !important;
-  box-shadow: 0 0 8px #ff0000 !important;
-  z-index: 10 !important;
+.profile-border-admin::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 124%;
+  height: 124%;
+  transform: translate(-50%, -48%);
+  z-index: 2;
+  background-image: url("./assets/admin.png");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  pointer-events: none;
 }
 
 @keyframes border-glow {
@@ -199,4 +201,24 @@ a {
 @keyframes admin-glow {
   from { box-shadow: 0 0 0 4px #ff0000, 0 0 15px #ff0000; }
   to { box-shadow: 0 0 0 4px #ff0000, 0 0 35px #ff0000; }
+}
+
+.challenger-shine {
+  background: linear-gradient(
+    120deg,
+    #70D1F4 30%,
+    rgba(255, 255, 255, 0.8) 50%,
+    #70D1F4 70%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: textShine 3s linear infinite;
+  display: inline-block;
+}
+
+@keyframes textShine {
+  to {
+    background-position: 200% center;
+  }
 }
