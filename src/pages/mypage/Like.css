@@ -120,6 +120,13 @@
   align-items: center;
   justify-content: space-between;
   gap: 30px;
+  padding: 10px;
+  border-radius: 20px;
+  transition: background-color 0.2s;
+}
+
+.info-card:hover {
+  background-color: #fdf2f6;
 }
 
 .thumb-img {

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import "./Like.css";
 import styles from "./MyPage.module.css";
 import { useAuth } from "../../contexts/AuthContext";
@@ -12,6 +13,7 @@ const Like = () => {
   const [searchKeyword, setSearchKeyword] = useState("");
   const { user: currentUser } = useAuth();
   const [selectedVoteForComments, setSelectedVoteForComments] = useState(null);
+  const navigate = useNavigate();
 
   const fetchLikedVotes = useCallback(async () => {
     if (!currentUser) return;
@@ -132,7 +134,11 @@ const Like = () => {
                   </div>
 
                   {/* 중앙 정보 박스 */}
-                  <div className="info-card">
+                  <div
+                    className="info-card"
+                    onClick={() => navigate(`/vote/${vote.id}`)}
+                    style={{ cursor: "pointer" }}
+                  >
                     <div className="thumb-img">
                       {vote.candidate_a_image ? (
                         <img
