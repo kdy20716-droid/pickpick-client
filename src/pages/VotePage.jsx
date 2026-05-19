@@ -706,6 +706,10 @@ export default function VotePage() {
             : Math.round(((item.candidate_b_count || 0) / totalVotes) * 100);
 
         const cardId = item.id.toString();
+        const isVoted = Boolean(item.user_voted_side);
+        const isExpired = item.expires_at
+          ? new Date(item.expires_at) <= new Date()
+          : false;
 
         if (item.user_voted_side) {
           serverVotes[cardId] = item.user_voted_side.toLowerCase();
@@ -723,7 +727,8 @@ export default function VotePage() {
           feedId: cardId,
           title: item.title,
           expiresAt: item.expires_at,
-          isExpired: item.expires_at ? new Date(item.expires_at) <= new Date() : false,
+          isExpired,
+          isVoted,
           leftCandidate: {
             id: "a",
             name: item.candidate_a_name,
@@ -746,10 +751,19 @@ export default function VotePage() {
         return;
       }
 
+      // 투표 완료(Voted) 또는 마감(Expired)된 항목을 뒤로 정렬
+      const sortedCards = [...formattedCards].sort((a, b) => {
+        const aDone = a.isVoted || a.isExpired;
+        const bDone = b.isVoted || b.isExpired;
+        if (aDone && !bDone) return 1;
+        if (!aDone && bDone) return -1;
+        return 0;
+      });
+
       // Merge server votes into local state (server has priority)
       setSelectedVotes((prev) => ({ ...prev, ...serverVotes }));
       setCardActions((prev) => ({ ...prev, ...serverActions }));
-      setCards(pinTargetCard(formattedCards, targetVoteId));
+      setCards(pinTargetCard(sortedCards, targetVoteId));
     } catch (error) {
       if (fetchSequenceRef.current !== fetchId) {
         return;
