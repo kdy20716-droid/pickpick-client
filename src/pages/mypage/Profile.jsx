@@ -92,24 +92,22 @@ const Profile = () => {
   const getGradeInfo = (grade) => {
     const g = grade?.toUpperCase() || "UNRANKED";
     if (g === "BRONZE" || g === "브론즈")
-      return { color: "#CD7F32", emoji: "🥉" };
-    if (g === "SILVER" || g === "실버") return { color: "#C0C0C0", emoji: "🥈" };
-    if (g === "GOLD" || g === "골드") return { color: "#FFD700", emoji: "🥇" };
+      return { color: "#CD7F32" };
+    if (g === "SILVER" || g === "실버") return { color: "#C0C0C0" };
+    if (g === "GOLD" || g === "골드") return { color: "#FFD700" };
     if (g === "PLATINUM" || g === "플래티넘")
-      return { color: "#B4C3D2", emoji: "💎" };
-    if (
-      g === "MASTER" ||
-      g === "마스터" ||
-      g === "DIAMOND" ||
-      g === "다이아몬드"
-    )
-      return { color: "#8B5CF6", emoji: "👑" };
-    return { color: "#999999", emoji: "⚪" }; // UnRanked
+      return { color: "#B4C3D2" };
+    if (g === "DIAMOND" || g === "다이아몬드")
+      return { color: "#70D1F4" };
+    if (g === "MASTER" || g === "마스터")
+      return { color: "#8B5CF6" };
+    if (g === "CHALLENGER" || g === "챌린저")
+      return { color: "#FF4B8D" };
+    return { color: "#999999" }; // UnRanked
   };
 
   const getGradeDisplayName = (grade) => {
-    const normalized = grade?.toUpperCase() || "UNRANKED";
-    return normalized === "DIAMOND" ? "MASTER" : grade || "UnRanked";
+    return grade || "UnRanked";
   };
 
   const gradeDisplayName = getGradeDisplayName(currentUser?.grade);
@@ -141,7 +139,7 @@ const Profile = () => {
               style={{ cursor: "pointer" }}
             >
               <div className={`${styles.circleBig} ${currentUser?.selected_border ? `profile-border-${currentUser.selected_border}` : ""}`}>
-                <div style={{ width: "100%", height: "100%", borderRadius: "50%", overflow: "hidden" }}>
+                <div style={{ width: "100%", height: "100%", borderRadius: "50%", overflow: "hidden", display: "flex", alignItems: "flex-end", justifyContent: "center" }}>
                   {currentUser?.profile_image ? (
                     <img
                       src={getImageUrl(currentUser.profile_image)}
@@ -166,7 +164,7 @@ const Profile = () => {
                 className={styles.lvBadge}
                 style={{ color: gradeInfo.color }}
               >
-                {gradeInfo.emoji} {gradeDisplayName}{" "}
+                {gradeDisplayName}{" "}
               </div>
               <h2 className={styles.nickname}>
                 {currentUser?.name || "게스트"} 님

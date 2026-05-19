@@ -15,6 +15,12 @@ export const logout = async () => {
   return response.data;
 };
 
+// 내 정보 조회 API
+export const getMe = async () => {
+  const response = await instance.get("/users/me");
+  return response.data;
+};
+
 // 이메일 인증 코드 발송 API
 export const sendEmailCode = async (email) => {
   const response = await instance.post("/users/send-email-code", { email });
@@ -64,5 +70,11 @@ export const updateBorder = async (userId, border) => {
 // 로그인 기록 조회 API
 export const getLoginHistory = async (userId) => {
   const response = await instance.get(`/users/login-history/${userId}`);
+  return response.data;
+};
+
+// 비밀번호 변경 API
+export const changePassword = async (data) => {
+  const response = await instance.post("/users/change-password", data);
   return response.data;
 };

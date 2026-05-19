@@ -12,67 +12,73 @@ const Grade = () => {
         </div>
         <div className="gradeContent">
           <div className="gradeItem">
-            <div
-              className="gradeIcon"
-              style={{ background: "#CD7F3222", color: "#CD7F32" }}
-            >
-              🥉
+            <div className="gradeIconWrapper profile-border-bronze">
+              <div className="gradeIconPlaceholder"></div>
             </div>
             <span className="gradeName">BRONZE</span>
             <div className="gradeRequirements">
-              <span className="gradeRequirement">투표 참여 10회 이상</span>
+              <span className="gradeRequirement">투표 참여</span>
+              <span className="gradeRequirement">10회 이상</span>
             </div>
           </div>
           <div className="gradeItem">
-            <div
-              className="gradeIcon"
-              style={{ background: "#C0C0C022", color: "#C0C0C0" }}
-            >
-              🥈
+            <div className="gradeIconWrapper profile-border-silver">
+              <div className="gradeIconPlaceholder"></div>
             </div>
             <span className="gradeName">SILVER</span>
             <div className="gradeRequirements">
-              <span className="gradeRequirement">투표 참여 100회 이상</span>
-              <span className="gradeRequirement">게시글 생성 10회 이상</span>
+              <span className="gradeRequirement">참여 100 / 생성 10</span>
+              <span className="gradeRequirement">이상 달성</span>
             </div>
           </div>
           <div className="gradeItem">
-            <div
-              className="gradeIcon"
-              style={{ background: "#FFD70022", color: "#FFD700" }}
-            >
-              🥇
+            <div className="gradeIconWrapper profile-border-gold">
+              <div className="gradeIconPlaceholder"></div>
             </div>
             <span className="gradeName">GOLD</span>
             <div className="gradeRequirements">
-              <span className="gradeRequirement">투표 우승 100회 이상</span>
-              <span className="gradeRequirement">게시글 생성 100회 이상</span>
+              <span className="gradeRequirement">우승 100 / 생성 100</span>
+              <span className="gradeRequirement">이상 달성</span>
             </div>
           </div>
           <div className="gradeItem">
-            <div
-              className="gradeIcon"
-              style={{ background: "#E5E4E222", color: "#4ae46b" }}
-            >
-              💎
+            <div className="gradeIconWrapper profile-border-platinum">
+              <div className="gradeIconPlaceholder"></div>
             </div>
             <span className="gradeName">PLATINUM</span>
             <div className="gradeRequirements">
-              <span className="gradeRequirement">투표 우승 500회 이상</span>
-              <span className="gradeRequirement">게시글 생성 200회 이상</span>
+              <span className="gradeRequirement">우승 500 / 생성 200</span>
+              <span className="gradeRequirement">이상 달성</span>
             </div>
           </div>
           <div className="gradeItem">
-            <div
-              className="gradeIcon"
-              style={{ background: "#8B5CF622", color: "#8B5CF6" }}
-            >
-              👑
+            <div className="gradeIconWrapper profile-border-diamond">
+              <div className="gradeIconPlaceholder"></div>
+            </div>
+            <span className="gradeName">DIAMOND</span>
+            <div className="gradeRequirements">
+              <span className="gradeRequirement">우승 1000 / 생성 500</span>
+              <span className="gradeRequirement">이상 달성</span>
+            </div>
+          </div>
+          <div className="gradeItem">
+            <div className="gradeIconWrapper profile-border-master">
+              <div className="gradeIconPlaceholder"></div>
             </div>
             <span className="gradeName">MASTER</span>
             <div className="gradeRequirements">
-              <span className="gradeRequirement">투표 우승 1000회 이상</span>
-              <span className="gradeRequirement">게시글 생성 500회 이상</span>
+              <span className="gradeRequirement">월간 랭킹 1,2,3위</span>
+              <span className="gradeRequirement">3회 이상 달성</span>
+            </div>
+          </div>
+          <div className="gradeItem">
+            <div className="gradeIconWrapper profile-border-challenger">
+              <div className="gradeIconPlaceholder"></div>
+            </div>
+            <span className="gradeName">CHALLENGER</span>
+            <div className="gradeRequirements">
+              <span className="gradeRequirement">마스터 달성 후</span>
+              <span className="gradeRequirement">랭킹 1위 3회 이상</span>
             </div>
           </div>
         </div>

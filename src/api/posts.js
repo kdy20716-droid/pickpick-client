@@ -105,10 +105,13 @@ export const submitVote = async (postId, user_id, selected_side) => {
 };
 
 // 4. 좋아요 토글 API
-export const toggleLike = async (postId, user_id) => {
-  const response = await instance.post(`/api/votes/${postId}/like`, {
-    user_id,
-  });
+export const toggleLike = async (postId, user_id, liked = undefined) => {
+  const payload = { user_id };
+  if (typeof liked === "boolean") {
+    payload.liked = liked;
+  }
+
+  const response = await instance.post(`/api/votes/${postId}/like`, payload);
   return response.data;
 };
 
