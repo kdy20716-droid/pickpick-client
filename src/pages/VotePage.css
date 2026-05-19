@@ -576,19 +576,21 @@
 }
 
 .vote-choice.is-loser {
-  filter: grayscale(0.8) brightness(0.7);
   cursor: default;
   pointer-events: none;
+}
+
+.vote-choice.is-loser .vote-choice-inner {
+  filter: grayscale(0.8) brightness(0.7);
 }
 
 .vote-choice.is-loser:hover {
   transform: none;
 }
 
-.vote-choice.is-loser img,
 .vote-choice.is-loser .vote-choice-media,
 .vote-choice.is-loser .vote-choice-image-fallback {
-  filter: brightness(0.8);
+  filter: none; /* 상위 .vote-choice-inner에서 필터가 적용되므로 중복 필터 제거 */
 }
 
 .vote-choice.is-selected {
