@@ -112,6 +112,24 @@ function getCandidateNameStyle(name) {
   };
 }
 
+function formatVoteDeadline(expiresAt) {
+  if (!expiresAt) {
+    return "";
+  }
+
+  const date = new Date(expiresAt);
+  if (Number.isNaN(date.getTime())) {
+    return "";
+  }
+
+  if (date <= new Date()) {
+    return "마감됨";
+  }
+
+  const pad = (number) => String(number).padStart(2, "0");
+  return `마감 ${pad(date.getMonth() + 1)}.${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
+}
+
 function getTargetVoteId(routePostId, search, hash) {
   const searchParams = new URLSearchParams(search);
   const candidates = [
@@ -362,6 +380,7 @@ function VoteCard({
   registerCardRef,
 }) {
   const hasVoted = Boolean(selectedCandidateId) || card.isExpired;
+  const deadlineLabel = formatVoteDeadline(card.expiresAt);
 
   return (
     <article
@@ -370,6 +389,9 @@ function VoteCard({
       id={card.feedId}
     >
       <div className={`vote-sheet${hasVoted ? " has-results" : ""}`}>
+        {deadlineLabel ? (
+          <div className="vote-deadline-badge">{deadlineLabel}</div>
+        ) : null}
         <VoteSheetTitle>{card.title}</VoteSheetTitle>
 
         <div className="vote-sheet-match">
@@ -667,6 +689,7 @@ export default function VotePage() {
           id: cardId,
           feedId: cardId,
           title: item.title,
+          expiresAt: item.expires_at,
           isExpired: item.expires_at ? new Date(item.expires_at) <= new Date() : false,
           leftCandidate: {
             id: "a",

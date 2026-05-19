@@ -6,6 +6,19 @@ import { Pencil, Trash2, Maximize, Minus, Plus } from "lucide-react";
 import vsLogo from "../assets/vs-logo.svg";
 import "./Create.css";
 
+const DEFAULT_DEADLINE_HOURS = 24;
+
+function toDatetimeLocalValue(value) {
+  const date = value ? new Date(value) : new Date();
+
+  if (Number.isNaN(date.getTime())) {
+    return toDatetimeLocalValue(new Date(Date.now() + DEFAULT_DEADLINE_HOURS * 60 * 60 * 1000));
+  }
+
+  const pad = (number) => String(number).padStart(2, "0");
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+}
+
 const Create = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -35,6 +48,11 @@ const Create = () => {
   const [mediaType2, setMediaType2] = useState("image");
   const [youtubeUrl1, setYoutubeUrl1] = useState("");
   const [youtubeUrl2, setYoutubeUrl2] = useState("");
+  const [expiresAt, setExpiresAt] = useState(() =>
+    toDatetimeLocalValue(
+      new Date(Date.now() + DEFAULT_DEADLINE_HOURS * 60 * 60 * 1000),
+    ),
+  );
 
   useEffect(() => {
     if (isEditing) {
@@ -50,6 +68,12 @@ const Create = () => {
       setMediaType2(type2 === "video" || type2 === "audio" ? "youtube" : type2);
       if (type1 === "youtube") setYoutubeUrl1(editData.candidate_a_image);
       if (type2 === "youtube") setYoutubeUrl2(editData.candidate_b_image);
+      setExpiresAt(
+        toDatetimeLocalValue(
+          editData.expires_at ||
+            new Date(Date.now() + DEFAULT_DEADLINE_HOURS * 60 * 60 * 1000),
+        ),
+      );
     }
   }, [isEditing, editData]);
 
@@ -182,6 +206,18 @@ const Create = () => {
       return;
     }
 
+    const expiresAtDate = new Date(expiresAt);
+    if (
+      !expiresAt ||
+      Number.isNaN(expiresAtDate.getTime()) ||
+      expiresAtDate <= new Date()
+    ) {
+      alert("마감시간은 현재 이후로 설정해주세요.");
+      return;
+    }
+
+    const expiresAtValue = expiresAtDate.toISOString();
+
     setIsSubmitting(true);
 
     try {
@@ -199,7 +235,8 @@ const Create = () => {
           candidate2,
           f2,
           mediaType1,
-          mediaType2
+          mediaType2,
+          expiresAtValue
         );
         alert("투표 게시글이 성공적으로 수정되었습니다!");
       } else {
@@ -212,7 +249,8 @@ const Create = () => {
           candidate2,
           f2,
           mediaType1,
-          mediaType2
+          mediaType2,
+          expiresAtValue
         );
         alert("투표 게시글이 성공적으로 등록되었습니다!");
       }
@@ -513,6 +551,17 @@ const Create = () => {
                 </button>
               ))}
             </div>
+          </div>
+
+          <div className="settings-group deadline-settings-group">
+            <h3 className="settings-group__title">마감시간</h3>
+            <input
+              type="datetime-local"
+              className="deadline-input"
+              value={expiresAt}
+              min={toDatetimeLocalValue(new Date())}
+              onChange={(event) => setExpiresAt(event.target.value)}
+            />
           </div>
 
           <button
