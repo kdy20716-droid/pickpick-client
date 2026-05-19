@@ -38,11 +38,17 @@ const MyCreate = () => {
     fetchMyVotes();
   }, [fetchMyVotes]);
 
-  const handleEdit = (vote) => {
+  const handleEdit = (e, vote) => {
+    e.stopPropagation();
     navigate("/create", { state: { editData: vote } });
   };
 
-  const handleDelete = async (postId) => {
+  const handleVoteClick = (postId) => {
+    navigate(`/vote/${postId}`);
+  };
+
+  const handleDelete = async (e, postId) => {
+    e.stopPropagation();
     if (!window.confirm("정말로 이 투표를 삭제하시겠습니까?")) return;
 
     try {
@@ -70,7 +76,12 @@ const MyCreate = () => {
           <div className="my-vote-list">
             {myVotes.length > 0 ? (
               myVotes.map((vote) => (
-                <div key={vote.id} className="my-vote-item">
+                <div
+                  key={vote.id}
+                  className="my-vote-item"
+                  onClick={() => handleVoteClick(vote.id)}
+                  style={{ cursor: "pointer" }}
+                >
                   <div className="vote-info">
                     <span className="vote-category">
                       [{vote.category || "기타"}]
@@ -90,13 +101,13 @@ const MyCreate = () => {
                     <div className="vote-actions">
                       <button
                         className="edit-btn"
-                        onClick={() => handleEdit(vote)}
+                        onClick={(e) => handleEdit(e, vote)}
                       >
                         수정
                       </button>
                       <button
                         className="delete-btn"
-                        onClick={() => handleDelete(vote.id)}
+                        onClick={(e) => handleDelete(e, vote.id)}
                       >
                         삭제
                       </button>
@@ -104,13 +115,25 @@ const MyCreate = () => {
                   </div>
                   <div className="vote-preview">
                     {vote.candidate_a_image ? (
-                      <img src={getCandidateThumbnail(vote.candidate_a_image, vote.candidate_a_type)} alt="a" />
+                      <img
+                        src={getCandidateThumbnail(
+                          vote.candidate_a_image,
+                          vote.candidate_a_type,
+                        )}
+                        alt="a"
+                      />
                     ) : (
                       <div className="no-img">No Img</div>
                     )}
                     <span className="vs-text">VS</span>
                     {vote.candidate_b_image ? (
-                      <img src={getCandidateThumbnail(vote.candidate_b_image, vote.candidate_b_type)} alt="b" />
+                      <img
+                        src={getCandidateThumbnail(
+                          vote.candidate_b_image,
+                          vote.candidate_b_type,
+                        )}
+                        alt="b"
+                      />
                     ) : (
                       <div className="no-img">No Img</div>
                     )}

@@ -22,12 +22,12 @@ html {
 
 body {
   margin: 0;
-  width: var(--layout-vw);
+  width: 100%;
   min-width: var(--app-min-width);
   background: var(--bg);
   color: var(--text);
   font-family: "REM", sans-serif;
-  overflow-x: auto;
+  overflow-x: hidden;
 }
 
 body,
