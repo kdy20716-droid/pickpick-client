@@ -73,18 +73,6 @@
   align-items: center;
 }
 
-.header-profile-avatar.profile-border-bronze::before,
-.header-profile-avatar.profile-border-silver::before,
-.header-profile-avatar.profile-border-gold::before,
-.header-profile-avatar.profile-border-platinum::before,
-.header-profile-avatar.profile-border-diamond::before,
-.header-profile-avatar.profile-border-master::before,
-.header-profile-avatar.profile-border-challenger::before,
-.header-profile-avatar.profile-border-pick::before,
-.header-profile-avatar.profile-border-admin::before {
-  /* Removed transform to use global centered style */
-}
-
 .header-profile-inner {
   width: 100%;
   height: 100%;
