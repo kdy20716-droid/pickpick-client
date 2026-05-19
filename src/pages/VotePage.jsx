@@ -411,13 +411,22 @@ function VoteCard({
             const isSelected = selectedCandidateId === candidate.id;
             const isVideo =
               candidate.type === "youtube" || candidate.type === "video";
+            
+            // 승패 판정 로직 추가 (50:50인 경우 제외)
+            const isLeft = candidate.id === "a";
+            const leftShare = card.shares.left;
+            const rightShare = card.shares.right;
+            const isLoser = hasVoted && (
+              (isLeft && leftShare < rightShare) ||
+              (!isLeft && rightShare < leftShare)
+            );
 
             return (
               <div
                 key={candidate.id}
                 className={`vote-choice tone-${candidate.tone}${
                   isSelected ? " is-selected" : ""
-                }`}
+                }${isLoser ? " is-loser" : ""}`}
                 aria-pressed={isSelected}
               >
                 {!hasVoted && isVideo && (

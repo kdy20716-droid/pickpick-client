@@ -564,6 +564,22 @@
     0 0 18px rgba(255, 91, 91, 0.4), 0 3px 12px rgba(255, 255, 255, 0.24);
 }
 
+.vote-choice.is-loser {
+  filter: grayscale(0.8) brightness(0.7);
+  cursor: default;
+  pointer-events: none;
+}
+
+.vote-choice.is-loser:hover {
+  transform: none;
+}
+
+.vote-choice.is-loser img,
+.vote-choice.is-loser .vote-choice-media,
+.vote-choice.is-loser .vote-choice-image-fallback {
+  filter: brightness(0.8);
+}
+
 .vote-choice.is-selected {
   transform: translateY(-3px);
   border-color: var(--vote-choice-selected-border);
@@ -571,6 +587,7 @@
     0 0 20px rgba(252, 146, 199, 0.45),
     0 22px 48px rgba(17, 17, 17, 0.16),
     0 0 0 1px rgba(252, 146, 199, 0.2);
+  z-index: 5; /* Ensure selected winner stays on top and glow is visible */
 }
 
 .tone-blue.is-selected {
