@@ -51,13 +51,35 @@ const Grade = () => {
             </div>
           </div>
           <div className="gradeItem">
+            <div className="gradeIconWrapper profile-border-diamond">
+              <div className="gradeIconPlaceholder"></div>
+            </div>
+            <span className="gradeName">DIAMOND</span>
+            <div className="gradeRequirements">
+              <span className="gradeRequirement">투표 우승 1000회 이상</span>
+              <span className="gradeRequirement">게시글 생성 500회 이상</span>
+            </div>
+          </div>
+          <div className="gradeItem">
             <div className="gradeIconWrapper profile-border-master">
               <div className="gradeIconPlaceholder"></div>
             </div>
             <span className="gradeName">MASTER</span>
             <div className="gradeRequirements">
-              <span className="gradeRequirement">투표 우승 1000회 이상</span>
-              <span className="gradeRequirement">게시글 생성 500회 이상</span>
+              <span className="gradeRequirement">다이아 등급 달성 후</span>
+              <span className="gradeRequirement">랭킹 1,2,3위 등극</span>
+              <span className="gradeRequirement">월 3회 이상 (매월 초기화)</span>
+            </div>
+          </div>
+          <div className="gradeItem">
+            <div className="gradeIconWrapper profile-border-challenger">
+              <div className="gradeIconPlaceholder"></div>
+            </div>
+            <span className="gradeName">CHALLENGER</span>
+            <div className="gradeRequirements">
+              <span className="gradeRequirement">한 달간 내 게시물</span>
+              <span className="gradeRequirement">랭킹 1위 등극</span>
+              <span className="gradeRequirement">월 3회 이상 (매월 초기화)</span>
             </div>
           </div>
         </div>

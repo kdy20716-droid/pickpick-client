@@ -97,12 +97,40 @@ a {
 }
 
 .profile-border-platinum {
-  --profile-border-image: url("./assets/플래티넘.png");
+  --profile-border-image: url("./assets/플레티넘.png");
 }
 
-.profile-border-diamond,
+.profile-border-diamond {
+  --profile-border-image: url("./assets/다이아.png");
+}
+
 .profile-border-master {
   --profile-border-image: url("./assets/마스터.png");
+}
+
+.profile-border-challenger {
+  position: relative !important;
+  border-radius: 50% !important;
+  box-shadow: none !important;
+  overflow: visible !important;
+}
+
+.profile-border-challenger > * {
+  position: relative;
+  z-index: 1;
+}
+
+.profile-border-challenger::before {
+  content: "";
+  position: absolute;
+  inset: -14%;
+  z-index: 2;
+  background-image: url("./assets/챌린저.png");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  transform: translate(2px, 5px);
+  pointer-events: none;
 }
 
 /* ===================================================================== */
