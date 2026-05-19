@@ -977,15 +977,19 @@
 
 .vote-pick-badge {
   position: absolute;
-  top: 15px;
-  right: 15px; /* 상단 오른쪽으로 이동하여 하단 컨트롤 바 방해 금지 */
+  top: 25px; /* 15px에서 10px 더 내림 */
+  right: 15px;
   z-index: 25;
   background: #f7a1c4;
   color: white;
-  padding: 8px 18px;
+  padding: 8px 15px; /* 좌우 패딩을 동일하게 맞추고 길이를 살짝 줄임 */
+  min-width: 60px; /* 최소 너비 설정으로 균형 잡음 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
   border-radius: 12px;
   font-weight: 800;
-  font-size: 1rem;
+  font-size: 0.95rem; /* 글자 크기 아주 살짝 줄임 */
   box-shadow: 0 4px 12px rgba(0,0,0,0.2);
   border: 2px solid white;
   transition: all 0.2s;
