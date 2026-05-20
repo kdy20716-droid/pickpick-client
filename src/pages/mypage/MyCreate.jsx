@@ -38,11 +38,6 @@ const MyCreate = () => {
     fetchMyVotes();
   }, [fetchMyVotes]);
 
-  const handleEdit = (e, vote) => {
-    e.stopPropagation();
-    navigate("/create", { state: { editData: vote } });
-  };
-
   const handleVoteClick = (postId) => {
     navigate(`/vote/${postId}`);
   };
@@ -145,12 +140,4 @@ const MyCreate = () => {
 };
 
 export default MyCreate;
-   )}
-          </div>
-        )}
-      </div>
-    </div>
-  );
-};
 
-export default MyCreate;
