@@ -91,18 +91,13 @@ const Profile = () => {
 
   const getGradeInfo = (grade) => {
     const g = grade?.toUpperCase() || "UNRANKED";
-    if (g === "BRONZE" || g === "브론즈")
-      return { color: "#CD7F32" };
+    if (g === "BRONZE" || g === "브론즈") return { color: "#CD7F32" };
     if (g === "SILVER" || g === "실버") return { color: "#C0C0C0" };
     if (g === "GOLD" || g === "골드") return { color: "#FFD700" };
-    if (g === "PLATINUM" || g === "플래티넘")
-      return { color: "#26C6DA" };
-    if (g === "DIAMOND" || g === "다이아몬드")
-      return { color: "#8B5CF6" };
-    if (g === "MASTER" || g === "마스터")
-      return { color: "#FF4B8D" };
-    if (g === "CHALLENGER" || g === "챌린저")
-      return { color: "#70D1F4" };
+    if (g === "PLATINUM" || g === "플래티넘") return { color: "#26C6DA" };
+    if (g === "DIAMOND" || g === "다이아몬드") return { color: "#8B5CF6" };
+    if (g === "MASTER" || g === "마스터") return { color: "#FF4B8D" };
+    if (g === "CHALLENGER" || g === "챌린저") return { color: "#70D1F4" };
     return { color: "#999999" }; // UnRanked
   };
 
@@ -138,8 +133,20 @@ const Profile = () => {
               onClick={() => setIsEditingProfile(true)}
               style={{ cursor: "pointer" }}
             >
-              <div className={`${styles.circleBig} ${currentUser?.selected_border ? `profile-border-${currentUser.selected_border}` : ""}`}>
-                <div style={{ width: "100%", height: "100%", borderRadius: "50%", overflow: "hidden", display: "flex", alignItems: "flex-end", justifyContent: "center" }}>
+              <div
+                className={`${styles.circleBig} ${currentUser?.selected_border ? `profile-border-${currentUser.selected_border}` : ""}`}
+              >
+                <div
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    borderRadius: "50%",
+                    overflow: "hidden",
+                    display: "flex",
+                    alignItems: "flex-end",
+                    justifyContent: "center",
+                  }}
+                >
                   {currentUser?.profile_image ? (
                     <img
                       src={getImageUrl(currentUser.profile_image)}
@@ -156,13 +163,19 @@ const Profile = () => {
                 </div>
               </div>
               <div className={styles.camIconWrapper}>
-                {!currentUser?.selected_border && <div className={styles.camIcon}>📷</div>}
+                {!currentUser?.selected_border && (
+                  <div className={styles.camIcon}>📷</div>
+                )}
               </div>
             </div>
             <div className={`${styles.card} ${styles.nicknameCard}`}>
               <div
                 className={`${styles.lvBadge} ${gradeDisplayName.toUpperCase() === "CHALLENGER" ? "challenger-shine" : ""}`}
-                style={gradeDisplayName.toUpperCase() === "CHALLENGER" ? {} : { color: gradeInfo.color }}
+                style={
+                  gradeDisplayName.toUpperCase() === "CHALLENGER"
+                    ? {}
+                    : { color: gradeInfo.color }
+                }
               >
                 {gradeDisplayName}{" "}
               </div>
@@ -202,8 +215,8 @@ const Profile = () => {
                     {notif.type === "REPLY_ON_COMMENT" && (
                       <>
                         <span className={styles.mIcon}>M</span> ↳{" "}
-                        {notif.sender_name}님이 [${notif.post_title}] 투표의 내 댓글에 답글을 남겼습니다: "
-                        {notif.comment_content}"
+                        {notif.sender_name}님이 [${notif.post_title}] 투표의 내
+                        댓글에 답글을 남겼습니다: "{notif.comment_content}"
                       </>
                     )}
                   </div>

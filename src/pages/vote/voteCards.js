@@ -1,10 +1,3 @@
-function makeVoteCard(template, index) {
-  return {
-    ...template,
-    feedId: `${template.id}-${index + 1}`,
-  };
-}
-
 function shuffleCards(cards) {
   const shuffledCards = [...cards];
 
@@ -51,8 +44,4 @@ export function pinTargetCard(cards, targetCardId) {
     pinnedCard,
     ...shuffleCards(cards.filter((card) => card.feedId !== targetCardId)),
   ];
-}
-
-export function createVoteBatch(start, count) {
-  return createVoteCards().slice(start, start + count);
 }

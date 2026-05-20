@@ -5,7 +5,7 @@ import styles from "./MyPage.module.css";
 import { useAuth } from "../../contexts/AuthContext";
 import { getVote } from "../../api/posts";
 import Comments from "../../components/Comments.jsx";
-import { getImageUrl, getCandidateThumbnail } from "../../utils/image";
+import { getCandidateThumbnail } from "../../utils/image";
 
 const Result = () => {
   const [voteResults, setVoteResults] = useState([]);

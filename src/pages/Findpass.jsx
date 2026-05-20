@@ -12,24 +12,9 @@ export default function FindPassword() {
   const [isSending, setIsSending] = useState(false);
   const navigate = useNavigate();
 
-  const validDomains = [
-    "gmail.com",
-    "naver.com",
-    "daum.net",
-    "kakao.com",
-    "outlook.com",
-    "hotmail.com",
-    "icloud.com",
-    "yahoo.com",
-    "hanmail.net",
-    "nate.com",
-  ];
-
   const checkEmail = (value) => {
-    const parts = value.split("@");
-    if (parts.length !== 2) return false;
-    const domain = parts[1].toLowerCase();
-    return validDomains.includes(domain);
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(value);
   };
 
   const handleEmailChange = (e) => {

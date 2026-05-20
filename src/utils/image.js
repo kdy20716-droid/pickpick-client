@@ -37,3 +37,57 @@ export const getCandidateThumbnail = (imagePath, type = "image") => {
   // 4. 일반 이미지
   return getImageUrl(imagePath);
 };
+
+/**
+ * 이미지를 압축합니다.
+ * @param {File} file - 압축할 파일
+ * @param {number} maxWidth - 최대 너비
+ * @param {number} maxHeight - 최대 높이
+ * @param {number} quality - 품질 (0.1 ~ 1.0)
+ * @returns {Promise<Blob>} 압축된 Blob
+ */
+export const compressImage = (file, maxWidth = 1024, maxHeight = 1024, quality = 0.8) => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = (event) => {
+      const img = new Image();
+      img.src = event.target.result;
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        let width = img.width;
+        let height = img.height;
+
+        if (width > height) {
+          if (width > maxWidth) {
+            height *= maxWidth / width;
+            width = maxWidth;
+          }
+        } else {
+          if (height > maxHeight) {
+            width *= maxHeight / height;
+            height = maxHeight;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0, width, height);
+        canvas.toBlob(
+          (blob) => {
+            if (blob) {
+              resolve(blob);
+            } else {
+              reject(new Error("Canvas to Blob failed"));
+            }
+          },
+          "image/jpeg",
+          quality
+        );
+      };
+      img.onerror = (err) => reject(err);
+    };
+    reader.onerror = (err) => reject(err);
+  });
+};
