@@ -85,7 +85,6 @@
   margin-top: 15px;
 }
 
-.edit-btn,
 .delete-btn {
   display: inline-flex;
   align-items: center;
@@ -103,19 +102,6 @@
   border: none;
   line-height: 1;
   box-sizing: border-box; /* 너비에 패딩/테두리 포함 */
-}
-
-.edit-btn {
-  background-color: #f5f5f5;
-  color: #666;
-}
-
-.edit-btn:hover {
-  background-color: #eeeeee;
-  color: #333;
-}
-
-.delete-btn {
   background-color: #fff1f1;
   color: #ff9ea2;
 }
