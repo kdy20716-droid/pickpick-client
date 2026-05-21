@@ -277,6 +277,15 @@ const Admin = () => {
         headers: { Authorization: `Bearer ${token}` },
       });
       alert("투표가 삭제되었습니다.");
+      
+      // 만약 신고 탭에서 삭제한 경우, 해당 신고를 처리 완료로 변경
+      if (itemToDelete.reportId) {
+        await instance.put(`/admin/reports/${itemToDelete.reportId}/status`, { status: 'resolved' }, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setReports(reports.map(r => r.id === itemToDelete.reportId ? { ...r, status: 'resolved' } : r));
+      }
+
       setVotes(votes.filter((v) => v.id !== itemToDelete.id));
       setDeleteModal(null);
       setItemToDelete(null);
@@ -815,29 +824,18 @@ const Admin = () => {
                           >
                             {report.status === "pending"
                               ? "대기"
-                              : report.status === "resolved"
-                                ? "처리완료"
-                                : "무시됨"}
+                              : "처리완료"}
                           </span>
                         </td>
                         <td>{new Date(report.created_at).toLocaleString()}</td>
                         <td>
                           <div className="action-btns">
                             <button
-                              className="resolve-btn"
-                              onClick={() =>
-                                handleUpdateReportStatus(report.id, "resolved")
-                              }
-                              disabled={report.status === "resolved"}
-                            >
-                              처리완료
-                            </button>
-                            <button
                               className="ignore-btn"
                               onClick={() =>
                                 handleUpdateReportStatus(report.id, "ignored")
                               }
-                              disabled={report.status === "ignored"}
+                              disabled={report.status !== "pending"}
                             >
                               무시
                             </button>
@@ -848,8 +846,10 @@ const Admin = () => {
                                 setItemToDelete({
                                   id: report.post_id,
                                   title: report.vote_title,
+                                  reportId: report.id, // 신고 ID 전달
                                 });
                               }}
+                              disabled={!report.post_id || report.status !== "pending"}
                             >
                               게시물 삭제
                             </button>
