@@ -38,11 +38,6 @@ const MyCreate = () => {
     fetchMyVotes();
   }, [fetchMyVotes]);
 
-  const handleEdit = (e, vote) => {
-    e.stopPropagation();
-    navigate("/create", { state: { editData: vote } });
-  };
-
   const handleVoteClick = (postId) => {
     navigate(`/vote/${postId}`);
   };
@@ -137,15 +132,6 @@ const MyCreate = () => {
             ) : (
               <div className="empty-state">생성한 투표가 없습니다.</div>
             )}
-          </div>
-        )}
-      </div>
-    </div>
-  );
-};
-
-export default MyCreate;
-   )}
           </div>
         )}
       </div>
