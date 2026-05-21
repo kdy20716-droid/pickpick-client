@@ -34,7 +34,61 @@ const Admin = () => {
   const [inputCode, setInputCode] = useState("");
   const [isSendingCode, setIsSendingCode] = useState(false);
 
-  // ... (다른 상태 생략) ...
+  // 유저 삭제 전용 인증 상태
+  const [userDeleteStep, setUserDeleteStep] = useState(0); // 0: 초기, 1: 확인됨, 2: 인증코드입력중
+  const [deleteVerifyCode, setDeleteVerifyCode] = useState("");
+  const [deleteInputCode, setDeleteInputCode] = useState("");
+
+  const userStr = localStorage.getItem("user");
+  const currentUser = userStr ? JSON.parse(userStr) : null;
+  const token = localStorage.getItem("token");
+
+  // 관리자 권한 확인
+  useEffect(() => {
+    if (!currentUser || currentUser.role !== "admin") {
+      alert("관리자 권한이 필요합니다.");
+      navigate("/");
+    }
+  }, [currentUser, navigate]);
+
+  // 관리자 인증 완료 시 초기 목록 로드
+  useEffect(() => {
+    if (isVerified) {
+      fetchList("votes", 1);
+    }
+  }, [isVerified]);
+
+  // 인증 코드 발송 (범용)
+  const handleSendCode = async (isForUserDelete = false) => {
+    setIsSendingCode(true);
+    try {
+      const response = await instance.post(
+        "/admin/send-verification",
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
+
+      if (isForUserDelete) {
+        setDeleteVerifyCode(response.data.code);
+        setUserDeleteStep(2);
+      } else {
+        setServerCode(response.data.code);
+      }
+      alert("관리자 이메일로 인증 코드가 발송되었습니다.");
+    } catch (error) {
+      console.error("인증 코드 발송 에러:", error);
+      if (!handleAuthError(error)) {
+        alert("인증 코드 발송에 실패했습니다.");
+      }
+    } finally {
+      setIsSendingCode(false);
+    }
+  };
+
+  // 인증 코드 발송 (로그인용)
+  const handleSendVerificationCode = () => handleSendCode(false);
 
   // 인증 코드 확인 (로그인용)
   const handleVerifyCode = () => {
