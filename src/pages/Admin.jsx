@@ -11,15 +11,20 @@ const Admin = () => {
   const [selectedVoteId, setSelectedVoteId] = useState(null);
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("votes"); // 'votes', 'comments', or 'users'
-  const [deleteModal, setDeleteModal] = useState(null); // null, 'vote', 'comment'
+  const [deleteModal, setDeleteModal] = useState(null); // null, 'vote', 'comment', 'user'
   const [itemToDelete, setItemToDelete] = useState(null);
   const [users, setUsers] = useState([]);
 
-  // 2차 인증 상태
+  // 2차 인증 상태 (로그인 초기 인증용)
   const [isVerified, setIsVerified] = useState(false);
   const [serverCode, setServerCode] = useState("");
   const [inputCode, setInputCode] = useState("");
   const [isSendingCode, setIsSendingCode] = useState(false);
+
+  // 유저 삭제 전용 인증 상태
+  const [userDeleteStep, setUserDeleteStep] = useState(0); // 0: 초기, 1: 확인됨, 2: 인증코드입력중
+  const [deleteVerifyCode, setDeleteVerifyCode] = useState("");
+  const [deleteInputCode, setDeleteInputCode] = useState("");
 
   const userStr = localStorage.getItem("user");
   const currentUser = userStr ? JSON.parse(userStr) : null;
@@ -33,8 +38,8 @@ const Admin = () => {
     }
   }, [currentUser, navigate]);
 
-  // 인증 코드 발송
-  const handleSendVerificationCode = async () => {
+  // 인증 코드 발송 (범용)
+  const handleSendCode = async (isForUserDelete = false) => {
     setIsSendingCode(true);
     try {
       const response = await instance.post(
@@ -44,7 +49,13 @@ const Admin = () => {
           headers: { Authorization: `Bearer ${token}` },
         },
       );
-      setServerCode(response.data.code);
+      
+      if (isForUserDelete) {
+        setDeleteVerifyCode(response.data.code);
+        setUserDeleteStep(2);
+      } else {
+        setServerCode(response.data.code);
+      }
       alert("관리자 이메일로 인증 코드가 발송되었습니다.");
     } catch (error) {
       console.error("인증 코드 발송 에러:", error);
@@ -56,7 +67,10 @@ const Admin = () => {
     }
   };
 
-  // 인증 코드 확인
+  // 인증 코드 발송 (로그인용)
+  const handleSendVerificationCode = () => handleSendCode(false);
+
+  // 인증 코드 확인 (로그인용)
   const handleVerifyCode = () => {
     if (!serverCode) {
       alert("먼저 인증 코드를 발송해주세요.");
@@ -68,6 +82,38 @@ const Admin = () => {
     } else {
       alert("인증 코드가 일치하지 않습니다.");
     }
+  };
+
+  // 유저 강제 탈퇴 처리
+  const handleDeleteUser = async () => {
+    if (!itemToDelete) return;
+    if (deleteInputCode !== deleteVerifyCode) {
+      alert("인증 코드가 일치하지 않습니다.");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await instance.delete(`/admin/users/${itemToDelete.id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      alert("유저가 강제 탈퇴 처리되었습니다.");
+      setUsers(users.filter((u) => u.id !== itemToDelete.id));
+      handleCloseModal();
+    } catch (error) {
+      console.error("유저 탈퇴 에러:", error);
+      alert(error.response?.data?.message || "유저 탈퇴 처리 중 에러가 발생했습니다.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCloseModal = () => {
+    setDeleteModal(null);
+    setItemToDelete(null);
+    setUserDeleteStep(0);
+    setDeleteVerifyCode("");
+    setDeleteInputCode("");
   };
 
   // 401 에러 공통 처리 함수
@@ -489,8 +535,19 @@ const Admin = () => {
                         </td>
                         <td>{new Date(user.created_at).toLocaleDateString()}</td>
                         <td>
-                          {/* 추가 관리 기능 필요시 배치 */}
-                          -
+                          {user.role !== "admin" && (
+                            <button
+                              className="delete-btn"
+                              onClick={() => {
+                                setDeleteModal("user");
+                                setItemToDelete(user);
+                                setUserDeleteStep(1); // 첫 번째 확인 단계로 진입
+                              }}
+                              disabled={loading}
+                            >
+                              강제탈퇴
+                            </button>
+                          )}
                         </td>
                       </tr>
                     ))}
@@ -545,45 +602,88 @@ const Admin = () => {
 
         {/* 삭제 확인 모달 */}
         {deleteModal && (
-          <div
-            className="modal-overlay"
-            onClick={() => {
-              setDeleteModal(null);
-              setItemToDelete(null);
-            }}
-          >
+          <div className="modal-overlay" onClick={handleCloseModal}>
             <div className="modal-content" onClick={(e) => e.stopPropagation()}>
               <h3 className="modal-title">
-                {deleteModal === "vote" ? "투표 삭제" : "댓글 삭제"}
+                {deleteModal === "vote" ? "투표 삭제" : 
+                 deleteModal === "comment" ? "댓글 삭제" : "유저 강제 탈퇴"}
               </h3>
-              <p className="modal-text">
-                {deleteModal === "vote"
-                  ? `"${itemToDelete?.title}" 투표를 삭제하시겠습니까?`
-                  : `댓글을 삭제하시겠습니까?`}
-              </p>
-              <div className="modal-actions">
-                <button
-                  className="modal-cancel-btn"
-                  onClick={() => {
-                    setDeleteModal(null);
-                    setItemToDelete(null);
-                  }}
-                  disabled={loading}
-                >
-                  취소
-                </button>
-                <button
-                  className="modal-delete-btn"
-                  onClick={
-                    deleteModal === "vote"
-                      ? handleDeleteVote
-                      : handleDeleteComment
-                  }
-                  disabled={loading}
-                >
-                  {loading ? "처리 중..." : "삭제"}
-                </button>
-              </div>
+
+              {deleteModal === "user" ? (
+                <div className="user-delete-steps">
+                  {userDeleteStep === 1 && (
+                    <div className="step-content animate-fade-in">
+                      <p className="modal-text warning-text">
+                        <strong>주의:</strong> [{itemToDelete?.nickname}] 유저를 정말로 <strong>강제 탈퇴</strong> 시키겠습니까?<br/>
+                        이 작업은 되돌릴 수 없으며 유저의 모든 활동 데이터가 삭제됩니다.
+                      </p>
+                      <div className="modal-actions">
+                        <button className="modal-cancel-btn" onClick={handleCloseModal}>취소</button>
+                        <button className="modal-delete-btn" onClick={() => handleSendCode(true)} disabled={isSendingCode}>
+                          {isSendingCode ? "발송 중..." : "확인 및 인증번호 받기"}
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  {userDeleteStep === 2 && (
+                    <div className="step-content animate-fade-in">
+                      <p className="modal-text">
+                        관리자 보안 인증이 필요합니다.<br/>
+                        등록된 이메일로 전송된 <strong>인증 번호</strong>를 입력해주세요.
+                      </p>
+                      <div className="verification-input-group">
+                        <input
+                          type="text"
+                          placeholder="6자리 코드 입력"
+                          value={deleteInputCode}
+                          onChange={(e) => setDeleteInputCode(e.target.value)}
+                          maxLength={6}
+                          autoFocus
+                        />
+                      </div>
+                      <div className="modal-actions">
+                        <button className="modal-cancel-btn" onClick={handleCloseModal}>취소</button>
+                        <button 
+                          className="modal-delete-btn final-delete-btn" 
+                          onClick={handleDeleteUser}
+                          disabled={loading || deleteInputCode.length < 6}
+                        >
+                          {loading ? "처리 중..." : "최종 강제 탈퇴 승인"}
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <>
+                  <p className="modal-text">
+                    {deleteModal === "vote"
+                      ? `"${itemToDelete?.title}" 투표를 삭제하시겠습니까?`
+                      : `댓글을 삭제하시겠습니까?`}
+                  </p>
+                  <div className="modal-actions">
+                    <button
+                      className="modal-cancel-btn"
+                      onClick={handleCloseModal}
+                      disabled={loading}
+                    >
+                      취소
+                    </button>
+                    <button
+                      className="modal-delete-btn"
+                      onClick={
+                        deleteModal === "vote"
+                          ? handleDeleteVote
+                          : handleDeleteComment
+                      }
+                      disabled={loading}
+                    >
+                      {loading ? "처리 중..." : "삭제"}
+                    </button>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         )}
