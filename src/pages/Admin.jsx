@@ -26,6 +26,29 @@ const Admin = () => {
     bans: { current: 1, total: 0, limit: 30 }
   });
 
+  // 2차 인증 상태 (로그인 초기 인증용)
+  const [isVerified, setIsVerified] = useState(false);
+  const [serverCode, setServerCode] = useState("");
+  const [inputCode, setInputCode] = useState("");
+  const [isSendingCode, setIsSendingCode] = useState(false);
+
+  // 유저 삭제 전용 인증 상태
+  const [userDeleteStep, setUserDeleteStep] = useState(0); // 0: 초기, 1: 확인됨, 2: 인증코드입력중
+  const [deleteVerifyCode, setDeleteVerifyCode] = useState("");
+  const [deleteInputCode, setDeleteInputCode] = useState("");
+
+  const userStr = localStorage.getItem("user");
+  const currentUser = userStr ? JSON.parse(userStr) : null;
+  const token = localStorage.getItem("token");
+
+  // 관리자 권한 확인
+  useEffect(() => {
+    if (!currentUser || currentUser.role !== "admin") {
+      alert("관리자 권한이 필요합니다.");
+      navigate("/");
+    }
+  }, [currentUser, navigate]);
+
   // 관리자 인증 완료 시 초기 목록 로드
   useEffect(() => {
     if (isVerified) {
@@ -33,7 +56,51 @@ const Admin = () => {
     }
   }, [isVerified]);
 
-  // ... (기존 인증 로직 생략) ...
+  // 인증 코드 발송 (범용)
+  const handleSendCode = async (isForUserDelete = false) => {
+    setIsSendingCode(true);
+    try {
+      const response = await instance.post(
+        "/admin/send-verification",
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
+
+      if (isForUserDelete) {
+        setDeleteVerifyCode(response.data.code);
+        setUserDeleteStep(2);
+      } else {
+        setServerCode(response.data.code);
+      }
+      alert("관리자 이메일로 인증 코드가 발송되었습니다.");
+    } catch (error) {
+      console.error("인증 코드 발송 에러:", error);
+      if (!handleAuthError(error)) {
+        alert("인증 코드 발송에 실패했습니다.");
+      }
+    } finally {
+      setIsSendingCode(false);
+    }
+  };
+
+  // 인증 코드 발송 (로그인용)
+  const handleSendVerificationCode = () => handleSendCode(false);
+
+  // 인증 코드 확인 (로그인용)
+  const handleVerifyCode = () => {
+    if (!serverCode) {
+      alert("먼저 인증 코드를 발송해주세요.");
+      return;
+    }
+    if (inputCode === serverCode) {
+      setIsVerified(true);
+      alert("관리자 인증이 완료되었습니다.");
+    } else {
+      alert("인증 코드가 일치하지 않습니다.");
+    }
+  };
 
   // 공통 목록 로드 함수
   const fetchList = async (tab, page = 1) => {
