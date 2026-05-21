@@ -515,6 +515,12 @@ const Admin = () => {
               유저 ({users.length || "..."})
             </button>
             <button
+              className={`tab ${activeTab === "bans" ? "active" : ""}`}
+              onClick={handleLoadBannedEmails}
+            >
+              이메일 차단 ({bannedEmails.length || "..."})
+            </button>
+            <button
               className={`tab ${activeTab === "reports" ? "active" : ""}`}
               onClick={handleLoadReports}
             >
