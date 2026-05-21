@@ -1,9 +1,13 @@
 import axios from "axios";
 
+const isLocalHost = ["localhost", "127.0.0.1"].includes(
+  window.location.hostname,
+);
+
 const instance = axios.create({
-  // 개발 환경(localhost)일 경우 로컬 서버(4000포트)를 사용하고, 아닐 경우 배포 서버 사용
-  baseURL: window.location.hostname === "localhost" 
-    ? "http://localhost:4000" 
+  // 로컬 개발 환경에서는 실행 중인 Vite 포트와 관계없이 로컬 API 서버를 사용합니다.
+  baseURL: isLocalHost
+    ? "http://localhost:4000"
     : "https://dolphin-app-onqn2.ondigitalocean.app/",
 });
 

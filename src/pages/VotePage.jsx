@@ -26,6 +26,7 @@ import {
   incrementView,
 } from "../api/posts.js";
 import { useAuth } from "../contexts/AuthContext";
+import { getCandidateThumbnail } from "../utils/image.js";
 
 const tags = ["전체", "연예", "음식", "애니메이션", "동물", "스포츠", "일상", "게임", "음악", "영화 / 드라마", "웹툰 / 웹소설", "유튜버 / 스트리머", "밸런스 게임", "밈", "기타"];
 
@@ -35,6 +36,14 @@ const actionButtons = [
   { id: "share", label: "공유", icon: shareIcon, kind: "button" },
   { id: "report", label: "신고", icon: reportIcon, kind: "button" },
 ];
+
+const getCandidateMediaSource = (image, type = "image") => {
+  if (type === "youtube" || type === "video" || type === "audio") {
+    return image;
+  }
+
+  return getCandidateThumbnail(image, type);
+};
 
 function getTargetVoteId(routePostId, search, hash) {
   const searchParams = new URLSearchParams(search);
@@ -137,8 +146,26 @@ export default function VotePage() {
           id: cardId, feedId: cardId, title: item.title, expiresAt: item.expires_at,
           isExpired: item.expires_at ? new Date(item.expires_at) <= new Date() : false,
           isVoted: !!item.user_voted_side,
-          leftCandidate: { id: "a", name: item.candidate_a_name, image: item.candidate_a_image, type: item.candidate_a_type || "image", tone: "light" },
-          rightCandidate: { id: "b", name: item.candidate_b_name, image: item.candidate_b_image, type: item.candidate_b_type || "image", tone: "dark" },
+          leftCandidate: {
+            id: "a",
+            name: item.candidate_a_name,
+            image: getCandidateMediaSource(
+              item.candidate_a_image,
+              item.candidate_a_type || "image",
+            ),
+            type: item.candidate_a_type || "image",
+            tone: "light",
+          },
+          rightCandidate: {
+            id: "b",
+            name: item.candidate_b_name,
+            image: getCandidateMediaSource(
+              item.candidate_b_image,
+              item.candidate_b_type || "image",
+            ),
+            type: item.candidate_b_type || "image",
+            tone: "dark",
+          },
           shares: { 
             left: total === 0 ? 50 : Math.round((item.candidate_a_count / total) * 100),
             right: total === 0 ? 50 : Math.round((item.candidate_b_count / total) * 100)

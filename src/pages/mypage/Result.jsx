@@ -123,7 +123,7 @@ const Result = () => {
               const rightPercent = total === 0 ? 50 : 100 - leftPercent;
               const isLeftWinner = vote.winner_side === 'A' || (vote.winner_side === null && leftVotes > rightVotes);
               const isRightWinner = vote.winner_side === 'B' || (vote.winner_side === null && rightVotes > leftVotes);
-              const isExpired = new Date(vote.expires_at) <= new Date();
+              const isExpired = Boolean(vote.expires_at) && new Date(vote.expires_at) <= new Date();
               const userVotedSide = vote.user_voted_side?.toUpperCase();
               const isLeftPicked = isHistory && userVotedSide === "A";
               const isRightPicked = isHistory && userVotedSide === "B";
@@ -239,7 +239,7 @@ const Result = () => {
 
 // 남은 시간 계산 함수를 컴포넌트 외부로 이동
 const calculateRemainingTime = (expiresAt) => {
-  if (!expiresAt) return "정보 없음";
+  if (!expiresAt) return "무기한";
   const now = new Date();
   const expiration = new Date(expiresAt);
   const diff = expiration - now;

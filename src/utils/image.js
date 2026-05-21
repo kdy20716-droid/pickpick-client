@@ -1,8 +1,14 @@
 export const getImageUrl = (imagePath) => {
   if (!imagePath) return null;
   if (imagePath.startsWith("http")) return imagePath;
+  const isLocalHost =
+    typeof window !== "undefined" &&
+    ["localhost", "127.0.0.1"].includes(window.location.hostname);
   const baseUrl =
-    import.meta.env.VITE_API_URL || "https://dolphin-app-onqn2.ondigitalocean.app";
+    import.meta.env.VITE_API_URL ||
+    (isLocalHost
+      ? "http://localhost:4000"
+      : "https://dolphin-app-onqn2.ondigitalocean.app");
   return `${baseUrl}/uploads/${imagePath}`;
 };
 

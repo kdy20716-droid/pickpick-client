@@ -6,6 +6,7 @@ import { useMainPageAnimations } from "../hooks/useMainPageAnimations.js";
 import { useScrollToVote } from "./animations/useScrollToVote.js";
 import { mainRouteTransitions } from "./animations/routeTransitions.js";
 import { getMainFeaturedVote } from "../api/main.js";
+import { getCandidateThumbnail } from "../utils/image.js";
 
 const voteLinkState = { transition: mainRouteTransitions.link };
 
@@ -38,11 +39,17 @@ export default function MainPage() {
             title: item.title,
             leftCandidate: {
               name: item.candidate_a_name,
-              image: item.candidate_a_image,
+              image: getCandidateThumbnail(
+                item.candidate_a_image,
+                item.candidate_a_type,
+              ),
             },
             rightCandidate: {
               name: item.candidate_b_name,
-              image: item.candidate_b_image,
+              image: getCandidateThumbnail(
+                item.candidate_b_image,
+                item.candidate_b_type,
+              ),
             },
           });
         }
@@ -93,7 +100,7 @@ export default function MainPage() {
                   >
                     {featuredVote.leftCandidate.image && (
                       <img
-                        src={featuredVote.leftCandidate.image.startsWith('http') ? featuredVote.leftCandidate.image : `https://img.youtube.com/vi/${featuredVote.leftCandidate.image}/0.jpg`}
+                        src={featuredVote.leftCandidate.image}
                         alt={featuredVote.leftCandidate.name}
                       />
                     )}
@@ -114,7 +121,7 @@ export default function MainPage() {
                   >
                     {featuredVote.rightCandidate.image && (
                       <img
-                        src={featuredVote.rightCandidate.image.startsWith('http') ? featuredVote.rightCandidate.image : `https://img.youtube.com/vi/${featuredVote.rightCandidate.image}/0.jpg`}
+                        src={featuredVote.rightCandidate.image}
                         alt={featuredVote.rightCandidate.name}
                       />
                     )}
