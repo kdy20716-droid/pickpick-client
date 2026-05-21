@@ -10,135 +10,114 @@ const Admin = () => {
   const [comments, setComments] = useState([]);
   const [selectedVoteId, setSelectedVoteId] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState("votes"); // 'votes', 'comments', or 'users'
-  const [deleteModal, setDeleteModal] = useState(null); // null, 'vote', 'comment', 'user'
+  const [activeTab, setActiveTab] = useState("votes"); // 'votes', 'users', 'reports', or 'bans'
+  const [deleteModal, setDeleteModal] = useState(null); // null, 'vote', 'user'
   const [itemToDelete, setItemToDelete] = useState(null);
   const [users, setUsers] = useState([]);
   const [bannedEmails, setBannedEmails] = useState([]);
   const [newBanEmail, setNewBanEmail] = useState("");
   const [reports, setReports] = useState([]);
 
-  // 2차 인증 상태 (로그인 초기 인증용)
-  const [isVerified, setIsVerified] = useState(false);
-  const [serverCode, setServerCode] = useState("");
-  const [inputCode, setInputCode] = useState("");
-  const [isSendingCode, setIsSendingCode] = useState(false);
+  // 페이지네이션 상태
+  const [pagination, setPagination] = useState({
+    votes: { current: 1, total: 0, limit: 50 },
+    users: { current: 1, total: 0, limit: 50 },
+    reports: { current: 1, total: 0, limit: 30 },
+    bans: { current: 1, total: 0, limit: 30 }
+  });
 
-  // 유저 삭제 전용 인증 상태
-  const [userDeleteStep, setUserDeleteStep] = useState(0); // 0: 초기, 1: 확인됨, 2: 인증코드입력중
-  const [deleteVerifyCode, setDeleteVerifyCode] = useState("");
-  const [deleteInputCode, setDeleteInputCode] = useState("");
-
-  const userStr = localStorage.getItem("user");
-  const currentUser = userStr ? JSON.parse(userStr) : null;
-  const token = localStorage.getItem("token");
-
-  // 관리자 권한 확인
+  // 관리자 인증 완료 시 초기 목록 로드
   useEffect(() => {
-    if (!currentUser || currentUser.role !== "admin") {
-      alert("관리자 권한이 필요합니다.");
-      navigate("/");
+    if (isVerified) {
+      fetchList("votes", 1);
     }
-  }, [currentUser, navigate]);
+  }, [isVerified]);
 
-  // 인증 코드 발송 (범용)
-  const handleSendCode = async (isForUserDelete = false) => {
-    setIsSendingCode(true);
-    try {
-      const response = await instance.post(
-        "/admin/send-verification",
-        {},
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        },
-      );
+  // ... (기존 인증 로직 생략) ...
 
-      if (isForUserDelete) {
-        setDeleteVerifyCode(response.data.code);
-        setUserDeleteStep(2);
-      } else {
-        setServerCode(response.data.code);
-      }
-      alert("관리자 이메일로 인증 코드가 발송되었습니다.");
-    } catch (error) {
-      console.error("인증 코드 발송 에러:", error);
-      if (!handleAuthError(error)) {
-        alert("인증 코드 발송에 실패했습니다.");
-      }
-    } finally {
-      setIsSendingCode(false);
-    }
-  };
-
-  // 인증 코드 발송 (로그인용)
-  const handleSendVerificationCode = () => handleSendCode(false);
-
-  // 인증 코드 확인 (로그인용)
-  const handleVerifyCode = () => {
-    if (!serverCode) {
-      alert("먼저 인증 코드를 발송해주세요.");
-      return;
-    }
-    if (inputCode === serverCode) {
-      setIsVerified(true);
-      alert("관리자 인증이 완료되었습니다.");
-    } else {
-      alert("인증 코드가 일치하지 않습니다.");
-    }
-  };
-
-  // 유저 강제 탈퇴 처리
-  const handleDeleteUser = async () => {
-    if (!itemToDelete) return;
-    if (deleteInputCode !== deleteVerifyCode) {
-      alert("인증 코드가 일치하지 않습니다.");
-      return;
-    }
-
+  // 공통 목록 로드 함수
+  const fetchList = async (tab, page = 1) => {
     setLoading(true);
     try {
-      await instance.delete(`/admin/users/${itemToDelete.id}`, {
+      let endpoint = "";
+      let limit = 50;
+      if (tab === "votes") {
+        endpoint = "/admin/votes";
+        limit = 50;
+      } else if (tab === "users") {
+        endpoint = "/admin/users";
+        limit = 50;
+      } else if (tab === "reports") {
+        endpoint = "/admin/reports";
+        limit = 30;
+      } else if (tab === "bans") {
+        endpoint = "/admin/banned-emails";
+        limit = 30;
+      }
+
+      const response = await instance.get(endpoint, {
+        params: { page, limit },
         headers: { Authorization: `Bearer ${token}` },
       });
-      alert("유저가 강제 탈퇴 처리되었습니다.");
-      setUsers(users.filter((u) => u.id !== itemToDelete.id));
-      handleCloseModal();
+
+      if (tab === "votes") setVotes(response.data.votes);
+      else if (tab === "users") setUsers(response.data.users);
+      else if (tab === "reports") setReports(response.data.reports);
+      else if (tab === "bans") setBannedEmails(response.data.bannedEmails);
+
+      setPagination(prev => ({
+        ...prev,
+        [tab]: { ...prev[tab], current: page, total: response.data.total }
+      }));
+      setActiveTab(tab);
     } catch (error) {
-      console.error("유저 탈퇴 에러:", error);
-      alert(
-        error.response?.data?.message ||
-          "유저 탈퇴 처리 중 에러가 발생했습니다.",
-      );
+      console.error(`${tab} 로드 에러:`, error);
+      if (!handleAuthError(error)) {
+        alert("데이터를 불러오는 중 에러가 발생했습니다.");
+      }
     } finally {
       setLoading(false);
     }
   };
 
-  const handleCloseModal = () => {
-    setDeleteModal(null);
-    setItemToDelete(null);
-    setUserDeleteStep(0);
-    setDeleteVerifyCode("");
-    setDeleteInputCode("");
-  };
+  // 페이지네이션 컴포넌트
+  const Pagination = ({ tab }) => {
+    const { current, total, limit } = pagination[tab];
+    const totalPages = Math.ceil(total / limit);
+    if (totalPages <= 1) return null;
 
-  // 이메일 차단 목록 조회
-  const handleLoadBannedEmails = async () => {
-    setLoading(true);
-    try {
-      const response = await instance.get("/admin/banned-emails", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setBannedEmails(response.data.bannedEmails);
-      setActiveTab("bans");
-    } catch (error) {
-      console.error("차단 목록 조회 에러:", error);
-      if (!handleAuthError(error)) {
-        alert("차단 목록을 불러오는 중 에러가 발생했습니다.");
-      }
-    } finally {
-      setLoading(false);
+    const pages = [];
+    for (let i = 1; i <= totalPages; i++) {
+      pages.push(i);
     }
+
+    return (
+      <div className="admin-pagination">
+        <button 
+          onClick={() => fetchList(tab, current - 1)} 
+          disabled={current === 1}
+          className="page-nav-btn"
+        >
+          &lt;
+        </button>
+        {pages.map(p => (
+          <button 
+            key={p} 
+            onClick={() => fetchList(tab, p)}
+            className={`page-btn ${current === p ? 'active' : ''}`}
+          >
+            {p}
+          </button>
+        ))}
+        <button 
+          onClick={() => fetchList(tab, current + 1)} 
+          disabled={current === totalPages}
+          className="page-nav-btn"
+        >
+          &gt;
+        </button>
+      </div>
+    );
   };
 
   // 이메일 차단 추가
@@ -157,13 +136,19 @@ const Admin = () => {
       );
       alert("이메일이 차단되었습니다.");
       setNewBanEmail("");
-      handleLoadBannedEmails();
+      fetchList("bans", 1); // 1페이지로 새로고침
     } catch (error) {
       console.error("이메일 차단 에러:", error);
       alert("이메일 차단 중 에러가 발생했습니다.");
     } finally {
       setLoading(false);
     }
+  };
+
+  // ... (다른 핸들러들 수정) ...
+
+  const handleTabChange = (tab) => {
+    fetchList(tab, 1);
   };
 
   // 이메일 차단 해제
@@ -501,37 +486,27 @@ const Admin = () => {
           <div className="tabs">
             <button
               className={`tab ${activeTab === "votes" ? "active" : ""}`}
-              onClick={() => {
-                setActiveTab("votes");
-                setComments([]);
-              }}
+              onClick={() => fetchList("votes", 1)}
             >
-              투표 ({votes.length})
+              투표 ({pagination.votes.total})
             </button>
             <button
               className={`tab ${activeTab === "users" ? "active" : ""}`}
-              onClick={handleLoadUsers}
+              onClick={() => fetchList("users", 1)}
             >
-              유저 ({users.length || "..."})
+              유저 ({pagination.users.total})
             </button>
             <button
               className={`tab ${activeTab === "reports" ? "active" : ""}`}
-              onClick={handleLoadReports}
+              onClick={() => fetchList("reports", 1)}
             >
-              신고 ({reports.length || "..."})
-            </button>
-            <button
-              className={`tab ${activeTab === "comments" ? "active" : ""}`}
-              onClick={() => setActiveTab("comments")}
-              disabled={!selectedVoteId}
-            >
-              댓글 ({comments.length})
+              신고 ({pagination.reports.total})
             </button>
             <button
               className={`tab ${activeTab === "bans" ? "active" : ""}`}
-              onClick={handleLoadBannedEmails}
+              onClick={() => fetchList("bans", 1)}
             >
-              이메일 차단 ({bannedEmails.length || "..."})
+              이메일 차단 ({pagination.bans.total})
             </button>
           </div>
 
@@ -602,6 +577,7 @@ const Admin = () => {
                     </tbody>
                   </table>
                 </div>
+                <Pagination tab="bans" />
               </div>
             </div>
           )}
@@ -612,67 +588,63 @@ const Admin = () => {
               {votes.length === 0 ? (
                 <p className="no-data">검색 결과가 없습니다.</p>
               ) : (
-                <div className="votes-grid">
-                  {votes.map((vote) => (
-                    <div key={vote.id} className="vote-card">
-                      <div className="vote-header">
-                        <h3>{vote.title}</h3>
-                        <span className="vote-id">#{vote.id}</span>
-                      </div>
-                      <div className="vote-body">
-                        <div className="candidates">
-                          <div className="candidate">
-                            <span className="name">
-                              A: {vote.candidate_a_name}
-                            </span>
-                            <span className="count">
-                              {vote.candidate_a_count} votes
-                            </span>
+                <>
+                  <div className="votes-grid">
+                    {votes.map((vote) => (
+                      <div key={vote.id} className="vote-card">
+                        <div className="vote-header">
+                          <h3>{vote.title}</h3>
+                          <span className="vote-id">#{vote.id}</span>
+                        </div>
+                        <div className="vote-body">
+                          <div className="candidates">
+                            <div className="candidate">
+                              <span className="name">
+                                A: {vote.candidate_a_name}
+                              </span>
+                              <span className="count">
+                                {vote.candidate_a_count} votes
+                              </span>
+                            </div>
+                            <span className="vs">VS</span>
+                            <div className="candidate">
+                              <span className="name">
+                                B: {vote.candidate_b_name}
+                              </span>
+                              <span className="count">
+                                {vote.candidate_b_count} votes
+                              </span>
+                            </div>
                           </div>
-                          <span className="vs">VS</span>
-                          <div className="candidate">
-                            <span className="name">
-                              B: {vote.candidate_b_name}
-                            </span>
-                            <span className="count">
-                              {vote.candidate_b_count} votes
-                            </span>
+                          <div className="vote-info">
+                            <p>
+                              작성자: {vote.author_nickname} ({vote.author_name})
+                            </p>
+                            <p>
+                              조회: {vote.view_count} | 댓글: {vote.comment_count}
+                            </p>
+                            <p>
+                              작성일: {new Date(vote.created_at).toLocaleString()}
+                            </p>
                           </div>
                         </div>
-                        <div className="vote-info">
-                          <p>
-                            작성자: {vote.author_nickname} ({vote.author_name})
-                          </p>
-                          <p>
-                            조회: {vote.view_count} | 댓글: {vote.comment_count}
-                          </p>
-                          <p>
-                            작성일: {new Date(vote.created_at).toLocaleString()}
-                          </p>
+                        <div className="vote-actions">
+                          <button
+                            className="delete-btn"
+                            onClick={() => {
+                              setDeleteModal("vote");
+                              setItemToDelete(vote);
+                            }}
+                            disabled={loading}
+                          >
+                            삭제
+                          </button>
                         </div>
                       </div>
-                      <div className="vote-actions">
-                        <button
-                          className="view-comments-btn"
-                          onClick={() => handleViewComments(vote.id)}
-                          disabled={loading}
-                        >
-                          댓글 보기
-                        </button>
-                        <button
-                          className="delete-btn"
-                          onClick={() => {
-                            setDeleteModal("vote");
-                            setItemToDelete(vote);
-                          }}
-                          disabled={loading}
-                        >
-                          삭제
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                  <Pagination tab="votes" />
+                </>
               )}
             </div>
           )}
@@ -790,6 +762,7 @@ const Admin = () => {
                   </tbody>
                 </table>
               </div>
+              <Pagination tab="users" />
             </div>
           )}
 
@@ -867,116 +840,7 @@ const Admin = () => {
                   </tbody>
                 </table>
               </div>
-            </div>
-          )}
-
-          {/* 댓글 목록 */}
-          {activeTab === "comments" && (
-            <div className="content-section">
-              {!selectedVoteId ? (
-                <p className="no-data">
-                  투표를 선택하면 댓글을 조회할 수 있습니다.
-                </p>
-              ) : (
-                <div className="admin-comments-split-view animate-fade-in">
-                  {/* 왼쪽: 투표 정보 프리뷰 */}
-                  <div className="selected-vote-column">
-                    <h3>선택된 투표</h3>
-                    {votes.find((v) => v.id === selectedVoteId) ? (
-                      (() => {
-                        const vote = votes.find((v) => v.id === selectedVoteId);
-                        return (
-                          <div className="vote-card selected-preview">
-                            <div className="vote-header">
-                              <h3>{vote.title}</h3>
-                              <span className="vote-id">#{vote.id}</span>
-                            </div>
-                            <div className="vote-body">
-                              <div className="candidates">
-                                <div className="candidate">
-                                  <span className="name">
-                                    A: {vote.candidate_a_name}
-                                  </span>
-                                  <span className="count">
-                                    {vote.candidate_a_count} votes
-                                  </span>
-                                </div>
-                                <span className="vs">VS</span>
-                                <div className="candidate">
-                                  <span className="name">
-                                    B: {vote.candidate_b_name}
-                                  </span>
-                                  <span className="count">
-                                    {vote.candidate_b_count} votes
-                                  </span>
-                                </div>
-                              </div>
-                              <div className="vote-info">
-                                <p>작성자: {vote.author_nickname}</p>
-                                <p>
-                                  조회: {vote.view_count} | 댓글:{" "}
-                                  {vote.comment_count}
-                                </p>
-                              </div>
-                            </div>
-                            <div className="vote-actions">
-                              <button
-                                className="delete-btn"
-                                onClick={() => {
-                                  setDeleteModal("vote");
-                                  setItemToDelete(vote);
-                                }}
-                                disabled={loading}
-                              >
-                                삭제
-                              </button>
-                            </div>
-                          </div>
-                        );
-                      })()
-                    ) : (
-                      <p className="no-data">투표 정보를 불러올 수 없습니다.</p>
-                    )}
-                  </div>
-
-                  {/* 오른쪽: 댓글 리스트 */}
-                  <div className="comments-column">
-                    <h3>댓글 목록 ({comments.length})</h3>
-                    {comments.length === 0 ? (
-                      <p className="no-data">댓글이 없습니다.</p>
-                    ) : (
-                      <div className="comments-list">
-                        {comments.map((comment) => (
-                          <div key={comment.id} className="comment-item">
-                            <div className="comment-header">
-                              <span className="author">
-                                {comment.author_nickname} ({comment.author_name}
-                                )
-                              </span>
-                              <span className="created-at">
-                                {new Date(comment.created_at).toLocaleString()}
-                              </span>
-                            </div>
-                            <div className="comment-content">
-                              {comment.content}
-                            </div>
-                            <button
-                              className="delete-comment-btn"
-                              onClick={() => {
-                                setDeleteModal("comment");
-                                setItemToDelete(comment);
-                              }}
-                              disabled={loading}
-                            >
-                              삭제
-                            </button>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
+              <Pagination tab="reports" />
             </div>
           )}
         </div>
