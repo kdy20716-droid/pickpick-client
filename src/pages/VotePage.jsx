@@ -145,6 +145,10 @@ export default function VotePage() {
       });
 
       const sorted = formattedCards.sort((a, b) => {
+        // 1. 투표 여부 (안 한 것이 먼저)
+        if (a.isVoted !== b.isVoted) return (a.isVoted ? 1 : 0) - (b.isVoted ? 1 : 0);
+
+        // 2. 투표 상태 (마감안됨 -> 무기한 -> 마감됨)
         const getPriority = (c) => {
           if (c.expiresAt && !c.isExpired) return 0; // 마감안된 투표
           if (!c.expiresAt) return 1;                // 무기한 투표
@@ -152,8 +156,7 @@ export default function VotePage() {
         };
         const pA = getPriority(a);
         const pB = getPriority(b);
-        if (pA !== pB) return pA - pB;
-        return (a.isVoted ? 1 : 0) - (b.isVoted ? 1 : 0);
+        return pA - pB;
       });
       setSelectedVotes(prev => ({ ...prev, ...serverVotes }));
       setCardActions(prev => ({ ...prev, ...serverActions }));
