@@ -144,7 +144,17 @@ export default function VotePage() {
         };
       });
 
-      const sorted = formattedCards.sort((a, b) => (a.isVoted || a.isExpired) - (b.isVoted || b.isExpired));
+      const sorted = formattedCards.sort((a, b) => {
+        const getPriority = (c) => {
+          if (c.expiresAt && !c.isExpired) return 0; // 마감안된 투표
+          if (!c.expiresAt) return 1;                // 무기한 투표
+          return 2;                                   // 마감된 투표
+        };
+        const pA = getPriority(a);
+        const pB = getPriority(b);
+        if (pA !== pB) return pA - pB;
+        return (a.isVoted ? 1 : 0) - (b.isVoted ? 1 : 0);
+      });
       setSelectedVotes(prev => ({ ...prev, ...serverVotes }));
       setCardActions(prev => ({ ...prev, ...serverActions }));
       setCards(pinTargetCard(sorted, targetVoteId));
