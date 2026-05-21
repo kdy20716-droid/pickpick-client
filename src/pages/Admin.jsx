@@ -14,6 +14,8 @@ const Admin = () => {
   const [deleteModal, setDeleteModal] = useState(null); // null, 'vote', 'comment', 'user'
   const [itemToDelete, setItemToDelete] = useState(null);
   const [users, setUsers] = useState([]);
+  const [bannedEmails, setBannedEmails] = useState([]);
+  const [newBanEmail, setNewBanEmail] = useState("");
 
   // 2차 인증 상태 (로그인 초기 인증용)
   const [isVerified, setIsVerified] = useState(false);
@@ -116,6 +118,65 @@ const Admin = () => {
     setDeleteInputCode("");
   };
 
+  // 이메일 차단 목록 조회
+  const handleLoadBannedEmails = async () => {
+    setLoading(true);
+    try {
+      const response = await instance.get("/admin/banned-emails", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setBannedEmails(response.data.bannedEmails);
+      setActiveTab("bans");
+    } catch (error) {
+      console.error("차단 목록 조회 에러:", error);
+      if (!handleAuthError(error)) {
+        alert("차단 목록을 불러오는 중 에러가 발생했습니다.");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 이메일 차단 추가
+  const handleAddBanEmail = async (e) => {
+    e.preventDefault();
+    if (!newBanEmail.trim()) return alert("이메일을 입력해주세요.");
+
+    setLoading(true);
+    try {
+      await instance.post("/admin/banned-emails", { email: newBanEmail }, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      alert("이메일이 차단되었습니다.");
+      setNewBanEmail("");
+      handleLoadBannedEmails();
+    } catch (error) {
+      console.error("이메일 차단 에러:", error);
+      alert("이메일 차단 중 에러가 발생했습니다.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 이메일 차단 해제
+  const handleRemoveBanEmail = async (id) => {
+    if (!window.confirm("차단을 해제하시겠습니까?")) return;
+
+    setLoading(true);
+    try {
+      await instance.delete(`/admin/banned-emails/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      alert("차단이 해제되었습니다.");
+      setBannedEmails(bannedEmails.filter(b => b.id !== id));
+    } catch (error) {
+      console.error("차단 해제 에러:", error);
+      alert("차단 해제 중 에러가 발생했습니다.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // 401 에러 공통 처리 함수
   const handleAuthError = (error) => {
     if (error.response && error.response.status === 401) {
@@ -165,6 +226,7 @@ const Admin = () => {
       setVotes(response.data.votes);
       setComments([]);
       setSelectedVoteId(null);
+      setActiveTab("votes");
     } catch (error) {
       console.error("투표 조회 에러:", error);
       if (!handleAuthError(error)) {
@@ -347,25 +409,29 @@ const Admin = () => {
           {/* 검색 섹션 */}
           <div className="admin-search-section">
             <h2>투표 검색</h2>
-            <form onSubmit={handleSearchVotes} className="search-form">
-              <input
-                type="text"
-                placeholder="투표 제목, 선택지명으로 검색..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="search-input"
-              />
-              <button type="submit" className="search-btn" disabled={loading}>
-                {loading ? "검색 중..." : "투표 검색"}
-              </button>
-              <button
-                type="button"
-                className="load-all-btn"
-                onClick={handleLoadAllVotes}
-                disabled={loading}
-              >
-                {loading ? "로딩 중..." : "전체 투표 보기"}
-              </button>
+            <form onSubmit={handleSearchVotes} className="search-form-horizontal">
+              <div className="search-input-wrapper">
+                <input
+                  type="text"
+                  placeholder="투표 제목, 선택지명으로 검색..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="search-input"
+                />
+              </div>
+              <div className="search-buttons-group">
+                <button type="submit" className="search-btn" disabled={loading}>
+                  {loading ? "검색 중..." : "투표 검색"}
+                </button>
+                <button
+                  type="button"
+                  className="load-all-btn"
+                  onClick={handleLoadAllVotes}
+                  disabled={loading}
+                >
+                  {loading ? "로딩 중..." : "전체 투표 보기"}
+                </button>
+              </div>
             </form>
           </div>
 
@@ -387,6 +453,12 @@ const Admin = () => {
               유저 ({users.length || "..."})
             </button>
             <button
+              className={`tab ${activeTab === "bans" ? "active" : ""}`}
+              onClick={handleLoadBannedEmails}
+            >
+              이메일 차단 ({bannedEmails.length || "..."})
+            </button>
+            <button
               className={`tab ${activeTab === "comments" ? "active" : ""}`}
               onClick={() => setActiveTab("comments")}
               disabled={!selectedVoteId}
@@ -394,6 +466,66 @@ const Admin = () => {
               댓글 ({comments.length})
             </button>
           </div>
+
+          {/* 이메일 차단 관리 섹션 */}
+          {activeTab === "bans" && (
+            <div className="content-section animate-fade-in">
+              <div className="ban-management-card">
+                <h3>새로운 이메일 차단</h3>
+                <form onSubmit={handleAddBanEmail} className="ban-form-horizontal">
+                  <input
+                    type="email"
+                    placeholder="차단할 이메일 주소 입력"
+                    value={newBanEmail}
+                    onChange={(e) => setNewBanEmail(e.target.value)}
+                    className="ban-input"
+                    required
+                  />
+                  <button type="submit" className="admin-btn ban-submit-btn" disabled={loading}>
+                    이메일 차단하기
+                  </button>
+                </form>
+              </div>
+
+              <div className="banned-list-container">
+                <h3>차단된 이메일 목록</h3>
+                <div className="users-table-container">
+                  <table className="users-table">
+                    <thead>
+                      <tr>
+                        <th>ID</th>
+                        <th>이메일 주소</th>
+                        <th>차단 일시</th>
+                        <th>작업</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {bannedEmails.length === 0 ? (
+                        <tr><td colSpan="4" className="no-data">차단된 이메일이 없습니다.</td></tr>
+                      ) : (
+                        bannedEmails.map(ban => (
+                          <tr key={ban.id}>
+                            <td>{ban.id}</td>
+                            <td>{ban.email}</td>
+                            <td>{new Date(ban.created_at).toLocaleString()}</td>
+                            <td>
+                              <button
+                                className="clear-btn"
+                                onClick={() => handleRemoveBanEmail(ban.id)}
+                                disabled={loading}
+                              >
+                                차단 해제
+                              </button>
+                            </td>
+                          </tr>
+                        ))
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* 투표 목록 */}
           {activeTab === "votes" && (
