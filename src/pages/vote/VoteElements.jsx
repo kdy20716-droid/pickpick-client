@@ -87,7 +87,8 @@ export const VoteCard = memo(({
             const isSelected = selectedCandidateId === candidate.id;
             const isVideo = candidate.type === "youtube" || candidate.type === "video";
             const isLeft = candidate.id === "a";
-            const isLoser = hasVoted && (
+            const isIndefinite = !card.expiresAt;
+            const isLoser = !isIndefinite && hasVoted && (
               (isLeft && card.shares.left < card.shares.right) ||
               (!isLeft && card.shares.right < card.shares.left)
             );
