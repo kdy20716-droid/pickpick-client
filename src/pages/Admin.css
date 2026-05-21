@@ -194,7 +194,7 @@
 }
 
 .tab {
-  padding: 16px 24px;
+  padding: 18.5px 24px; /* 세로로 5px 추가 (기존 16px -> 18.5px) */
   border: none;
   background: none;
   cursor: pointer;

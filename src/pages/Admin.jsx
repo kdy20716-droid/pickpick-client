@@ -515,12 +515,6 @@ const Admin = () => {
               유저 ({users.length || "..."})
             </button>
             <button
-              className={`tab ${activeTab === "bans" ? "active" : ""}`}
-              onClick={handleLoadBannedEmails}
-            >
-              이메일 차단 ({bannedEmails.length || "..."})
-            </button>
-            <button
               className={`tab ${activeTab === "reports" ? "active" : ""}`}
               onClick={handleLoadReports}
             >
@@ -532,6 +526,12 @@ const Admin = () => {
               disabled={!selectedVoteId}
             >
               댓글 ({comments.length})
+            </button>
+            <button
+              className={`tab ${activeTab === "bans" ? "active" : ""}`}
+              onClick={handleLoadBannedEmails}
+            >
+              이메일 차단 ({bannedEmails.length || "..."})
             </button>
           </div>
 
@@ -768,6 +768,9 @@ const Admin = () => {
                           </div>
                         </td>
                         <td>
+                          {new Date(user.created_at).toLocaleDateString()}
+                        </td>
+                        <td>
                           {user.role !== "admin" && (
                             <button
                               className="delete-btn"
@@ -781,9 +784,7 @@ const Admin = () => {
                               강제탈퇴
                             </button>
                           )}
-                          {new Date(user.created_at).toLocaleDateString()}
                         </td>
-                        <td>{/* 추가 관리 기능 필요시 배치 */}-</td>
                       </tr>
                     ))}
                   </tbody>
