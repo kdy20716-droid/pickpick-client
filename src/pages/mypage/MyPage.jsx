@@ -82,7 +82,7 @@ const MyPage = () => {
       // 현재 등급을 저장 (다음 비교를 위해)
       localStorage.setItem(`prevGrade_${currentUser.id}`, currentGrade);
     }
-  }, [token, navigate, currentUser, gradeOrder]);
+  }, [token, navigate, currentUser]);
 
   const executeLogout = async () => {
     setConfirmModal(null);

@@ -7,10 +7,16 @@ import { getVote, toggleLike } from "../../api/posts";
 import Comments from "../../components/Comments.jsx";
 import { getCandidateThumbnail } from "../../utils/image";
 
-function getLikeCountFromResponse(response, fallbackCount) {
-  const nextCount = Number(response?.like_count ?? response?.likes);
-  return Number.isFinite(nextCount) ? Math.max(0, nextCount) : fallbackCount;
-}
+// 후보자 썸네일 컴포넌트 (중복 제거)
+const CandidateThumbnail = ({ image, type, isPick }) => (
+  <div className={`thumb-img${isPick ? " is-user-pick" : ""}`}>
+    {image ? (
+      <img src={getCandidateThumbnail(image, type)} alt="candidate" />
+    ) : (
+      <div className="no-img">No Img</div>
+    )}
+  </div>
+);
 
 const Like = () => {
   const [likedVotes, setLikedVotes] = useState([]);
@@ -20,19 +26,19 @@ const Like = () => {
   const [selectedVoteForComments, setSelectedVoteForComments] = useState(null);
   const navigate = useNavigate();
 
+  // 좋아요 목록 조회
   const fetchLikedVotes = useCallback(async () => {
     if (!currentUser) return;
 
     try {
       setLoading(true);
       const data = await getVote(
-        searchKeyword,
-        null,
-        null,
-        currentUser.id,
-        null,
-        true,
-        null,
+        searchKeyword, // keyword
+        null,          // category
+        null,          // sort
+        currentUser.id,// user_id
+        null,          // only_voted
+        true           // only_liked
       );
       setLikedVotes(data);
     } catch (error) {
@@ -46,50 +52,45 @@ const Like = () => {
     fetchLikedVotes();
   }, [fetchLikedVotes]);
 
+  // 좋아요 취소 처리
   const handleUnlike = async (vote) => {
     if (!currentUser) return;
 
     const postId = vote.id;
+    const userId = currentUser.id;
 
     try {
-      const res = await toggleLike(postId, currentUser.id, false);
+      const res = await toggleLike(postId, userId, false);
       if (res.success && res.liked === false) {
-        // 성공적으로 취소되면 목록에서 해당 항목 제거
-        setLikedVotes((prev) => prev.filter((vote) => vote.id !== postId));
+        // 1. 목록에서 즉시 제거
+        setLikedVotes((prev) => prev.filter((v) => v.id !== postId));
 
-        // VotePage와 좋아요 상태 동기화 (localStorage 업데이트)
-        const userId = currentUser.id;
+        // 2. localStorage 및 전역 상태 동기화
+        const cardId = postId.toString();
         const savedActions = localStorage.getItem(`cardActions_${userId}`);
         const actions = savedActions ? JSON.parse(savedActions) : {};
-        const cardId = postId.toString();
         const previousAction = actions[cardId] ?? {};
-        const fallbackCount = Math.max(
-          0,
-          Number(previousAction.likeCount ?? vote.like_count ?? 1) - 1,
-        );
-        const likeCount = getLikeCountFromResponse(res, fallbackCount);
+        
+        // 새로운 좋아요 수 결정
+        const nextCount = Number(res?.like_count ?? res?.likes);
+        const fallbackCount = Math.max(0, Number(previousAction.likeCount ?? vote.like_count ?? 1) - 1);
+        const likeCount = Number.isFinite(nextCount) ? Math.max(0, nextCount) : fallbackCount;
 
         actions[cardId] = {
           ...previousAction,
           like: false,
           likeCount,
         };
-        localStorage.setItem(
-          `cardActions_${userId}`,
-          JSON.stringify(actions),
-        );
+        localStorage.setItem(`cardActions_${userId}`, JSON.stringify(actions));
 
+        // 다른 컴포넌트에 알림
         window.dispatchEvent(
           new CustomEvent("vote-like-updated", {
-            detail: {
-              userId,
-              cardId,
-              liked: false,
-              likeCount,
-            },
-          }),
+            detail: { userId, cardId, liked: false, likeCount },
+          })
         );
       } else if (res.success) {
+        // 예상치 못한 성공 상태일 경우 재조회
         await fetchLikedVotes();
       }
     } catch (error) {
@@ -99,21 +100,15 @@ const Like = () => {
   };
 
   const handleToggleComments = (vote) => {
-    if (selectedVoteForComments?.id === vote.id) {
-      setSelectedVoteForComments(null);
-    } else {
-      setSelectedVoteForComments(vote);
-    }
+    setSelectedVoteForComments((prev) => (prev?.id === vote.id ? null : vote));
   };
 
   return (
-    <div className="like-page-container">
-      {/* 상단 브레드크럼 */}
+    <div className="like-page-container" key={currentUser?.id}>
       <div className={styles.topSearchRow} style={{ marginBottom: "20px" }}>
         <p className={styles.breadcrumb}>마이페이지 〉 좋아요한 투표</p>
       </div>
 
-      {/* 검색바 영역 - Result 페이지와 구조 통일 */}
       <div className="like-search-section">
         <div className="like-search-bar">
           <input
@@ -127,15 +122,10 @@ const Like = () => {
       </div>
 
       <div className="like-content">
-        <p className="description-text">
-          최근 좋아요한 항목부터 순서대로 표시됩니다.
-        </p>
+        <p className="description-text">최근 좋아요한 항목부터 순서대로 표시됩니다.</p>
 
         {loading ? (
-          <div
-            className="like-list"
-            style={{ textAlign: "center", color: "#bbb", padding: "60px" }}
-          >
+          <div className="like-list" style={{ textAlign: "center", color: "#bbb", padding: "60px" }}>
             데이터를 불러오는 중입니다...
           </div>
         ) : (
@@ -143,7 +133,6 @@ const Like = () => {
             {likedVotes.length > 0 ? (
               likedVotes.map((vote) => (
                 <div key={vote.id} className="like-item-row">
-                  {/* 왼쪽 하트 아이콘 - 클릭 시 좋아요 취소 */}
                   <div
                     className="like-badge"
                     onClick={() => handleUnlike(vote)}
@@ -153,74 +142,26 @@ const Like = () => {
                     <span className="material-icons">favorite</span>
                   </div>
 
-                  {/* 중앙 정보 박스 */}
                   <div
                     className="info-card"
                     onClick={() => navigate(`/vote/${vote.id}`)}
                     style={{ cursor: "pointer" }}
                   >
-                    <div
-                      className={`thumb-img${
-                        vote.user_voted_side?.toUpperCase() === "A"
-                          ? " is-user-pick"
-                          : ""
-                      }`}
-                    >
-                      {vote.candidate_a_image ? (
-                        <img
-                          src={getCandidateThumbnail(vote.candidate_a_image, vote.candidate_a_type)}
-                          alt="candidate a"
-                        />
-                      ) : (
-                        <div
-                          style={{
-                            width: "100%",
-                            height: "100%",
-                            background: "#eee",
-                            display: "flex",
-                            justifyContent: "center",
-                            alignItems: "center",
-                            fontSize: "12px",
-                            color: "#ccc",
-                          }}
-                        >
-                          No Img
-                        </div>
-                      )}
-                    </div>
+                    <CandidateThumbnail 
+                      image={vote.candidate_a_image} 
+                      type={vote.candidate_a_type} 
+                      isPick={vote.user_voted_side?.toUpperCase() === "A"} 
+                    />
                     <h3 className="vote-title">{vote.title}</h3>
-                    <div
-                      className={`thumb-img${
-                        vote.user_voted_side?.toUpperCase() === "B"
-                          ? " is-user-pick"
-                          : ""
-                      }`}
-                    >
-                      {vote.candidate_b_image ? (
-                        <img
-                          src={getCandidateThumbnail(vote.candidate_b_image, vote.candidate_b_type)}
-                          alt="candidate b"
-                        />
-                      ) : (
-                        <div
-                          style={{
-                            width: "100%",
-                            height: "100%",
-                            background: "#eee",
-                            display: "flex",
-                            justifyContent: "center",
-                            alignItems: "center",
-                            fontSize: "12px",
-                            color: "#ccc",
-                          }}
-                        >
-                          No Img
-                        </div>
-                      )}
-                    </div>
+                    <CandidateThumbnail 
+                      image={vote.candidate_b_image} 
+                      type={vote.candidate_b_type} 
+                      isPick={vote.user_voted_side?.toUpperCase() === "B"} 
+                    />
                   </div>
+
                   <button
-                    className={`icon-btn${selectedVoteForComments?.id === vote.id ? " active" : ""}`}
+                    className={`comment-icon-btn${selectedVoteForComments?.id === vote.id ? " active" : ""}`}
                     onClick={() => handleToggleComments(vote)}
                   >
                     <span className="material-icons">chat_bubble_outline</span>
@@ -228,15 +169,14 @@ const Like = () => {
                 </div>
               ))
             ) : (
-              <div
-                style={{ textAlign: "center", color: "#bbb", padding: "60px" }}
-              >
+              <div style={{ textAlign: "center", color: "#bbb", padding: "60px" }}>
                 좋아요한 투표가 없습니다.
               </div>
             )}
           </div>
         )}
       </div>
+
       {selectedVoteForComments && (
         <Comments
           title={selectedVoteForComments.title}

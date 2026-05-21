@@ -3,51 +3,132 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { addVote, updateVote } from "../api/posts";
 import { useAuth } from "../contexts/AuthContext";
 import { Pencil, Trash2, Maximize, Minus, Plus } from "lucide-react";
+import { compressImage } from "../utils/image";
 import vsLogo from "../assets/vs-logo.svg";
 import "./Create.css";
 
 const DEFAULT_DEADLINE_MINUTES = 24 * 60;
 const DEADLINE_OPTIONS = [
-  { label: "30분", minutes: 30 },
-  { label: "1시간", minutes: 60 },
-  { label: "2시간", minutes: 2 * 60 },
-  { label: "4시간", minutes: 4 * 60 },
-  { label: "8시간", minutes: 8 * 60 },
-  { label: "12시간", minutes: 12 * 60 },
-  { label: "1일", minutes: 24 * 60 },
-  { label: "3일", minutes: 3 * 24 * 60 },
-  { label: "7일", minutes: 7 * 24 * 60 },
-  { label: "15일", minutes: 15 * 24 * 60 },
+  { label: "30분", minutes: 30 }, { label: "1시간", minutes: 60 },
+  { label: "2시간", minutes: 2 * 60 }, { label: "4시간", minutes: 4 * 60 },
+  { label: "8시간", minutes: 8 * 60 }, { label: "12시간", minutes: 12 * 60 },
+  { label: "1일", minutes: 24 * 60 }, { label: "3일", minutes: 3 * 24 * 60 },
+  { label: "7일", minutes: 7 * 24 * 60 }, { label: "15일", minutes: 15 * 24 * 60 },
   { label: "30일", minutes: 30 * 24 * 60 },
 ];
 
-function getDeadlineMinutesFromExpiresAt(expiresAt) {
-  const expiresAtTime = new Date(expiresAt).getTime();
-  if (!expiresAt || Number.isNaN(expiresAtTime)) {
-    return DEFAULT_DEADLINE_MINUTES;
-  }
+const TAGS = [
+  "연예", "음식", "애니메이션", "동물", "스포츠", "일상", "게임", "음악",
+  "영화 / 드라마", "웹툰 / 웹소설", "유튜버 / 스트리머", "밸런스 게임", "밈", "기타",
+];
 
-  const remainingMinutes = Math.max(
-    1,
-    Math.round((expiresAtTime - Date.now()) / 60000),
+const getYouTubeId = (url) => {
+  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=|shorts\/)([^#&?]*).*/;
+  const match = url.match(regExp);
+  return (match && match[2].length === 11) ? match[2] : null;
+};
+
+// 후보자 박스 컴포넌트 (중복 제거)
+const CandidateBox = ({ 
+  num, name, preview, mediaType, zoom, setZoom, 
+  onFileChange, onPaste, onDrop, onYoutubeInput, onRemove, onEditToggle, showEdit 
+}) => {
+  const fileInputRef = useRef(null);
+
+  return (
+    <div
+      className="candidate-box"
+      onPaste={(e) => onPaste(e, num)}
+      onDragOver={(e) => e.preventDefault()}
+      onDrop={(e) => onDrop(e, num)}
+      tabIndex="0"
+    >
+      <input
+        type="file"
+        ref={fileInputRef}
+        style={{ display: "none" }}
+        accept="image/*"
+        onChange={(e) => onFileChange(e, num)}
+      />
+      {preview ? (
+        <>
+          <div className="image-wrapper">
+            <img
+              src={preview}
+              alt={`Preview ${num}`}
+              className="candidate-box__img"
+              style={{ transform: `scale(${zoom})` }}
+            />
+            {mediaType === "youtube" && <div className="youtube-badge">YouTube</div>}
+          </div>
+          <button className="image-edit-trigger" onClick={() => onEditToggle(num)}>
+            <Pencil size={18} />
+          </button>
+          {showEdit && (
+            <div className="image-edit-overlay">
+              <div className="edit-controls">
+                <button onClick={() => fileInputRef.current.click()} title="이미지 교체">
+                  <Maximize size={16} /> <span>이미지</span>
+                </button>
+                <button onClick={() => onRemove(num)} title="삭제">
+                  <Trash2 size={16} /> <span>삭제</span>
+                </button>
+              </div>
+              <div className="zoom-control">
+                <Minus size={14} onClick={() => setZoom(num, Math.max(0.5, zoom - 0.1))} />
+                <input
+                  type="range" min="0.5" max="3" step="0.1" value={zoom}
+                  onChange={(e) => setZoom(num, parseFloat(e.target.value))}
+                />
+                <Plus size={14} onClick={() => setZoom(num, Math.min(3, zoom + 0.1))} />
+              </div>
+            </div>
+          )}
+        </>
+      ) : (
+        <div className="candidate-box__upload">
+          <div className="upload-buttons">
+            <button className="upload-button" onClick={() => fileInputRef.current.click()}>
+              이미지 삽입
+            </button>
+          </div>
+          <div className="youtube-input-group">
+            <input 
+              type="text" placeholder="유튜브 링크 붙여넣기"
+              onChange={(e) => onYoutubeInput(e.target.value, num)}
+              className="youtube-url-input"
+            />
+          </div>
+          <p style={{ fontSize: "11px", color: "#f589b4", marginTop: "8px", textAlign: "center" }}>
+            * 이미지 드래그/붙여넣기 지원<br/>
+            * 유튜브 링크 입력 시 영상 자동 연결
+          </p>
+        </div>
+      )}
+      <div className="candidate-box__label">{name || "후보군 이름"}</div>
+    </div>
   );
-
-  return DEADLINE_OPTIONS.reduce((closest, option) => {
-    return Math.abs(option.minutes - remainingMinutes) <
-      Math.abs(closest - remainingMinutes)
-      ? option.minutes
-      : closest;
-  }, DEFAULT_DEADLINE_MINUTES);
-}
+};
 
 const Create = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user: currentUser, token } = useAuth();
-  const authorId = currentUser?.id || null;
-
+  
   const editData = location.state?.editData || null;
   const isEditing = !!editData;
+
+  const [title, setTitle] = useState("");
+  const [selectedTag, setSelectedTag] = useState("영화 / 드라마");
+  const [deadlineMinutes, setDeadlineMinutes] = useState(DEFAULT_DEADLINE_MINUTES);
+  const [isDeadlineUnlimited, setIsDeadlineUnlimited] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // 후보자 상태 통합
+  const [candidates, setCandidates] = useState({
+    1: { name: "", preview: null, file: null, mediaType: "image", youtubeUrl: "", zoom: 1, showEdit: false },
+    2: { name: "", preview: null, file: null, mediaType: "image", youtubeUrl: "", zoom: 1, showEdit: false }
+  });
 
   useEffect(() => {
     if (!token) {
@@ -56,219 +137,123 @@ const Create = () => {
     }
   }, [token, navigate]);
 
-  const [title, setTitle] = useState("");
-  const [selectedTag, setSelectedTag] = useState("영화 / 드라마");
-  const [candidate1, setCandidate1] = useState("");
-  const [candidate2, setCandidate2] = useState("");
-
-  const [previewImage1, setPreviewImage1] = useState(null);
-  const [previewImage2, setPreviewImage2] = useState(null);
-  const [file1, setFile1] = useState(null);
-  const [file2, setFile2] = useState(null);
-  const [mediaType1, setMediaType1] = useState("image"); // 'image', 'youtube'
-  const [mediaType2, setMediaType2] = useState("image");
-  const [youtubeUrl1, setYoutubeUrl1] = useState("");
-  const [youtubeUrl2, setYoutubeUrl2] = useState("");
-  const [deadlineMinutes, setDeadlineMinutes] = useState(
-    DEFAULT_DEADLINE_MINUTES,
-  );
-  const [isDeadlineUnlimited, setIsDeadlineUnlimited] = useState(false);
-
   useEffect(() => {
     if (isEditing) {
       setTitle(editData.title);
       setSelectedTag(editData.category || "기타");
-      setCandidate1(editData.candidate_a_name);
-      setCandidate2(editData.candidate_b_name);
-      setPreviewImage1(editData.candidate_a_image);
-      setPreviewImage2(editData.candidate_b_image);
+      setIsDeadlineUnlimited(!editData.expires_at);
+      
       const type1 = editData.candidate_a_type || "image";
       const type2 = editData.candidate_b_type || "image";
-      setMediaType1(type1 === "video" || type1 === "audio" ? "youtube" : type1);
-      setMediaType2(type2 === "video" || type2 === "audio" ? "youtube" : type2);
-      if (type1 === "youtube") setYoutubeUrl1(editData.candidate_a_image);
-      if (type2 === "youtube") setYoutubeUrl2(editData.candidate_b_image);
-      setIsDeadlineUnlimited(!editData.expires_at);
-      setDeadlineMinutes(getDeadlineMinutesFromExpiresAt(editData.expires_at));
+      
+      setCandidates({
+        1: { 
+          name: editData.candidate_a_name, preview: editData.candidate_a_image, file: null, 
+          mediaType: (type1 === "video" || type1 === "audio" ? "youtube" : type1),
+          youtubeUrl: type1 === "youtube" ? editData.candidate_a_image : "", zoom: 1, showEdit: false 
+        },
+        2: { 
+          name: editData.candidate_b_name, preview: editData.candidate_b_image, file: null, 
+          mediaType: (type2 === "video" || type2 === "audio" ? "youtube" : type2),
+          youtubeUrl: type2 === "youtube" ? editData.candidate_b_image : "", zoom: 1, showEdit: false 
+        }
+      });
     }
   }, [isEditing, editData]);
 
-  const [zoom1, setZoom1] = useState(1);
-  const [zoom2, setZoom2] = useState(1);
-  const [showEdit1, setShowEdit1] = useState(false);
-  const [showEdit2, setShowEdit2] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const hasCandidateNames =
-    candidate1.trim().length > 0 && candidate2.trim().length > 0;
-  const isPublishDisabled = isSubmitting || !hasCandidateNames;
-
-  const fileInputRef1 = useRef(null);
-  const fileInputRef2 = useRef(null);
-
-  const tags = [
-    "연예",
-    "음식",
-    "애니메이션",
-    "동물",
-    "스포츠",
-    "일상",
-    "게임",
-    "음악",
-    "영화 / 드라마",
-    "웹툰 / 웹소설",
-    "유튜버 / 스트리머",
-    "밸런스 게임",
-    "밈",
-    "기타",
-  ];
-
-  const getYouTubeId = (url) => {
-    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=|shorts\/)([^#\&\?]*).*/;
-    const match = url.match(regExp);
-    return (match && match[2].length === 11) ? match[2] : null;
+  const updateCandidate = (num, updates) => {
+    setCandidates(prev => ({
+      ...prev,
+      [num]: { ...prev[num], ...updates }
+    }));
   };
 
-  const handleFileChange = (e, setPreview, setFile, setZoom, setMediaType) => {
-    const file = e.target.files[0];
-    if (file) {
-      setFile(file);
-      setMediaType("image");
-      processFile(file, setPreview);
-      setZoom(1);
+  const processAndSetFile = async (num, file) => {
+    if (!file) return;
+    try {
+      // 클라이언트 측 압축 적용 (용량 감소 -> 전송 속도 향상)
+      const compressedBlob = await compressImage(file, 1200, 1200, 0.7);
+      const compressedFile = new File([compressedBlob], file.name, { type: "image/jpeg" });
+      
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        updateCandidate(num, { preview: reader.result, file: compressedFile, mediaType: "image", zoom: 1 });
+      };
+      reader.readAsDataURL(compressedFile);
+    } catch (err) {
+      console.error("이미지 압축 실패:", err);
+      // 실패 시 원본 사용
+      const reader = new FileReader();
+      reader.onloadend = () => updateCandidate(num, { preview: reader.result, file, mediaType: "image", zoom: 1 });
+      reader.readAsDataURL(file);
     }
   };
 
-  const handlePaste = (e, setPreview, setFile, setZoom, setMediaType) => {
+  const handleFileChange = (e, num) => {
+    const file = e.target.files[0];
+    if (file) processAndSetFile(num, file);
+  };
+
+  const handlePaste = (e, num) => {
     const text = e.clipboardData.getData("text");
     const youtubeId = getYouTubeId(text);
 
     if (youtubeId) {
-      setMediaType("youtube");
-      setPreview(`https://img.youtube.com/vi/${youtubeId}/0.jpg`);
-      setFile(null);
-      if (setPreview === setPreviewImage1) setYoutubeUrl1(youtubeId);
-      else setYoutubeUrl2(youtubeId);
-      setZoom(1);
+      updateCandidate(num, { 
+        mediaType: "youtube", preview: `https://img.youtube.com/vi/${youtubeId}/0.jpg`, 
+        file: null, youtubeUrl: youtubeId, zoom: 1 
+      });
       return;
     }
 
-    const items = (e.clipboardData || e.originalEvent.clipboardData).items;
-    for (const item of items) {
-      if (item.kind === "file") {
-        const file = item.getAsFile();
-        setFile(file);
-        setMediaType("image");
-        processFile(file, setPreview);
-        setZoom(1);
-        break;
-      }
-    }
+    const item = Array.from(e.clipboardData.items).find(i => i.kind === "file");
+    if (item) processAndSetFile(num, item.getAsFile());
   };
 
-  const handleDragOver = (e) => {
+  const handleDrop = (e, num) => {
     e.preventDefault();
+    if (e.dataTransfer.files?.length > 0) processAndSetFile(num, e.dataTransfer.files[0]);
   };
 
-  const handleDrop = (e, setPreview, setFile, setZoom, setMediaType) => {
-    e.preventDefault();
-    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      const file = e.dataTransfer.files[0];
-      setFile(file);
-      setMediaType("image");
-      processFile(file, setPreview);
-      setZoom(1);
-    }
-  };
-
-  const handleYoutubeInput = (url, setPreview, setFile, setZoom, setMediaType, setYoutubeUrl) => {
+  const handleYoutubeInput = (url, num) => {
     const youtubeId = getYouTubeId(url);
     if (youtubeId) {
-      setMediaType("youtube");
-      setPreview(`https://img.youtube.com/vi/${youtubeId}/0.jpg`);
-      setFile(null);
-      setYoutubeUrl(youtubeId);
-      setZoom(1);
+      updateCandidate(num, { 
+        mediaType: "youtube", preview: `https://img.youtube.com/vi/${youtubeId}/0.jpg`, 
+        file: null, youtubeUrl: youtubeId, zoom: 1 
+      });
     }
-  };
-
-  const processFile = (file, setPreview) => {
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setPreview(reader.result);
-    };
-    reader.readAsDataURL(file);
-  };
-
-  const handleRemoveFile = (setPreview, setFile, setZoom, setShowEdit, setMediaType, setYoutubeUrl) => {
-    setPreview(null);
-    setFile(null);
-    setZoom(1);
-    setMediaType("image");
-    setYoutubeUrl("");
-    setShowEdit(false);
   };
 
   const handleSubmit = async () => {
     if (isSubmitting) return;
-
-    if (!title.trim() || !candidate1.trim() || !candidate2.trim()) {
-      alert("필수 항목을 모두 입력해주세요.");
-      return;
+    if (!title.trim() || !candidates[1].name.trim() || !candidates[2].name.trim()) {
+      alert("필수 항목을 모두 입력해주세요."); return;
     }
-
-    if (!authorId) {
-      alert("로그인이 필요합니다.");
-      navigate("/login");
-      return;
-    }
-
-    const expiresAtValue = isDeadlineUnlimited
-      ? null
-      : new Date(Date.now() + deadlineMinutes * 60 * 1000).toISOString();
+    if (!currentUser?.id) { alert("로그인이 필요합니다."); navigate("/login"); return; }
 
     setIsSubmitting(true);
+    const expiresAt = isDeadlineUnlimited ? null : new Date(Date.now() + deadlineMinutes * 60 * 1000).toISOString();
 
     try {
-      const f1 = mediaType1 === "youtube" ? youtubeUrl1 : file1;
-      const f2 = mediaType2 === "youtube" ? youtubeUrl2 : file2;
+      const f1 = candidates[1].mediaType === "youtube" ? candidates[1].youtubeUrl : candidates[1].file;
+      const f2 = candidates[2].mediaType === "youtube" ? candidates[2].youtubeUrl : candidates[2].file;
 
-      if (isEditing) {
-        await updateVote(
-          editData.id,
-          authorId,
-          selectedTag,
-          title,
-          candidate1,
-          f1,
-          candidate2,
-          f2,
-          mediaType1,
-          mediaType2,
-          expiresAtValue,
-          isDeadlineUnlimited,
-        );
-        alert("투표 게시글이 성공적으로 수정되었습니다!");
-      } else {
-        await addVote(
-          authorId,
-          selectedTag,
-          title,
-          candidate1,
-          f1,
-          candidate2,
-          f2,
-          mediaType1,
-          mediaType2,
-          expiresAtValue,
-          isDeadlineUnlimited,
-        );
-        alert("투표 게시글이 성공적으로 등록되었습니다!");
-      }
+      const payload = [
+        currentUser.id, selectedTag, title,
+        candidates[1].name, f1, candidates[2].name, f2,
+        candidates[1].mediaType, candidates[2].mediaType,
+        expiresAt, isDeadlineUnlimited
+      ];
 
+      if (isEditing) await updateVote(editData.id, ...payload);
+      else await addVote(...payload);
+      
+      alert(`투표가 성공적으로 ${isEditing ? "수정" : "등록"}되었습니다!`);
       navigate("/vote");
     } catch (error) {
       console.error("처리 에러:", error);
-      alert(isEditing ? "수정에 실패했습니다." : "등록에 실패했습니다.");
+      alert(`${isEditing ? "수정" : "등록"}에 실패했습니다.`);
     } finally {
       setIsSubmitting(false);
     }
@@ -279,245 +264,26 @@ const Create = () => {
       <main className="main-content">
         <section className="editor-card preview-section">
           <input
-            type="text"
-            className="editor-card__title-input"
-            placeholder="제목을 입력하세요"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
+            type="text" className="editor-card__title-input" placeholder="제목을 입력하세요"
+            value={title} onChange={(e) => setTitle(e.target.value)}
           />
 
           <div className="vs-container">
-            <div
-              className="candidate-box"
-              onPaste={(e) =>
-                handlePaste(e, setPreviewImage1, setFile1, setZoom1, setMediaType1)
-              }
-              onDragOver={handleDragOver}
-              onDrop={(e) =>
-                handleDrop(e, setPreviewImage1, setFile1, setZoom1, setMediaType1)
-              }
-              tabIndex="0"
-            >
-              <input
-                type="file"
-                ref={fileInputRef1}
-                style={{ display: "none" }}
-                accept="image/*"
-                onChange={(e) =>
-                  handleFileChange(e, setPreviewImage1, setFile1, setZoom1, setMediaType1)
-                }
-              />
-              {previewImage1 ? (
-                <>
-                  <div className="image-wrapper">
-                    <img
-                      src={previewImage1}
-                      alt="Preview 1"
-                      className="candidate-box__img"
-                      style={{ transform: `scale(${zoom1})` }}
-                    />
-                    {mediaType1 === "youtube" && (
-                      <div className="youtube-badge">YouTube</div>
-                    )}
-                  </div>
-                  <button
-                    className="image-edit-trigger"
-                    onClick={() => setShowEdit1(!showEdit1)}
-                  >
-                    <Pencil size={18} />
-                  </button>
-                  {showEdit1 && (
-                    <div className="image-edit-overlay">
-                      <div className="edit-controls">
-                        <button
-                          onClick={() => fileInputRef1.current.click()}
-                          title="이미지 교체"
-                        >
-                          <Maximize size={16} /> <span>이미지</span>
-                        </button>
-                        <button
-                          onClick={() =>
-                            handleRemoveFile(
-                              setPreviewImage1,
-                              setFile1,
-                              setZoom1,
-                              setShowEdit1,
-                              setMediaType1,
-                              setYoutubeUrl1
-                            )
-                          }
-                          title="삭제"
-                        >
-                          <Trash2 size={16} /> <span>삭제</span>
-                        </button>
-                      </div>
-                      <div className="zoom-control">
-                        <Minus
-                          size={14}
-                          onClick={() => setZoom1(Math.max(0.5, zoom1 - 0.1))}
-                        />
-                        <input
-                          type="range"
-                          min="0.5"
-                          max="3"
-                          step="0.1"
-                          value={zoom1}
-                          onChange={(e) => setZoom1(parseFloat(e.target.value))}
-                        />
-                        <Plus
-                          size={14}
-                          onClick={() => setZoom1(Math.min(3, zoom1 + 0.1))}
-                        />
-                      </div>
-                    </div>
-                  )}
-                </>
-              ) : (
-                <div className="candidate-box__upload">
-                  <div className="upload-buttons">
-                    <button
-                      className="upload-button"
-                      onClick={() => fileInputRef1.current.click()}
-                    >
-                      이미지 삽입
-                    </button>
-                  </div>
-                  <div className="youtube-input-group">
-                    <input 
-                      type="text" 
-                      placeholder="유튜브 링크 붙여넣기"
-                      onChange={(e) => handleYoutubeInput(e.target.value, setPreviewImage1, setFile1, setZoom1, setMediaType1, setYoutubeUrl1)}
-                      className="youtube-url-input"
-                    />
-                  </div>
-                  <p style={{ fontSize: "11px", color: "#f589b4", marginTop: "8px", textAlign: "center" }}>
-                    * 이미지 드래그/붙여넣기 지원<br/>
-                    * 유튜브 링크 입력 시 영상 자동 연결
-                  </p>
-                </div>
-              )}
-              <div className="candidate-box__label">
-                {candidate1 || "후보군 이름"}
-              </div>
-            </div>
-
-            <div className="vs-badge">
-              <img src={vsLogo} alt="VS" />
-            </div>
-
-            <div
-              className="candidate-box"
-              onPaste={(e) =>
-                handlePaste(e, setPreviewImage2, setFile2, setZoom2, setMediaType2)
-              }
-              onDragOver={handleDragOver}
-              onDrop={(e) =>
-                handleDrop(e, setPreviewImage2, setFile2, setZoom2, setMediaType2)
-              }
-              tabIndex="0"
-            >
-              <input
-                type="file"
-                ref={fileInputRef2}
-                style={{ display: "none" }}
-                accept="image/*"
-                onChange={(e) =>
-                  handleFileChange(e, setPreviewImage2, setFile2, setZoom2, setMediaType2)
-                }
-              />
-              {previewImage2 ? (
-                <>
-                  <div className="image-wrapper">
-                    <img
-                      src={previewImage2}
-                      alt="Preview 2"
-                      className="candidate-box__img"
-                      style={{ transform: `scale(${zoom2})` }}
-                    />
-                    {mediaType2 === "youtube" && (
-                      <div className="youtube-badge">YouTube</div>
-                    )}
-                  </div>
-                  <button
-                    className="image-edit-trigger"
-                    onClick={() => setShowEdit2(!showEdit2)}
-                  >
-                    <Pencil size={18} />
-                  </button>
-                  {showEdit2 && (
-                    <div className="image-edit-overlay">
-                      <div className="edit-controls">
-                        <button
-                          onClick={() => fileInputRef2.current.click()}
-                          title="이미지 교체"
-                        >
-                          <Maximize size={16} /> <span>이미지</span>
-                        </button>
-                        <button
-                          onClick={() =>
-                            handleRemoveFile(
-                              setPreviewImage2,
-                              setFile2,
-                              setZoom2,
-                              setShowEdit2,
-                              setMediaType2,
-                              setYoutubeUrl2
-                            )
-                          }
-                          title="삭제"
-                        >
-                          <Trash2 size={16} /> <span>삭제</span>
-                        </button>
-                      </div>
-                      <div className="zoom-control">
-                        <Minus
-                          size={14}
-                          onClick={() => setZoom2(Math.max(0.5, zoom2 - 0.1))}
-                        />
-                        <input
-                          type="range"
-                          min="0.5"
-                          max="3"
-                          step="0.1"
-                          value={zoom2}
-                          onChange={(e) => setZoom2(parseFloat(e.target.value))}
-                        />
-                        <Plus
-                          size={14}
-                          onClick={() => setZoom2(Math.min(3, zoom2 + 0.1))}
-                        />
-                      </div>
-                    </div>
-                  )}
-                </>
-              ) : (
-                <div className="candidate-box__upload">
-                  <div className="upload-buttons">
-                    <button
-                      className="upload-button"
-                      onClick={() => fileInputRef2.current.click()}
-                    >
-                      이미지 삽입
-                    </button>
-                  </div>
-                  <div className="youtube-input-group">
-                    <input 
-                      type="text" 
-                      placeholder="유튜브 링크 붙여넣기"
-                      onChange={(e) => handleYoutubeInput(e.target.value, setPreviewImage2, setFile2, setZoom2, setMediaType2, setYoutubeUrl2)}
-                      className="youtube-url-input"
-                    />
-                  </div>
-                  <p style={{ fontSize: "11px", color: "#f589b4", marginTop: "8px", textAlign: "center" }}>
-                    * 이미지 드래그/붙여넣기 지원<br/>
-                    * 유튜브 링크 입력 시 영상 자동 연결
-                  </p>
-                </div>
-              )}
-              <div className="candidate-box__label">
-                {candidate2 || "후보군 이름"}
-              </div>
-            </div>
+            {[1, 2].map(num => (
+              <React.Fragment key={num}>
+                <CandidateBox 
+                  num={num} name={candidates[num].name} preview={candidates[num].preview}
+                  mediaType={candidates[num].mediaType} zoom={candidates[num].zoom}
+                  showEdit={candidates[num].showEdit}
+                  setZoom={(n, z) => updateCandidate(n, { zoom: z })}
+                  onFileChange={handleFileChange} onPaste={handlePaste}
+                  onDrop={handleDrop} onYoutubeInput={handleYoutubeInput}
+                  onEditToggle={(n) => updateCandidate(n, { showEdit: !candidates[n].showEdit })}
+                  onRemove={(n) => updateCandidate(n, { preview: null, file: null, zoom: 1, mediaType: "image", youtubeUrl: "", showEdit: false })}
+                />
+                {num === 1 && <div className="vs-badge"><img src={vsLogo} alt="VS" /></div>}
+              </React.Fragment>
+            ))}
           </div>
         </section>
 
@@ -525,40 +291,26 @@ const Create = () => {
           <div className="settings-group">
             <h3 className="settings-group__title">후보군 이름</h3>
             <div className="settings-group__list">
-              <div className="list-item">
-                <span className="list-item__num">1</span>
-                <input
-                  type="text"
-                  className="candidate-name-input"
-                  placeholder="이름을 입력하세요"
-                  value={candidate1}
-                  onChange={(e) => setCandidate1(e.target.value)}
-                />
-              </div>
-              <div className="list-item">
-                <span className="list-item__num">2</span>
-                <input
-                  type="text"
-                  className="candidate-name-input"
-                  placeholder="이름을 입력하세요"
-                  value={candidate2}
-                  onChange={(e) => setCandidate2(e.target.value)}
-                />
-              </div>
+              {[1, 2].map(num => (
+                <div key={num} className="list-item">
+                  <span className="list-item__num">{num}</span>
+                  <input
+                    type="text" className="candidate-name-input" placeholder="이름을 입력하세요"
+                    value={candidates[num].name} onChange={(e) => updateCandidate(num, { name: e.target.value })}
+                  />
+                </div>
+              ))}
             </div>
           </div>
 
           <div className="settings-group">
             <h3 className="settings-group__title">TAG</h3>
             <div className="tag-cloud">
-              {tags.map((tag) => (
+              {TAGS.map(tag => (
                 <button
-                  key={tag}
-                  className={`tag-button ${selectedTag === tag ? "tag-button--active" : ""}`}
+                  key={tag} className={`tag-button ${selectedTag === tag ? "tag-button--active" : ""}`}
                   onClick={() => setSelectedTag(tag)}
-                >
-                  {tag}
-                </button>
+                >{tag}</button>
               ))}
             </div>
           </div>
@@ -566,40 +318,21 @@ const Create = () => {
           <div className="settings-group deadline-settings-group">
             <h3 className="settings-group__title">마감시간</h3>
             <select
-              className="deadline-select"
-              value={deadlineMinutes}
-              onChange={(event) => {
-                setIsDeadlineUnlimited(false);
-                setDeadlineMinutes(Number(event.target.value));
-              }}
+              className="deadline-select" value={deadlineMinutes}
+              onChange={(e) => { setIsDeadlineUnlimited(false); setDeadlineMinutes(Number(e.target.value)); }}
             >
-              {DEADLINE_OPTIONS.map((option) => (
-                <option key={option.minutes} value={option.minutes}>
-                  {option.label}
-                </option>
-              ))}
+              {DEADLINE_OPTIONS.map(opt => <option key={opt.minutes} value={opt.minutes}>{opt.label}</option>)}
             </select>
             <button
-              type="button"
-              className={`deadline-unlimited-button${
-                isDeadlineUnlimited ? " deadline-unlimited-button--active" : ""
-              }`}
-              onClick={() => {
-                setIsDeadlineUnlimited(true);
-                alert("무기한 선택 시 랭킹 진입은 불가합니다.");
-              }}
-            >
-              무기한
-            </button>
+              type="button" className={`deadline-unlimited-button${isDeadlineUnlimited ? " deadline-unlimited-button--active" : ""}`}
+              onClick={() => { setIsDeadlineUnlimited(true); alert("무기한 선택 시 랭킹 진입은 불가합니다."); }}
+            >무기한</button>
           </div>
 
           <button
-            className="fab-button"
-            onClick={handleSubmit}
-            disabled={isPublishDisabled}
-          >
-            <span>{isEditing ? "Update" : "Upload"}</span>
-          </button>
+            className="fab-button" onClick={handleSubmit}
+            disabled={isSubmitting || !candidates[1].name.trim() || !candidates[2].name.trim()}
+          ><span>{isEditing ? "Update" : "Upload"}</span></button>
         </section>
       </main>
     </div>
