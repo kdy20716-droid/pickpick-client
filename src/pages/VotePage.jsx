@@ -2,11 +2,12 @@ import { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import "./VotePage.css";
 import favoriteIcon from "../assets/favorite.svg";
-import dislikeIcon from "../assets/thumb_down.svg";
+import reportIcon from "../assets/report.svg";
 import commentIcon from "../assets/comment.svg";
 import shareIcon from "../assets/share.svg";
 import filterIcon from "../assets/filter.svg";
 import Comments from "../components/Comments.jsx";
+import Report from "../components/Report.jsx";
 import { isMainRouteTransition } from "./animations/routeTransitions.js";
 import { useActiveVoteCard } from "./vote/useActiveVoteCard.js";
 import { useActiveVoteHash } from "./vote/useActiveVoteHash.js";
@@ -30,9 +31,9 @@ const tags = ["전체", "연예", "음식", "애니메이션", "동물", "스포
 
 const actionButtons = [
   { id: "like", label: "좋아요", icon: favoriteIcon, kind: "toggle" },
-  { id: "dislike", label: "싫어요", icon: dislikeIcon, kind: "toggle" },
   { id: "comment", label: "댓글", icon: commentIcon, kind: "modal" },
   { id: "share", label: "공유", icon: shareIcon, kind: "button" },
+  { id: "report", label: "신고", icon: reportIcon, kind: "button" },
 ];
 
 function getTargetVoteId(routePostId, search, hash) {
@@ -65,6 +66,7 @@ export default function VotePage() {
   const [cardActions, setCardActions] = useState(() => JSON.parse(localStorage.getItem(`cardActions_${userId}`) || "{}"));
   const [copiedCardId, setCopiedCardId] = useState("");
   const [commentCardId, setCommentCardId] = useState("");
+  const [reportCardId, setReportCardId] = useState("");
   const [selectedTag, setSelectedTag] = useState("전체");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
@@ -95,7 +97,7 @@ export default function VotePage() {
 
       setCardActions(prev => {
         const state = prev[cardId] ?? initialActionState;
-        return { ...prev, [cardId]: { ...state, like: !!liked, dislike: liked ? false : state.dislike, likeCount: Number.isFinite(likeCount) ? Math.max(0, likeCount) : state.likeCount } };
+        return { ...prev, [cardId]: { ...state, like: !!liked, likeCount: Number.isFinite(likeCount) ? Math.max(0, likeCount) : state.likeCount } };
       });
     };
     window.addEventListener("vote-like-updated", handleLikeUpdated);
@@ -129,7 +131,7 @@ export default function VotePage() {
         const cardId = item.id.toString();
         const total = (item.candidate_a_count || 0) + (item.candidate_b_count || 0);
         if (item.user_voted_side) serverVotes[cardId] = item.user_voted_side.toLowerCase();
-        serverActions[cardId] = { like: !!item.user_liked, dislike: false, likeCount: item.like_count || 0 };
+        serverActions[cardId] = { like: !!item.user_liked, likeCount: item.like_count || 0 };
 
         return {
           id: cardId, feedId: cardId, title: item.title, expiresAt: item.expires_at,
@@ -145,6 +147,10 @@ export default function VotePage() {
       });
 
       const sorted = formattedCards.sort((a, b) => {
+        // 1. 투표 여부 (안 한 것이 먼저)
+        if (a.isVoted !== b.isVoted) return (a.isVoted ? 1 : 0) - (b.isVoted ? 1 : 0);
+
+        // 2. 투표 상태 (마감안됨 -> 무기한 -> 마감됨)
         const getPriority = (c) => {
           if (c.expiresAt && !c.isExpired) return 0; // 마감안된 투표
           if (!c.expiresAt) return 1;                // 무기한 투표
@@ -152,8 +158,7 @@ export default function VotePage() {
         };
         const pA = getPriority(a);
         const pB = getPriority(b);
-        if (pA !== pB) return pA - pB;
-        return (a.isVoted ? 1 : 0) - (b.isVoted ? 1 : 0);
+        return pA - pB;
       });
       setSelectedVotes(prev => ({ ...prev, ...serverVotes }));
       setCardActions(prev => ({ ...prev, ...serverActions }));
@@ -250,15 +255,8 @@ export default function VotePage() {
         }));
         alert("좋아요 처리에 실패했습니다."); 
       }
-    } else {
-      let serverLikeCount = null;
-      if (cardActions[cardId]?.like) {
-        try {
-          const res = await toggleLike(card.id, userId, false);
-          if (res.success) serverLikeCount = Number(res?.like_count ?? res?.likes ?? Math.max(0, cardActions[cardId].likeCount - 1));
-        } catch { return alert("좋아요 처리에 실패했습니다."); }
-      }
-      setCardActions(prev => updateCardActionState(prev, cardId, "dislike", { dislike: !prev[cardId]?.dislike, likeCount: serverLikeCount }));
+    } else if (actionId === "report") {
+      setReportCardId(cardId);
     }
   }, [userId, cards, cardActions]);
 
@@ -282,15 +280,20 @@ export default function VotePage() {
     setCommentCardId("");
   }, []);
 
+  const handleCloseReport = useCallback(() => {
+    setReportCardId("");
+  }, []);
+
   const commentCard = useMemo(() => cards.find(c => c.feedId === commentCardId), [cards, commentCardId]);
+  const reportCard = useMemo(() => cards.find(c => c.feedId === reportCardId), [cards, reportCardId]);
 
   return (
     <div key={userId} ref={pageRef} className={`vote-page${entersFromMain ? " is-entering-from-main" : ""}${commentCardId ? " has-comment-modal" : ""}`}>
-      {!isFilterOpen && !commentCardId && (
+      {!isFilterOpen && !commentCardId && !reportCardId && (
         <button type="button" className="vote-action-button vote-filter-toggle" onClick={() => setIsFilterOpen(true)}><img src={filterIcon} alt="" /></button>
       )}
 
-      {isFilterOpen && !commentCardId && (
+      {isFilterOpen && !commentCardId && !reportCardId && (
         <aside className="vote-filter-panel">
           <header className="vote-filter-header">
             <h2>카테고리</h2>
@@ -324,6 +327,9 @@ export default function VotePage() {
       </div>
       {commentCard && (
         <Comments title={commentCard.title} targetCardId={commentCard.feedId} postDbId={commentCard.id} onClose={handleCloseComments} layerClassName="is-vote-page" />
+      )}
+      {reportCard && (
+        <Report title={reportCard.title} targetCardId={reportCard.feedId} onClose={handleCloseReport} userId={userId} />
       )}
     </div>
   );

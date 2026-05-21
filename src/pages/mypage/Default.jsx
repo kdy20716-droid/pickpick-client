@@ -8,7 +8,7 @@ import {
   getLoginHistory,
   changePassword,
 } from "../../api/users";
-import { TEXT } from "./Laungage.js";
+import { TEXT } from "./Language.js";
 
 const AccountSettings = () => {
   const navigate = useNavigate();
@@ -134,7 +134,7 @@ const AccountSettings = () => {
       }
     } catch (error) {
       console.error("비밀번호 변경 실패:", error);
-      alert(error.response?.data?.message || "비밀번호 변경에 실패했습니다.");
+      alert(error.response?.data?.message || text.passwordChangeFail);
     }
   };
 
