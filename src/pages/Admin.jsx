@@ -696,36 +696,90 @@ const Admin = () => {
                 <p className="no-data">
                   투표를 선택하면 댓글을 조회할 수 있습니다.
                 </p>
-              ) : comments.length === 0 ? (
-                <p className="no-data">댓글이 없습니다.</p>
               ) : (
-                <div className="comments-list">
-                  <p className="selected-vote">
-                    선택된 투표: <strong>{comments[0]?.vote_title}</strong>
-                  </p>
-                  {comments.map((comment) => (
-                    <div key={comment.id} className="comment-item">
-                      <div className="comment-header">
-                        <span className="author">
-                          {comment.author_nickname} ({comment.author_name})
-                        </span>
-                        <span className="created-at">
-                          {new Date(comment.created_at).toLocaleString()}
-                        </span>
+                <div className="admin-comments-split-view animate-fade-in">
+                  {/* 왼쪽: 투표 정보 프리뷰 */}
+                  <div className="selected-vote-column">
+                    <h3>선택된 투표</h3>
+                    {votes.find(v => v.id === selectedVoteId) ? (
+                      (() => {
+                        const vote = votes.find(v => v.id === selectedVoteId);
+                        return (
+                          <div className="vote-card selected-preview">
+                            <div className="vote-header">
+                              <h3>{vote.title}</h3>
+                              <span className="vote-id">#{vote.id}</span>
+                            </div>
+                            <div className="vote-body">
+                              <div className="candidates">
+                                <div className="candidate">
+                                  <span className="name">A: {vote.candidate_a_name}</span>
+                                  <span className="count">{vote.candidate_a_count} votes</span>
+                                </div>
+                                <span className="vs">VS</span>
+                                <div className="candidate">
+                                  <span className="name">B: {vote.candidate_b_name}</span>
+                                  <span className="count">{vote.candidate_b_count} votes</span>
+                                </div>
+                              </div>
+                              <div className="vote-info">
+                                <p>작성자: {vote.author_nickname}</p>
+                                <p>조회: {vote.view_count} | 댓글: {vote.comment_count}</p>
+                              </div>
+                            </div>
+                            <div className="vote-actions">
+                              <button
+                                className="delete-btn"
+                                onClick={() => {
+                                  setDeleteModal("vote");
+                                  setItemToDelete(vote);
+                                }}
+                                disabled={loading}
+                              >
+                                삭제
+                              </button>
+                            </div>
+                          </div>
+                        );
+                      })()
+                    ) : (
+                      <p className="no-data">투표 정보를 불러올 수 없습니다.</p>
+                    )}
+                  </div>
+
+                  {/* 오른쪽: 댓글 리스트 */}
+                  <div className="comments-column">
+                    <h3>댓글 목록 ({comments.length})</h3>
+                    {comments.length === 0 ? (
+                      <p className="no-data">댓글이 없습니다.</p>
+                    ) : (
+                      <div className="comments-list">
+                        {comments.map((comment) => (
+                          <div key={comment.id} className="comment-item">
+                            <div className="comment-header">
+                              <span className="author">
+                                {comment.author_nickname} ({comment.author_name})
+                              </span>
+                              <span className="created-at">
+                                {new Date(comment.created_at).toLocaleString()}
+                              </span>
+                            </div>
+                            <div className="comment-content">{comment.content}</div>
+                            <button
+                              className="delete-comment-btn"
+                              onClick={() => {
+                                setDeleteModal("comment");
+                                setItemToDelete(comment);
+                              }}
+                              disabled={loading}
+                            >
+                              삭제
+                            </button>
+                          </div>
+                        ))}
                       </div>
-                      <div className="comment-content">{comment.content}</div>
-                      <button
-                        className="delete-comment-btn"
-                        onClick={() => {
-                          setDeleteModal("comment");
-                          setItemToDelete(comment);
-                        }}
-                        disabled={loading}
-                      >
-                        삭제
-                      </button>
-                    </div>
-                  ))}
+                    )}
+                  </div>
                 </div>
               )}
             </div>

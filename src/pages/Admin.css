@@ -247,6 +247,7 @@
   overflow: hidden;
   transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+  padding-bottom: 5px;
 }
 
 .vote-card:hover {
@@ -365,13 +366,15 @@
 }
 
 .delete-btn {
-  background: transparent;
-  color: #ff6b5b;
-  border-color: #ff6b5b;
+  background: #ff4d4f;
+  color: white;
+  border-color: #ff4d4f;
+  padding: 15px 12px;
 }
 
 .delete-btn:hover:not(:disabled) {
-  background: rgba(255, 107, 91, 0.1);
+  background: #ff7875;
+  border-color: #ff7875;
 }
 
 .delete-btn:disabled,
@@ -403,7 +406,7 @@
 .comment-item {
   background: white;
   border-left: 4px solid var(--point);
-  padding: 16px;
+  padding: 18.5px 16px;
   margin-bottom: 12px;
   border-radius: 10px;
   transition: all 0.2s;
@@ -546,7 +549,69 @@
   cursor: not-allowed;
 }
 
+/* 유저 관리 테이블 */
+.users-table-container {
+  overflow-x: auto;
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #eee;
+}
+
+.users-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.users-table th,
+.users-table td {
+  padding: 17.5px 15px;
+  border-bottom: 1px solid #eee;
+  font-size: 0.9rem;
+}
+
+.users-table th {
+  background: #fafafa;
+  font-weight: 700;
+  color: #666;
+}
+
+/* 댓글 분할 뷰 */
+.admin-comments-split-view {
+  display: flex;
+  gap: 30px;
+  align-items: flex-start;
+}
+
+.selected-vote-column {
+  flex: 1;
+  max-width: 450px;
+  position: sticky;
+  top: 20px;
+}
+
+.comments-column {
+  flex: 1.5;
+}
+
+.selected-vote-column .vote-card {
+  margin: 0;
+  border-color: var(--point);
+}
+
 /* 반응형 */
+@media (max-width: 1024px) {
+  .admin-comments-split-view {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .selected-vote-column {
+    max-width: none;
+    position: static;
+  }
+}
+
 @media (max-width: 768px) {
   .admin-container {
     padding: 24px;
@@ -728,33 +793,6 @@
     opacity: 1;
     transform: translateY(0);
   }
-}
-
-/* 유저 관리 테이블 */
-.users-table-container {
-  overflow-x: auto;
-  background: white;
-  border-radius: 12px;
-  border: 1px solid #eee;
-}
-
-.users-table {
-  width: 100%;
-  border-collapse: collapse;
-  text-align: left;
-}
-
-.users-table th,
-.users-table td {
-  padding: 15px;
-  border-bottom: 1px solid #eee;
-  font-size: 0.9rem;
-}
-
-.users-table th {
-  background: #fafafa;
-  font-weight: 700;
-  color: #666;
 }
 
 .users-table select {
