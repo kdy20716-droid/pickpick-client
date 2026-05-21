@@ -16,6 +16,7 @@ const Admin = () => {
   const [users, setUsers] = useState([]);
   const [bannedEmails, setBannedEmails] = useState([]);
   const [newBanEmail, setNewBanEmail] = useState("");
+  const [reports, setReports] = useState([]);
 
   // 2차 인증 상태 (로그인 초기 인증용)
   const [isVerified, setIsVerified] = useState(false);
@@ -51,7 +52,7 @@ const Admin = () => {
           headers: { Authorization: `Bearer ${token}` },
         },
       );
-      
+
       if (isForUserDelete) {
         setDeleteVerifyCode(response.data.code);
         setUserDeleteStep(2);
@@ -104,7 +105,10 @@ const Admin = () => {
       handleCloseModal();
     } catch (error) {
       console.error("유저 탈퇴 에러:", error);
-      alert(error.response?.data?.message || "유저 탈퇴 처리 중 에러가 발생했습니다.");
+      alert(
+        error.response?.data?.message ||
+          "유저 탈퇴 처리 중 에러가 발생했습니다.",
+      );
     } finally {
       setLoading(false);
     }
@@ -144,9 +148,13 @@ const Admin = () => {
 
     setLoading(true);
     try {
-      await instance.post("/admin/banned-emails", { email: newBanEmail }, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await instance.post(
+        "/admin/banned-emails",
+        { email: newBanEmail },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
       alert("이메일이 차단되었습니다.");
       setNewBanEmail("");
       handleLoadBannedEmails();
@@ -168,7 +176,7 @@ const Admin = () => {
         headers: { Authorization: `Bearer ${token}` },
       });
       alert("차단이 해제되었습니다.");
-      setBannedEmails(bannedEmails.filter(b => b.id !== id));
+      setBannedEmails(bannedEmails.filter((b) => b.id !== id));
     } catch (error) {
       console.error("차단 해제 에러:", error);
       alert("차단 해제 중 에러가 발생했습니다.");
@@ -333,10 +341,52 @@ const Admin = () => {
       });
       alert("유저 정보가 수정되었습니다.");
       // 목록 업데이트
-      setUsers(users.map(u => u.id === userId ? { ...u, ...updates } : u));
+      setUsers(users.map((u) => (u.id === userId ? { ...u, ...updates } : u)));
     } catch (error) {
       console.error("유저 수정 에러:", error);
       alert("유저 수정 중 에러가 발생했습니다.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 신고 목록 조회
+  const handleLoadReports = async () => {
+    setLoading(true);
+    try {
+      const response = await instance.get("/admin/reports", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setReports(response.data.reports);
+      setActiveTab("reports");
+    } catch (error) {
+      console.error("신고 조회 에러:", error);
+      if (!handleAuthError(error)) {
+        alert("신고 목록을 불러오는 중 에러가 발생했습니다.");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 신고 처리 상태 업데이트
+  const handleUpdateReportStatus = async (reportId, status) => {
+    setLoading(true);
+    try {
+      await instance.put(
+        `/admin/reports/${reportId}/status`,
+        { status },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
+      alert("신고 상태가 변경되었습니다.");
+      setReports(
+        reports.map((r) => (r.id === reportId ? { ...r, status } : r)),
+      );
+    } catch (error) {
+      console.error("신고 수정 에러:", error);
+      alert("신고 수정 중 에러가 발생했습니다.");
     } finally {
       setLoading(false);
     }
@@ -409,7 +459,10 @@ const Admin = () => {
           {/* 검색 섹션 */}
           <div className="admin-search-section">
             <h2>투표 검색</h2>
-            <form onSubmit={handleSearchVotes} className="search-form-horizontal">
+            <form
+              onSubmit={handleSearchVotes}
+              className="search-form-horizontal"
+            >
               <div className="search-input-wrapper">
                 <input
                   type="text"
@@ -453,10 +506,10 @@ const Admin = () => {
               유저 ({users.length || "..."})
             </button>
             <button
-              className={`tab ${activeTab === "bans" ? "active" : ""}`}
-              onClick={handleLoadBannedEmails}
+              className={`tab ${activeTab === "reports" ? "active" : ""}`}
+              onClick={handleLoadReports}
             >
-              이메일 차단 ({bannedEmails.length || "..."})
+              신고 ({reports.length || "..."})
             </button>
             <button
               className={`tab ${activeTab === "comments" ? "active" : ""}`}
@@ -472,7 +525,10 @@ const Admin = () => {
             <div className="content-section animate-fade-in">
               <div className="ban-management-card">
                 <h3>새로운 이메일 차단</h3>
-                <form onSubmit={handleAddBanEmail} className="ban-form-horizontal">
+                <form
+                  onSubmit={handleAddBanEmail}
+                  className="ban-form-horizontal"
+                >
                   <input
                     type="email"
                     placeholder="차단할 이메일 주소 입력"
@@ -481,7 +537,11 @@ const Admin = () => {
                     className="ban-input"
                     required
                   />
-                  <button type="submit" className="admin-btn ban-submit-btn" disabled={loading}>
+                  <button
+                    type="submit"
+                    className="admin-btn ban-submit-btn"
+                    disabled={loading}
+                  >
                     이메일 차단하기
                   </button>
                 </form>
@@ -501,9 +561,13 @@ const Admin = () => {
                     </thead>
                     <tbody>
                       {bannedEmails.length === 0 ? (
-                        <tr><td colSpan="4" className="no-data">차단된 이메일이 없습니다.</td></tr>
+                        <tr>
+                          <td colSpan="4" className="no-data">
+                            차단된 이메일이 없습니다.
+                          </td>
+                        </tr>
                       ) : (
-                        bannedEmails.map(ban => (
+                        bannedEmails.map((ban) => (
                           <tr key={ban.id}>
                             <td>{ban.id}</td>
                             <td>{ban.email}</td>
@@ -615,14 +679,20 @@ const Admin = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {users.map(user => (
+                    {users.map((user) => (
                       <tr key={user.id}>
                         <td>{user.id}</td>
-                        <td>{user.nickname} ({user.name})</td>
                         <td>
-                          <select 
+                          {user.nickname} ({user.name})
+                        </td>
+                        <td>
+                          <select
                             value={user.tier || "bronze"}
-                            onChange={(e) => handleUpdateUserStatus(user.id, { tier: e.target.value })}
+                            onChange={(e) =>
+                              handleUpdateUserStatus(user.id, {
+                                tier: e.target.value,
+                              })
+                            }
                           >
                             <option value="bronze">BRONZE</option>
                             <option value="silver">SILVER</option>
@@ -635,37 +705,53 @@ const Admin = () => {
                         </td>
                         <td>
                           {user.role === "admin" ? (
-                            <span style={{ color: "#ff4d4f", fontWeight: "bold" }}>ADMIN</span>
+                            <span
+                              style={{ color: "#ff4d4f", fontWeight: "bold" }}
+                            >
+                              ADMIN
+                            </span>
                           ) : (
                             <span>USER</span>
                           )}
                         </td>
                         <td>
                           <div className="border-grant-cell">
-                            <span className="current-unlocked">{user.unlocked_borders || "없음"}</span>
-                            <button 
+                            <span className="current-unlocked">
+                              {user.unlocked_borders || "없음"}
+                            </span>
+                            <button
                               className="grant-btn"
                               onClick={() => {
                                 const border = "pick";
-                                const newList = user.unlocked_borders 
-                                  ? [...new Set([...user.unlocked_borders.split(','), border])].join(',')
+                                const newList = user.unlocked_borders
+                                  ? [
+                                      ...new Set([
+                                        ...user.unlocked_borders.split(","),
+                                        border,
+                                      ]),
+                                    ].join(",")
                                   : border;
-                                handleUpdateUserStatus(user.id, { unlocked_borders: newList });
+                                handleUpdateUserStatus(user.id, {
+                                  unlocked_borders: newList,
+                                });
                               }}
                             >
                               Pick 지급
                             </button>
                             {user.unlocked_borders && (
-                              <button 
+                              <button
                                 className="clear-btn"
-                                onClick={() => handleUpdateUserStatus(user.id, { unlocked_borders: null })}
+                                onClick={() =>
+                                  handleUpdateUserStatus(user.id, {
+                                    unlocked_borders: null,
+                                  })
+                                }
                               >
                                 초기화
                               </button>
                             )}
                           </div>
                         </td>
-                        <td>{new Date(user.created_at).toLocaleDateString()}</td>
                         <td>
                           {user.role !== "admin" && (
                             <button
@@ -680,6 +766,94 @@ const Admin = () => {
                               강제탈퇴
                             </button>
                           )}
+                          {new Date(user.created_at).toLocaleDateString()}
+                        </td>
+                        <td>{/* 추가 관리 기능 필요시 배치 */}-</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+
+          {/* 신고 관리 섹션 */}
+          {activeTab === "reports" && (
+            <div className="content-section">
+              <div className="reports-table-container">
+                <table className="admin-table">
+                  <thead>
+                    <tr>
+                      <th>신고ID</th>
+                      <th>대상 게시물</th>
+                      <th>신고 사유</th>
+                      <th>신고자</th>
+                      <th>상태</th>
+                      <th>일시</th>
+                      <th>작업</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {reports.map((report) => (
+                      <tr key={report.id}>
+                        <td>{report.id}</td>
+                        <td>
+                          <div className="post-info">
+                            <strong>{report.vote_title}</strong>
+                            <span>#{report.post_id}</span>
+                          </div>
+                        </td>
+                        <td>
+                          <div className="report-reason-text">
+                            {report.reason}
+                          </div>
+                        </td>
+                        <td>{report.reporter_nickname || "익명"}</td>
+                        <td>
+                          <span
+                            className={`status-badge status-${report.status}`}
+                          >
+                            {report.status === "pending"
+                              ? "대기"
+                              : report.status === "resolved"
+                                ? "처리완료"
+                                : "무시됨"}
+                          </span>
+                        </td>
+                        <td>{new Date(report.created_at).toLocaleString()}</td>
+                        <td>
+                          <div className="action-btns">
+                            <button
+                              className="resolve-btn"
+                              onClick={() =>
+                                handleUpdateReportStatus(report.id, "resolved")
+                              }
+                              disabled={report.status === "resolved"}
+                            >
+                              처리완료
+                            </button>
+                            <button
+                              className="ignore-btn"
+                              onClick={() =>
+                                handleUpdateReportStatus(report.id, "ignored")
+                              }
+                              disabled={report.status === "ignored"}
+                            >
+                              무시
+                            </button>
+                            <button
+                              className="delete-post-btn"
+                              onClick={() => {
+                                setDeleteModal("vote");
+                                setItemToDelete({
+                                  id: report.post_id,
+                                  title: report.vote_title,
+                                });
+                              }}
+                            >
+                              게시물 삭제
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))}
@@ -701,9 +875,9 @@ const Admin = () => {
                   {/* 왼쪽: 투표 정보 프리뷰 */}
                   <div className="selected-vote-column">
                     <h3>선택된 투표</h3>
-                    {votes.find(v => v.id === selectedVoteId) ? (
+                    {votes.find((v) => v.id === selectedVoteId) ? (
                       (() => {
-                        const vote = votes.find(v => v.id === selectedVoteId);
+                        const vote = votes.find((v) => v.id === selectedVoteId);
                         return (
                           <div className="vote-card selected-preview">
                             <div className="vote-header">
@@ -713,18 +887,29 @@ const Admin = () => {
                             <div className="vote-body">
                               <div className="candidates">
                                 <div className="candidate">
-                                  <span className="name">A: {vote.candidate_a_name}</span>
-                                  <span className="count">{vote.candidate_a_count} votes</span>
+                                  <span className="name">
+                                    A: {vote.candidate_a_name}
+                                  </span>
+                                  <span className="count">
+                                    {vote.candidate_a_count} votes
+                                  </span>
                                 </div>
                                 <span className="vs">VS</span>
                                 <div className="candidate">
-                                  <span className="name">B: {vote.candidate_b_name}</span>
-                                  <span className="count">{vote.candidate_b_count} votes</span>
+                                  <span className="name">
+                                    B: {vote.candidate_b_name}
+                                  </span>
+                                  <span className="count">
+                                    {vote.candidate_b_count} votes
+                                  </span>
                                 </div>
                               </div>
                               <div className="vote-info">
                                 <p>작성자: {vote.author_nickname}</p>
-                                <p>조회: {vote.view_count} | 댓글: {vote.comment_count}</p>
+                                <p>
+                                  조회: {vote.view_count} | 댓글:{" "}
+                                  {vote.comment_count}
+                                </p>
                               </div>
                             </div>
                             <div className="vote-actions">
@@ -758,13 +943,16 @@ const Admin = () => {
                           <div key={comment.id} className="comment-item">
                             <div className="comment-header">
                               <span className="author">
-                                {comment.author_nickname} ({comment.author_name})
+                                {comment.author_nickname} ({comment.author_name}
+                                )
                               </span>
                               <span className="created-at">
                                 {new Date(comment.created_at).toLocaleString()}
                               </span>
                             </div>
-                            <div className="comment-content">{comment.content}</div>
+                            <div className="comment-content">
+                              {comment.content}
+                            </div>
                             <button
                               className="delete-comment-btn"
                               onClick={() => {
@@ -791,8 +979,11 @@ const Admin = () => {
           <div className="modal-overlay" onClick={handleCloseModal}>
             <div className="modal-content" onClick={(e) => e.stopPropagation()}>
               <h3 className="modal-title">
-                {deleteModal === "vote" ? "투표 삭제" : 
-                 deleteModal === "comment" ? "댓글 삭제" : "유저 강제 탈퇴"}
+                {deleteModal === "vote"
+                  ? "투표 삭제"
+                  : deleteModal === "comment"
+                    ? "댓글 삭제"
+                    : "유저 강제 탈퇴"}
               </h3>
 
               {deleteModal === "user" ? (
@@ -800,13 +991,26 @@ const Admin = () => {
                   {userDeleteStep === 1 && (
                     <div className="step-content animate-fade-in">
                       <p className="modal-text warning-text">
-                        <strong>주의:</strong> [{itemToDelete?.nickname}] 유저를 정말로 <strong>강제 탈퇴</strong> 시키겠습니까?<br/>
-                        이 작업은 되돌릴 수 없으며 유저의 모든 활동 데이터가 삭제됩니다.
+                        <strong>주의:</strong> [{itemToDelete?.nickname}] 유저를
+                        정말로 <strong>강제 탈퇴</strong> 시키겠습니까?
+                        <br />이 작업은 되돌릴 수 없으며 유저의 모든 활동
+                        데이터가 삭제됩니다.
                       </p>
                       <div className="modal-actions">
-                        <button className="modal-cancel-btn" onClick={handleCloseModal}>취소</button>
-                        <button className="modal-delete-btn" onClick={() => handleSendCode(true)} disabled={isSendingCode}>
-                          {isSendingCode ? "발송 중..." : "확인 및 인증번호 받기"}
+                        <button
+                          className="modal-cancel-btn"
+                          onClick={handleCloseModal}
+                        >
+                          취소
+                        </button>
+                        <button
+                          className="modal-delete-btn"
+                          onClick={() => handleSendCode(true)}
+                          disabled={isSendingCode}
+                        >
+                          {isSendingCode
+                            ? "발송 중..."
+                            : "확인 및 인증번호 받기"}
                         </button>
                       </div>
                     </div>
@@ -815,8 +1019,10 @@ const Admin = () => {
                   {userDeleteStep === 2 && (
                     <div className="step-content animate-fade-in">
                       <p className="modal-text">
-                        관리자 보안 인증이 필요합니다.<br/>
-                        등록된 이메일로 전송된 <strong>인증 번호</strong>를 입력해주세요.
+                        관리자 보안 인증이 필요합니다.
+                        <br />
+                        등록된 이메일로 전송된 <strong>인증 번호</strong>를
+                        입력해주세요.
                       </p>
                       <div className="verification-input-group">
                         <input
@@ -829,9 +1035,14 @@ const Admin = () => {
                         />
                       </div>
                       <div className="modal-actions">
-                        <button className="modal-cancel-btn" onClick={handleCloseModal}>취소</button>
-                        <button 
-                          className="modal-delete-btn final-delete-btn" 
+                        <button
+                          className="modal-cancel-btn"
+                          onClick={handleCloseModal}
+                        >
+                          취소
+                        </button>
+                        <button
+                          className="modal-delete-btn final-delete-btn"
                           onClick={handleDeleteUser}
                           disabled={loading || deleteInputCode.length < 6}
                         >
