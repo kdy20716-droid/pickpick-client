@@ -1,6 +1,5 @@
 export const initialActionState = {
   like: false,
-  dislike: false,
   likeCount: 0,
 };
 
@@ -57,23 +56,10 @@ export function updateCardActionState(currentActions, cardId, actionId, options 
       [cardId]: {
         ...previousState,
         like: nextLike,
-        dislike: false,
         likeCount: typeof options.likeCount === "number" ? Math.max(0, options.likeCount) : fallbackLikeCount,
       },
     };
   }
 
-  if (actionId === "dislike") {
-    const fallbackLikeCount = previousState.like ? Math.max(0, previousState.likeCount - 1) : previousState.likeCount;
-    return {
-      ...currentActions,
-      [cardId]: {
-        ...previousState,
-        like: false,
-        dislike: typeof options.dislike === "boolean" ? options.dislike : !previousState.dislike,
-        likeCount: typeof options.likeCount === "number" ? Math.max(0, options.likeCount) : fallbackLikeCount,
-      },
-    };
-  }
   return currentActions;
 }

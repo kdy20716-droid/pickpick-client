@@ -739,3 +739,130 @@
 .clear-btn:hover {
   background: #ddd;
 }
+
+/* 신고 관리 테이블 */
+.reports-table-container {
+  overflow-x: auto;
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #eee;
+  margin-top: 10px;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.admin-table th,
+.admin-table td {
+  padding: 16px;
+  border-bottom: 1px solid #eee;
+  font-size: 0.9rem;
+  vertical-align: middle;
+}
+
+.admin-table th {
+  background: #fafafa;
+  font-weight: 700;
+  color: #666;
+}
+
+.post-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.post-info strong {
+  color: var(--text);
+  font-size: 0.95rem;
+}
+
+.post-info span {
+  color: #999;
+  font-size: 0.8rem;
+}
+
+.report-reason-text {
+  color: #444;
+  line-height: 1.4;
+  word-break: break-all;
+  max-width: 300px;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.status-pending {
+  background: #fffbe6;
+  color: #faad14;
+  border: 1px solid #ffe58f;
+}
+
+.status-resolved {
+  background: #f6ffed;
+  color: #52c41a;
+  border: 1px solid #b7eb8f;
+}
+
+.status-ignored {
+  background: #f5f5f5;
+  color: #8c8c8c;
+  border: 1px solid #d9d9d9;
+}
+
+.action-btns {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.resolve-btn, .ignore-btn, .delete-post-btn {
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.2s;
+}
+
+.resolve-btn {
+  background: #52c41a;
+  color: white;
+}
+
+.resolve-btn:hover:not(:disabled) {
+  background: #389e0d;
+}
+
+.ignore-btn {
+  background: #8c8c8c;
+  color: white;
+}
+
+.ignore-btn:hover:not(:disabled) {
+  background: #595959;
+}
+
+.delete-post-btn {
+  background: transparent;
+  color: #ff4d4f;
+  border-color: #ff4d4f;
+}
+
+.delete-post-btn:hover {
+  background: #fff1f0;
+}
+
+.resolve-btn:disabled, .ignore-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

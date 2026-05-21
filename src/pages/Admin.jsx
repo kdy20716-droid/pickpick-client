@@ -10,10 +10,11 @@ const Admin = () => {
   const [comments, setComments] = useState([]);
   const [selectedVoteId, setSelectedVoteId] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState("votes"); // 'votes', 'comments', or 'users'
+  const [activeTab, setActiveTab] = useState("votes"); // 'votes', 'comments', 'users', or 'reports'
   const [deleteModal, setDeleteModal] = useState(null); // null, 'vote', 'comment'
   const [itemToDelete, setItemToDelete] = useState(null);
   const [users, setUsers] = useState([]);
+  const [reports, setReports] = useState([]);
 
   // 2차 인증 상태
   const [isVerified, setIsVerified] = useState(false);
@@ -225,10 +226,52 @@ const Admin = () => {
       });
       alert("유저 정보가 수정되었습니다.");
       // 목록 업데이트
-      setUsers(users.map(u => u.id === userId ? { ...u, ...updates } : u));
+      setUsers(users.map((u) => (u.id === userId ? { ...u, ...updates } : u)));
     } catch (error) {
       console.error("유저 수정 에러:", error);
       alert("유저 수정 중 에러가 발생했습니다.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 신고 목록 조회
+  const handleLoadReports = async () => {
+    setLoading(true);
+    try {
+      const response = await instance.get("/admin/reports", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setReports(response.data.reports);
+      setActiveTab("reports");
+    } catch (error) {
+      console.error("신고 조회 에러:", error);
+      if (!handleAuthError(error)) {
+        alert("신고 목록을 불러오는 중 에러가 발생했습니다.");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 신고 처리 상태 업데이트
+  const handleUpdateReportStatus = async (reportId, status) => {
+    setLoading(true);
+    try {
+      await instance.put(
+        `/admin/reports/${reportId}/status`,
+        { status },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
+      alert("신고 상태가 변경되었습니다.");
+      setReports(
+        reports.map((r) => (r.id === reportId ? { ...r, status } : r)),
+      );
+    } catch (error) {
+      console.error("신고 수정 에러:", error);
+      alert("신고 수정 중 에러가 발생했습니다.");
     } finally {
       setLoading(false);
     }
@@ -341,6 +384,12 @@ const Admin = () => {
               유저 ({users.length || "..."})
             </button>
             <button
+              className={`tab ${activeTab === "reports" ? "active" : ""}`}
+              onClick={handleLoadReports}
+            >
+              신고 ({reports.length || "..."})
+            </button>
+            <button
               className={`tab ${activeTab === "comments" ? "active" : ""}`}
               onClick={() => setActiveTab("comments")}
               disabled={!selectedVoteId}
@@ -437,14 +486,20 @@ const Admin = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {users.map(user => (
+                    {users.map((user) => (
                       <tr key={user.id}>
                         <td>{user.id}</td>
-                        <td>{user.nickname} ({user.name})</td>
                         <td>
-                          <select 
+                          {user.nickname} ({user.name})
+                        </td>
+                        <td>
+                          <select
                             value={user.tier || "bronze"}
-                            onChange={(e) => handleUpdateUserStatus(user.id, { tier: e.target.value })}
+                            onChange={(e) =>
+                              handleUpdateUserStatus(user.id, {
+                                tier: e.target.value,
+                              })
+                            }
                           >
                             <option value="bronze">BRONZE</option>
                             <option value="silver">SILVER</option>
@@ -457,40 +512,142 @@ const Admin = () => {
                         </td>
                         <td>
                           {user.role === "admin" ? (
-                            <span style={{ color: "#ff4d4f", fontWeight: "bold" }}>ADMIN</span>
+                            <span
+                              style={{ color: "#ff4d4f", fontWeight: "bold" }}
+                            >
+                              ADMIN
+                            </span>
                           ) : (
                             <span>USER</span>
                           )}
                         </td>
                         <td>
                           <div className="border-grant-cell">
-                            <span className="current-unlocked">{user.unlocked_borders || "없음"}</span>
-                            <button 
+                            <span className="current-unlocked">
+                              {user.unlocked_borders || "없음"}
+                            </span>
+                            <button
                               className="grant-btn"
                               onClick={() => {
                                 const border = "pick";
-                                const newList = user.unlocked_borders 
-                                  ? [...new Set([...user.unlocked_borders.split(','), border])].join(',')
+                                const newList = user.unlocked_borders
+                                  ? [
+                                      ...new Set([
+                                        ...user.unlocked_borders.split(","),
+                                        border,
+                                      ]),
+                                    ].join(",")
                                   : border;
-                                handleUpdateUserStatus(user.id, { unlocked_borders: newList });
+                                handleUpdateUserStatus(user.id, {
+                                  unlocked_borders: newList,
+                                });
                               }}
                             >
                               Pick 지급
                             </button>
                             {user.unlocked_borders && (
-                              <button 
+                              <button
                                 className="clear-btn"
-                                onClick={() => handleUpdateUserStatus(user.id, { unlocked_borders: null })}
+                                onClick={() =>
+                                  handleUpdateUserStatus(user.id, {
+                                    unlocked_borders: null,
+                                  })
+                                }
                               >
                                 초기화
                               </button>
                             )}
                           </div>
                         </td>
-                        <td>{new Date(user.created_at).toLocaleDateString()}</td>
                         <td>
-                          {/* 추가 관리 기능 필요시 배치 */}
-                          -
+                          {new Date(user.created_at).toLocaleDateString()}
+                        </td>
+                        <td>{/* 추가 관리 기능 필요시 배치 */}-</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+
+          {/* 신고 관리 섹션 */}
+          {activeTab === "reports" && (
+            <div className="content-section">
+              <div className="reports-table-container">
+                <table className="admin-table">
+                  <thead>
+                    <tr>
+                      <th>신고ID</th>
+                      <th>대상 게시물</th>
+                      <th>신고 사유</th>
+                      <th>신고자</th>
+                      <th>상태</th>
+                      <th>일시</th>
+                      <th>작업</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {reports.map((report) => (
+                      <tr key={report.id}>
+                        <td>{report.id}</td>
+                        <td>
+                          <div className="post-info">
+                            <strong>{report.vote_title}</strong>
+                            <span>#{report.post_id}</span>
+                          </div>
+                        </td>
+                        <td>
+                          <div className="report-reason-text">
+                            {report.reason}
+                          </div>
+                        </td>
+                        <td>{report.reporter_nickname || "익명"}</td>
+                        <td>
+                          <span
+                            className={`status-badge status-${report.status}`}
+                          >
+                            {report.status === "pending"
+                              ? "대기"
+                              : report.status === "resolved"
+                                ? "처리완료"
+                                : "무시됨"}
+                          </span>
+                        </td>
+                        <td>{new Date(report.created_at).toLocaleString()}</td>
+                        <td>
+                          <div className="action-btns">
+                            <button
+                              className="resolve-btn"
+                              onClick={() =>
+                                handleUpdateReportStatus(report.id, "resolved")
+                              }
+                              disabled={report.status === "resolved"}
+                            >
+                              처리완료
+                            </button>
+                            <button
+                              className="ignore-btn"
+                              onClick={() =>
+                                handleUpdateReportStatus(report.id, "ignored")
+                              }
+                              disabled={report.status === "ignored"}
+                            >
+                              무시
+                            </button>
+                            <button
+                              className="delete-post-btn"
+                              onClick={() => {
+                                setDeleteModal("vote");
+                                setItemToDelete({
+                                  id: report.post_id,
+                                  title: report.vote_title,
+                                });
+                              }}
+                            >
+                              게시물 삭제
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))}

@@ -49,6 +49,7 @@ export const TEXT = {
     passwordRequired: "현재 비밀번호와 새 비밀번호를 입력해주세요.",
     passwordMismatch: "새 비밀번호가 일치하지 않습니다.",
     passwordSaved: "비밀번호 변경 요청이 완료되었습니다.",
+    passwordChangeFail: "비밀번호 변경에 실패했습니다.",
     displaySaved: "화면 설정이 저장되었습니다.",
   },
   English: {
@@ -101,6 +102,7 @@ export const TEXT = {
     passwordRequired: "Please enter your current and new password.",
     passwordMismatch: "New passwords do not match.",
     passwordSaved: "Password change request completed.",
+    passwordChangeFail: "Failed to change password.",
     displaySaved: "Display settings saved.",
   },
 };
