@@ -145,12 +145,3 @@ const MyCreate = () => {
 };
 
 export default MyCreate;
-   )}
-          </div>
-        )}
-      </div>
-    </div>
-  );
-};
-
-export default MyCreate;
