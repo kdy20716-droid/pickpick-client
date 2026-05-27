@@ -52,7 +52,7 @@ const ProfileEditor = ({ initialImage, initialBorder, userTier, unlockedBorders,
   const fileInputRef = useRef(null);
 
   const borders = [
-    { id: null, name: "기본", tier: "bronze" },
+    { id: null, name: "기본", tier: "unranked" },
     { id: "bronze", name: "브론즈", tier: "bronze" },
     { id: "silver", name: "실버", tier: "silver" },
     { id: "gold", name: "골드", tier: "gold" },
@@ -74,14 +74,13 @@ const ProfileEditor = ({ initialImage, initialBorder, userTier, unlockedBorders,
     // 3. 티어별 해금 확인
     if (borderTier === "admin") return false; // 어드민 테두리는 티어로 해금 불가
     
-    const tiers = ["bronze", "silver", "gold", "platinum", "diamond", "master", "challenger"];
+    const tiers = ["unranked", "bronze", "silver", "gold", "platinum", "diamond", "master", "challenger"];
     
     // 유저 티어 정규화 (소문자로 변환)
-    let normalizedUserTier = (userTier || "bronze").toLowerCase();
-    if (normalizedUserTier === "unranked") normalizedUserTier = "bronze";
+    let normalizedUserTier = (userTier || "unranked").toLowerCase();
     
     // 테두리 티어 정규화
-    let normalizedBorderTier = (borderTier || "bronze").toLowerCase();
+    let normalizedBorderTier = (borderTier || "unranked").toLowerCase();
 
     const userTierIndex = tiers.indexOf(normalizedUserTier);
     const borderTierIndex = tiers.indexOf(normalizedBorderTier);
