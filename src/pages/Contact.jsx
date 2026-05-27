@@ -52,7 +52,7 @@ const Contact = () => {
         <h2>비즈니스 및 제휴 문의</h2>
         <p>광고 게재, 파트너십 제안 등 비즈니스 관련 문의는 아래 메일로 상세 내용을 전달해 주세요.</p>
         <div className="contact-info">
-          <p><strong>Email:</strong> business@pickpick.dev</p>
+          <p><strong>Email:</strong> <a href="mailto:kdy20716@gmail.com" style={{ color: "inherit", textDecoration: "underline" }}>kdy20716@gmail.com</a></p>
         </div>
       </section>
 
