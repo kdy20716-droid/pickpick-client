@@ -1,7 +1,8 @@
-import "./Signin.css";
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { signin, sendEmailCode } from "../api/users";
+import { Eye, EyeOff } from "lucide-react";
+import "./Signin.css";
 
 export default function Signin() {
   const navigate = useNavigate();
@@ -16,6 +17,7 @@ export default function Signin() {
   // ✅ 4️⃣ 에러 모달 상태
   const [errorMsg, setErrorMsg] = useState("");
   const [showModal, setShowModal] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   // ✅ 5️⃣ 이메일 인증 관련 상태
   const [emailCodeSent, setEmailCodeSent] = useState(false);
@@ -181,12 +183,20 @@ export default function Signin() {
         <div className="input-group">
           <span>🔒</span>
           <input
-            type="password"
+            type={showPassword ? "text" : "password"}
             name="pw"
             placeholder="비밀번호"
             value={form.pw}
             onChange={handleChange}
           />
+          <button
+            type="button"
+            className="password-toggle-btn"
+            onClick={() => setShowPassword(!showPassword)}
+            aria-label={showPassword ? "비밀번호 숨기기" : "비밀번호 보기"}
+          >
+            {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+          </button>
         </div>
 
         <div className="input-group-with-btn">

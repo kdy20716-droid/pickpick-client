@@ -78,6 +78,31 @@ body {
   padding: 0 5px;
 }
 
+/* 비밀번호 토글 버튼 */
+.password-toggle-btn {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  padding: 5px;
+  width: auto;
+  height: auto;
+  color: #999;
+  cursor: pointer;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s;
+}
+
+.password-toggle-btn:hover {
+  color: #f48fb1;
+  background: none;
+}
+
 /* 자동 로그인 체크박스 - 왼쪽 정렬 확실하게 */
 .auto-login {
   display: flex;

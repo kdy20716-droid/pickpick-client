@@ -464,6 +464,37 @@
   box-sizing: border-box;
 }
 
+/* 비밀번호 입력란 래퍼 및 토글 버튼 추가 */
+.password-input-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.password-input-wrapper input {
+  padding-right: 50px !important; /* 버튼 공간 확보 */
+}
+
+.password-input-wrapper .password-toggle-btn {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  padding: 5px;
+  color: #ccc;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s;
+  z-index: 5;
+}
+
+.password-input-wrapper .password-toggle-btn:hover {
+  color: #f08aaf;
+}
+
 .security-section button {
   align-self: flex-end;
   width: auto;
