@@ -1,6 +1,7 @@
 import { Outlet } from "react-router-dom";
 import { motion as Motion } from "framer-motion";
 import Header from "./Header";
+import Footer from "./Footer";
 import { useHeaderGlow } from "../hooks/useHeaderGlow";
 
 const Layout = () => {
@@ -22,6 +23,9 @@ const Layout = () => {
       <main className="site-main">
         <Outlet />
       </main>
+
+      {/* 하단 푸터 (Footer) */}
+      <Footer />
     </div>
   );
 };
