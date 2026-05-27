@@ -205,6 +205,11 @@
   display: flex;
   justify-content: center;
   align-items: center; /* Changed from align-items: flex-end */
+  transition: transform 0.3s ease;
+}
+
+.profileImgCard:hover .circleBig {
+  transform: scale(1.05);
 }
 
 .silhouette {
