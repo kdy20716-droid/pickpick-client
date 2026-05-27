@@ -73,10 +73,6 @@
   transition: background 0.3s;
 }
 
-.gradeItem:hover {
-  background: #fdf7f9;
-}
-
 .gradeIconWrapper {
   width: 60px;
   height: 60px;

@@ -93,9 +93,6 @@ export default function Login() {
             </div>
           </div>
         </form>
-
-        {/* 메시지 표시 (성공 시 등) */}
-        {!showModal && msg && <p id="message">{msg}</p>}
       </div>
     </div>
   );
