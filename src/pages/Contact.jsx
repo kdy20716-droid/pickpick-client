@@ -44,11 +44,36 @@ const Contact = () => {
   return (
     <div className="policy-page">
       <h1>문의하기 (Contact)</h1>
-      <p>
-        PICKPICK 서비스를 이용해 주셔서 감사합니다. 서비스 이용 중 궁금한 점이
-        있거나 건의 사항, 비즈니스 협업 제안이 있으시면 아래 채널을 통해 연락해
-        주세요.
+      <p style={{ marginBottom: "40px" }}>
+        픽픽은 유저 여러분의 소중한 의견을 귀담아듣고 항상 더 나은 서비스를
+        만들기 위해 노력하겠습니다.
       </p>
+
+      <section>
+        <h2>FAQ (자주 묻는 질문)</h2>
+        <div className="faq-container">
+          {faqData.map((item, index) => (
+            <div
+              key={index}
+              className={`faq-item ${openIndex === index ? "active" : ""}`}
+            >
+              <button
+                className="faq-question"
+                onClick={() => toggleFaq(index)}
+                aria-expanded={openIndex === index}
+              >
+                <span>{item.question}</span>
+                <span className="faq-icon">
+                  {openIndex === index ? "−" : "+"}
+                </span>
+              </button>
+              <div className="faq-answer">
+                <p>{item.answer}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
 
       <section>
         <h2>고객 지원</h2>
@@ -84,35 +109,10 @@ const Contact = () => {
         </div>
       </section>
 
-      <section>
-        <h2>FAQ (자주 묻는 질문)</h2>
-        <div className="faq-container">
-          {faqData.map((item, index) => (
-            <div
-              key={index}
-              className={`faq-item ${openIndex === index ? "active" : ""}`}
-            >
-              <button
-                className="faq-question"
-                onClick={() => toggleFaq(index)}
-                aria-expanded={openIndex === index}
-              >
-                <span>{item.question}</span>
-                <span className="faq-icon">
-                  {openIndex === index ? "−" : "+"}
-                </span>
-              </button>
-              <div className="faq-answer">
-                <p>{item.answer}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
       <p style={{ marginTop: "40px" }}>
-        픽픽은 유저 여러분의 소중한 의견을 귀담아듣고 항상 더 나은 서비스를
-        만들기 위해 노력하겠습니다.
+        PICKPICK 서비스를 이용해 주셔서 감사합니다. 서비스 이용 중 궁금한 점이
+        있거나 건의 사항, 비즈니스 협업 제안이 있으시면 아래 채널을 통해 연락해
+        주세요.
       </p>
     </div>
   );
