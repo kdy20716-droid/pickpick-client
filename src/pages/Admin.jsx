@@ -694,7 +694,12 @@ const Admin = () => {
                 <>
                   <div className="votes-grid">
                     {votes.map((vote) => (
-                      <div key={vote.id} className="vote-card">
+                      <div 
+                        key={vote.id} 
+                        className="vote-card" 
+                        onClick={() => handleViewVoteDetails(vote.id, vote.title)}
+                        style={{ cursor: "pointer" }}
+                      >
                         <div className="vote-header">
                           <h3>{vote.title}</h3>
                           <span className="vote-id">#{vote.id}</span>
@@ -733,16 +738,9 @@ const Admin = () => {
                         </div>
                         <div className="vote-actions">
                           <button
-                            className="detail-btn"
-                            onClick={() => handleViewVoteDetails(vote.id, vote.title)}
-                            disabled={loading}
-                            style={{ backgroundColor: "#4a90e2", color: "white", border: "none", padding: "8px 16px", borderRadius: "8px", cursor: "pointer", marginRight: "8px" }}
-                          >
-                            상세보기
-                          </button>
-                          <button
                             className="delete-btn"
-                            onClick={() => {
+                            onClick={(e) => {
+                              e.stopPropagation();
                               setDeleteModal("vote");
                               setItemToDelete(vote);
                             }}
