@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import { useLocation, useParams } from "react-router-dom";
+import { X } from "lucide-react";
 import "./VotePage.css";
 import favoriteIcon from "../assets/favorite.svg";
 import reportIcon from "../assets/report.svg";
@@ -297,7 +298,9 @@ export default function VotePage() {
         <aside className="vote-filter-panel">
           <header className="vote-filter-header">
             <h2>카테고리</h2>
-            <button type="button" className="vote-filter-close" onClick={() => setIsFilterOpen(false)}>X</button>
+            <button type="button" className="vote-filter-close" onClick={() => setIsFilterOpen(false)}>
+              <X size={22} />
+            </button>
           </header>
           <div className="vote-filter-list">
             {tags.map(tag => (

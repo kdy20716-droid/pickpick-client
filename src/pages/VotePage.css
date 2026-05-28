@@ -115,51 +115,51 @@
   position: relative;
   display: flex;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: center;
   gap: 8px;
   flex: 0 0 auto;
   min-height: 26px;
   margin-bottom: 16px;
-  padding-left: 15px;
+  padding: 0 10px;
 }
 
 .vote-filter-header h2 {
   margin: 0;
   color: #111111;
   font-size: 20px;
-  font-weight: 500;
+  font-weight: 600;
   line-height: 1;
 }
 
 .vote-filter-close {
   position: absolute;
   top: 50%;
-  right: 10px;
+  right: 5px;
   flex: 0 0 auto;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: auto !important;
-  min-width: 0 !important;
-  height: auto !important;
-  min-height: 0 !important;
+  width: 32px !important;
+  min-width: 32px !important;
+  height: 32px !important;
+  min-height: 32px !important;
   margin: 0;
   padding: 0;
   border: 0;
-  border-radius: 0;
+  border-radius: 50%;
   appearance: none;
   background: transparent !important;
   box-shadow: none;
   color: var(--filter-close-text);
   font-family: inherit;
-  font-size: 21px;
   line-height: 1;
   transform: translateY(-50%);
   cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .vote-filter-close:hover {
-  background: transparent !important;
+  background: rgba(0, 0, 0, 0.05) !important;
   box-shadow: none;
   border-color: transparent;
   color: var(--filter-close-hover-text);
