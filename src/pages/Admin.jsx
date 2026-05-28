@@ -17,6 +17,9 @@ const Admin = () => {
   const [bannedEmails, setBannedEmails] = useState([]);
   const [newBanEmail, setNewBanEmail] = useState("");
   const [reports, setReports] = useState([]);
+  const [voteRecords, setVoteRecords] = useState([]);
+  const [showVoteDetails, setShowVoteDetails] = useState(false);
+  const [selectedVoteTitle, setSelectedVoteTitle] = useState("");
 
   // 페이지네이션 상태
   const [pagination, setPagination] = useState({
@@ -277,6 +280,36 @@ const Admin = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  // 투표 상세 참여 기록 조회
+  const handleViewVoteDetails = async (voteId, voteTitle) => {
+    setLoading(true);
+    setSelectedVoteTitle(voteTitle);
+    try {
+      const response = await instance.get(`/admin/votes/${voteId}/records`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setVoteRecords(response.data.records);
+      setShowVoteDetails(true);
+    } catch (error) {
+      console.error("투표 상세 조회 에러:", error);
+      if (!handleAuthError(error)) {
+        alert("상세 기록을 불러오는 중 에러가 발생했습니다.");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCloseModal = () => {
+    setDeleteModal(null);
+    setItemToDelete(null);
+    setUserDeleteStep(0);
+    setDeleteVerifyCode("");
+    setDeleteInputCode("");
+    setShowVoteDetails(false);
+    setVoteRecords([]);
   };
 
   // 모든 투표 조회
@@ -661,7 +694,12 @@ const Admin = () => {
                 <>
                   <div className="votes-grid">
                     {votes.map((vote) => (
-                      <div key={vote.id} className="vote-card">
+                      <div 
+                        key={vote.id} 
+                        className="vote-card" 
+                        onClick={() => handleViewVoteDetails(vote.id, vote.title)}
+                        style={{ cursor: "pointer" }}
+                      >
                         <div className="vote-header">
                           <h3>{vote.title}</h3>
                           <span className="vote-id">#{vote.id}</span>
@@ -701,7 +739,8 @@ const Admin = () => {
                         <div className="vote-actions">
                           <button
                             className="delete-btn"
-                            onClick={() => {
+                            onClick={(e) => {
+                              e.stopPropagation();
                               setDeleteModal("vote");
                               setItemToDelete(vote);
                             }}
@@ -716,6 +755,64 @@ const Admin = () => {
                   <Pagination tab="votes" />
                 </>
               )}
+            </div>
+          )}
+
+          {/* 투표 참여 상세 모달 */}
+          {showVoteDetails && (
+            <div className="modal-overlay" onClick={handleCloseModal}>
+              <div className="modal-content detail-modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: "800px", width: "90%" }}>
+                <h3 className="modal-title">투표 참여 상세 내역</h3>
+                <p className="modal-subtitle" style={{ marginBottom: "20px", color: "#666" }}>게시글: <strong>{selectedVoteTitle}</strong></p>
+                
+                <div className="detail-table-container" style={{ maxHeight: "400px", overflowY: "auto", border: "1px solid #eee", borderRadius: "8px" }}>
+                  <table className="admin-table" style={{ width: "100%", borderCollapse: "collapse" }}>
+                    <thead style={{ position: "sticky", top: 0, backgroundColor: "#f8f9fa" }}>
+                      <tr>
+                        <th style={{ padding: "12px", textAlign: "left", borderBottom: "2px solid #dee2e6" }}>유저 (닉네임/이름)</th>
+                        <th style={{ padding: "12px", textAlign: "center", borderBottom: "2px solid #dee2e6" }}>선택</th>
+                        <th style={{ padding: "12px", textAlign: "right", borderBottom: "2px solid #dee2e6" }}>투표 일시</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {voteRecords.length === 0 ? (
+                        <tr>
+                          <td colSpan="3" style={{ padding: "40px", textAlign: "center", color: "#999" }}>아직 참여 기록이 없습니다.</td>
+                        </tr>
+                      ) : (
+                        voteRecords.map((record, idx) => (
+                          <tr key={idx} style={{ borderBottom: "1px solid #eee" }}>
+                            <td style={{ padding: "12px" }}>
+                              <strong>{record.nickname}</strong> <span style={{ color: "#888", fontSize: "0.9em" }}>({record.name})</span>
+                            </td>
+                            <td style={{ padding: "12px", textAlign: "center" }}>
+                              <span style={{ 
+                                padding: "4px 10px", 
+                                borderRadius: "20px", 
+                                fontWeight: "bold",
+                                backgroundColor: record.selected_side === "A" ? "#e3f2fd" : "#fff3e0",
+                                color: record.selected_side === "A" ? "#1976d2" : "#f57c00"
+                              }}>
+                                {record.selected_side}
+                              </span>
+                            </td>
+                            <td style={{ padding: "12px", textAlign: "right", color: "#666", fontSize: "0.9em" }}>
+                              {new Date(record.created_at).toLocaleString("ko-KR", {
+                                year: 'numeric', month: '2-digit', day: '2-digit',
+                                hour: '2-digit', minute: '2-digit', second: '2-digit'
+                              })}
+                            </td>
+                          </tr>
+                        ))
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+                
+                <div className="modal-actions" style={{ marginTop: "20px" }}>
+                  <button className="modal-cancel-btn" onClick={handleCloseModal}>닫기</button>
+                </div>
+              </div>
             </div>
           )}
 

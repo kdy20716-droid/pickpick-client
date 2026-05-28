@@ -1,4 +1,5 @@
 import { useState, useRef } from "react";
+import { createPortal } from "react-dom";
 import styles from "./ProfileEditor.module.css";
 import { getImageUrl } from "../utils/image";
 
@@ -51,7 +52,7 @@ const ProfileEditor = ({ initialImage, initialBorder, userTier, unlockedBorders,
   const fileInputRef = useRef(null);
 
   const borders = [
-    { id: null, name: "기본", tier: "bronze" },
+    { id: null, name: "기본", tier: "unranked" },
     { id: "bronze", name: "브론즈", tier: "bronze" },
     { id: "silver", name: "실버", tier: "silver" },
     { id: "gold", name: "골드", tier: "gold" },
@@ -73,14 +74,13 @@ const ProfileEditor = ({ initialImage, initialBorder, userTier, unlockedBorders,
     // 3. 티어별 해금 확인
     if (borderTier === "admin") return false; // 어드민 테두리는 티어로 해금 불가
     
-    const tiers = ["bronze", "silver", "gold", "platinum", "diamond", "master", "challenger"];
+    const tiers = ["unranked", "bronze", "silver", "gold", "platinum", "diamond", "master", "challenger"];
     
     // 유저 티어 정규화 (소문자로 변환)
-    let normalizedUserTier = (userTier || "bronze").toLowerCase();
-    if (normalizedUserTier === "unranked") normalizedUserTier = "bronze";
+    let normalizedUserTier = (userTier || "unranked").toLowerCase();
     
     // 테두리 티어 정규화
-    let normalizedBorderTier = (borderTier || "bronze").toLowerCase();
+    let normalizedBorderTier = (borderTier || "unranked").toLowerCase();
 
     const userTierIndex = tiers.indexOf(normalizedUserTier);
     const borderTierIndex = tiers.indexOf(normalizedBorderTier);
@@ -110,16 +110,14 @@ const ProfileEditor = ({ initialImage, initialBorder, userTier, unlockedBorders,
         imageBlob = await createCenteredSquareBlob(src, zoom);
       } catch (e) {
         console.error("이미지 크롭 실패:", e);
-        // 새 이미지가 아닌 경우(기존 이미지 줌 조절) CORS 문제로 실패할 수 있음
-        // 이 경우 에러를 내지 않고 테두리만 저장될 수 있도록 진행
       }
     }
     onSave(imageBlob, selectedBorder);
   };
 
-  return (
-    <div className={styles.modalOverlay}>
-      <div className={styles.modalContent}>
+  const modalContent = (
+    <div className={styles.modalOverlay} onClick={onCancel}>
+      <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
         <h3 className={styles.title}>프로필 편집</h3>
         
         <div className={styles.editorMain}>
@@ -177,7 +175,6 @@ const ProfileEditor = ({ initialImage, initialBorder, userTier, unlockedBorders,
               <div className={styles.borderGrid}>
                 {borders
                   .filter((border) => {
-                    // Admin 테두리와 Pick 테두리는 관리자이거나 직접 해금한 경우에만 노출
                     if (border.id === "admin" || border.id === "pick") {
                       if (isAdmin) return true;
                       if (unlockedBorders && unlockedBorders.split(',').includes(border.id)) return true;
@@ -194,7 +191,6 @@ const ProfileEditor = ({ initialImage, initialBorder, userTier, unlockedBorders,
                         onClick={() => unlocked && setSelectedBorder(border.id)}
                       >
                         <div className={`${styles.borderCircle} ${border.id ? `profile-border-${border.id}` : ""}`}>
-                          {/* 미니 미리보기 */}
                         </div>
                         <span className={styles.borderName}>{border.name}</span>
                       </div>
@@ -212,6 +208,8 @@ const ProfileEditor = ({ initialImage, initialBorder, userTier, unlockedBorders,
       </div>
     </div>
   );
+
+  return createPortal(modalContent, document.body);
 };
 
 export default ProfileEditor;

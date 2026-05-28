@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import "./Default.css";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
+import { Eye, EyeOff } from "lucide-react";
 import instance from "../../api/instance";
 import {
   updateProfile,
@@ -24,6 +25,9 @@ const AccountSettings = () => {
     newPassword: "",
     confirmPassword: "",
   });
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isDisplayOpen, setIsDisplayOpen] = useState(false);
   const [displaySettings, setDisplaySettings] = useState({
     language: "한국어",
@@ -416,27 +420,54 @@ const AccountSettings = () => {
             <div className="security-panel">
               <div className="security-section">
                 <strong>{text.changePassword}</strong>
-                <input
-                  type="password"
-                  name="currentPassword"
-                  placeholder={text.currentPassword}
-                  value={passwordForm.currentPassword}
-                  onChange={handlePasswordChange}
-                />
-                <input
-                  type="password"
-                  name="newPassword"
-                  placeholder={text.newPassword}
-                  value={passwordForm.newPassword}
-                  onChange={handlePasswordChange}
-                />
-                <input
-                  type="password"
-                  name="confirmPassword"
-                  placeholder={text.confirmPassword}
-                  value={passwordForm.confirmPassword}
-                  onChange={handlePasswordChange}
-                />
+                <div className="password-input-wrapper">
+                  <input
+                    type={showCurrentPassword ? "text" : "password"}
+                    name="currentPassword"
+                    placeholder={text.currentPassword}
+                    value={passwordForm.currentPassword}
+                    onChange={handlePasswordChange}
+                  />
+                  <button
+                    type="button"
+                    className="password-toggle-btn"
+                    onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                  >
+                    {showCurrentPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
+                <div className="password-input-wrapper">
+                  <input
+                    type={showNewPassword ? "text" : "password"}
+                    name="newPassword"
+                    placeholder={text.newPassword}
+                    value={passwordForm.newPassword}
+                    onChange={handlePasswordChange}
+                  />
+                  <button
+                    type="button"
+                    className="password-toggle-btn"
+                    onClick={() => setShowNewPassword(!showNewPassword)}
+                  >
+                    {showNewPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
+                <div className="password-input-wrapper">
+                  <input
+                    type={showConfirmPassword ? "text" : "password"}
+                    name="confirmPassword"
+                    placeholder={text.confirmPassword}
+                    value={passwordForm.confirmPassword}
+                    onChange={handlePasswordChange}
+                  />
+                  <button
+                    type="button"
+                    className="password-toggle-btn"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  >
+                    {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
                 <button type="button" onClick={handleSavePassword}>
                   {text.saveChange}
                 </button>

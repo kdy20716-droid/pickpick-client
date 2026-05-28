@@ -14,6 +14,10 @@ import Profileedit from "./pages/mypage/Default";
 import Like from "./pages/mypage/Like";
 import MyCreate from "./pages/mypage/MyCreate";
 import Admin from "./pages/Admin";
+import About from "./pages/About";
+import Privacy from "./pages/Privacy";
+import Terms from "./pages/Terms";
+import Contact from "./pages/Contact";
 
 const router = createBrowserRouter([
   {
@@ -62,6 +66,22 @@ const router = createBrowserRouter([
         element: <Admin />,
       },
       {
+        path: "/about",
+        element: <About />,
+      },
+      {
+        path: "/privacy",
+        element: <Privacy />,
+      },
+      {
+        path: "/terms",
+        element: <Terms />,
+      },
+      {
+        path: "/contact",
+        element: <Contact />,
+      },
+      {
         path: "/mypage",
         element: <MyPage />,
         children: [
@@ -84,9 +104,7 @@ const router = createBrowserRouter([
           },
           {
             path: "contact",
-            element: (
-              <div style={{ padding: "40px" }}>CONTACT PAGE (COMING SOON)</div>
-            ),
+            element: <Contact />,
           },
         ],
       },

@@ -1,6 +1,28 @@
 import "./Grade.css";
+import { useAuth } from "../../contexts/AuthContext";
+import { getImageUrl } from "../../utils/image";
 
 const Grade = () => {
+  const { user: currentUser } = useAuth();
+
+  const renderProfileImage = () => {
+    if (currentUser?.profile_image) {
+      return (
+        <img
+          src={getImageUrl(currentUser.profile_image)}
+          alt="Profile"
+          style={{
+            width: "100%",
+            height: "100%",
+            borderRadius: "50%",
+            objectFit: "cover",
+          }}
+        />
+      );
+    }
+    return <div className="gradeIconPlaceholder"></div>;
+  };
+
   return (
     <section className="gradeSection">
       <div className="gradeCard">
@@ -13,7 +35,7 @@ const Grade = () => {
         <div className="gradeContent">
           <div className="gradeItem">
             <div className="gradeIconWrapper profile-border-bronze">
-              <div className="gradeIconPlaceholder"></div>
+              <div className="gradeIconPlaceholder">{renderProfileImage()}</div>
             </div>
             <span className="gradeName grade-bronze">BRONZE</span>
             <div className="gradeRequirements">
@@ -23,7 +45,7 @@ const Grade = () => {
           </div>
           <div className="gradeItem">
             <div className="gradeIconWrapper profile-border-silver">
-              <div className="gradeIconPlaceholder"></div>
+              <div className="gradeIconPlaceholder">{renderProfileImage()}</div>
             </div>
             <span className="gradeName grade-silver">SILVER</span>
             <div className="gradeRequirements">
@@ -33,7 +55,7 @@ const Grade = () => {
           </div>
           <div className="gradeItem">
             <div className="gradeIconWrapper profile-border-gold">
-              <div className="gradeIconPlaceholder"></div>
+              <div className="gradeIconPlaceholder">{renderProfileImage()}</div>
             </div>
             <span className="gradeName grade-gold">GOLD</span>
             <div className="gradeRequirements">
@@ -43,7 +65,7 @@ const Grade = () => {
           </div>
           <div className="gradeItem">
             <div className="gradeIconWrapper profile-border-platinum">
-              <div className="gradeIconPlaceholder"></div>
+              <div className="gradeIconPlaceholder">{renderProfileImage()}</div>
             </div>
             <span className="gradeName grade-platinum">PLATINUM</span>
             <div className="gradeRequirements">
@@ -53,7 +75,7 @@ const Grade = () => {
           </div>
           <div className="gradeItem">
             <div className="gradeIconWrapper profile-border-diamond">
-              <div className="gradeIconPlaceholder"></div>
+              <div className="gradeIconPlaceholder">{renderProfileImage()}</div>
             </div>
             <span className="gradeName grade-diamond">DIAMOND</span>
             <div className="gradeRequirements">
@@ -63,7 +85,7 @@ const Grade = () => {
           </div>
           <div className="gradeItem">
             <div className="gradeIconWrapper profile-border-master">
-              <div className="gradeIconPlaceholder"></div>
+              <div className="gradeIconPlaceholder">{renderProfileImage()}</div>
             </div>
             <span className="gradeName grade-master">MASTER</span>
             <div className="gradeRequirements">
@@ -73,7 +95,7 @@ const Grade = () => {
           </div>
           <div className="gradeItem">
             <div className="gradeIconWrapper profile-border-challenger">
-              <div className="gradeIconPlaceholder"></div>
+              <div className="gradeIconPlaceholder">{renderProfileImage()}</div>
             </div>
             <span className="gradeName challenger-shine grade-challenger">CHALLENGER</span>
             <div className="gradeRequirements">

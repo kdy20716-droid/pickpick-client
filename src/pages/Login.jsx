@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { login as apiLogin } from "../api/users";
 import { useAuth } from "../contexts/AuthContext";
+import { Eye, EyeOff } from "lucide-react";
 import "./Login.css";
 
 export default function Login() {
@@ -10,6 +11,7 @@ export default function Login() {
   const [form, setForm] = useState({ username: "", password: "" });
   const [showModal, setShowModal] = useState(false);
   const [msg, setMsg] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -73,12 +75,20 @@ export default function Login() {
           {/* 비밀번호 */}
           <div className="input-group">
             <input
-              type="password"
+              type={showPassword ? "text" : "password"}
               required
               value={form.password}
               onChange={(e) => setForm({ ...form, password: e.target.value })}
             />
             <label>비밀번호</label>
+            <button
+              type="button"
+              className="password-toggle-btn"
+              onClick={() => setShowPassword(!showPassword)}
+              aria-label={showPassword ? "비밀번호 숨기기" : "비밀번호 보기"}
+            >
+              {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+            </button>
           </div>
 
           {/* 로그인 버튼 */}
@@ -93,9 +103,6 @@ export default function Login() {
             </div>
           </div>
         </form>
-
-        {/* 메시지 표시 (성공 시 등) */}
-        {!showModal && msg && <p id="message">{msg}</p>}
       </div>
     </div>
   );
