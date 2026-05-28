@@ -23,7 +23,7 @@ const Menu = () => {
       <NavLink to="/mypage/history">HISTORY</NavLink>
       <NavLink to="/mypage/like">LIKE</NavLink>
       <NavLink to="/mypage/mypoll">MY CREATE</NavLink>
-      <NavLink to="/mypage/contact">CONTACT</NavLink>
+      <NavLink to="/mypage/faq">FAQ</NavLink>
       {isAdmin && (
         <NavLink
           to="/admin"
