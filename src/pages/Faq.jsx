@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "./PolicyPage.css";
 
-const Contact = () => {
+const Faq = () => {
   const [openIndex, setOpenIndex] = useState(null);
 
   const faqData = [
@@ -43,7 +43,7 @@ const Contact = () => {
 
   return (
     <div className="policy-page">
-      <h1>문의하기 (Contact)</h1>
+      <h1>FAQ / 문의하기</h1>
       <p style={{ marginBottom: "40px" }}>
         픽픽은 유저 여러분의 소중한 의견을 귀담아듣고 항상 더 나은 서비스를
         만들기 위해 노력하겠습니다.
@@ -118,4 +118,4 @@ const Contact = () => {
   );
 };
 
-export default Contact;
+export default Faq;

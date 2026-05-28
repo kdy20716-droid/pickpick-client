@@ -15,9 +15,8 @@ import Like from "./pages/mypage/Like";
 import MyCreate from "./pages/mypage/MyCreate";
 import Admin from "./pages/Admin";
 import About from "./pages/About";
-import Privacy from "./pages/Privacy";
+import Faq from "./pages/Faq";
 import Terms from "./pages/Terms";
-import Contact from "./pages/Contact";
 
 const router = createBrowserRouter([
   {
@@ -78,8 +77,8 @@ const router = createBrowserRouter([
         element: <Terms />,
       },
       {
-        path: "/contact",
-        element: <Contact />,
+        path: "/faq",
+        element: <Faq />,
       },
       {
         path: "/mypage",
@@ -103,8 +102,8 @@ const router = createBrowserRouter([
             element: <MyCreate />,
           },
           {
-            path: "contact",
-            element: <Contact />,
+            path: "faq",
+            element: <Faq />,
           },
         ],
       },
