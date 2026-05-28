@@ -9,11 +9,29 @@ import { logout as apiLogout, getMe } from "../api/users";
 
 const AuthContext = createContext(null);
 
-export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(() => {
+function readStoredUser() {
+  try {
     const savedUser = localStorage.getItem("user");
-    return savedUser ? JSON.parse(savedUser) : null;
-  });
+    if (!savedUser) return null;
+
+    const parsedUser = JSON.parse(savedUser);
+    if (parsedUser && typeof parsedUser === "object" && !Array.isArray(parsedUser)) {
+      return parsedUser;
+    }
+
+    localStorage.removeItem("user");
+    localStorage.removeItem("token");
+    return null;
+  } catch (error) {
+    console.warn("저장된 사용자 정보를 초기화합니다.", error);
+    localStorage.removeItem("user");
+    localStorage.removeItem("token");
+    return null;
+  }
+}
+
+export const AuthProvider = ({ children }) => {
+  const [user, setUser] = useState(() => readStoredUser());
 
   const [token, setToken] = useState(() => localStorage.getItem("token"));
 
@@ -23,9 +41,8 @@ export const AuthProvider = ({ children }) => {
   // Sync state with localStorage if it changes elsewhere (optional but good for consistency)
   useEffect(() => {
     const handleStorageChange = () => {
-      const savedUser = localStorage.getItem("user");
       const savedToken = localStorage.getItem("token");
-      setUser(savedUser ? JSON.parse(savedUser) : null);
+      setUser(readStoredUser());
       setToken(savedToken);
     };
 

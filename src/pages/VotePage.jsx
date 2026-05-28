@@ -45,6 +45,22 @@ const getCandidateMediaSource = (image, type = "image") => {
   return getCandidateThumbnail(image, type);
 };
 
+function readStoredObject(key) {
+  try {
+    const value = localStorage.getItem(key);
+    if (!value) return {};
+
+    const parsed = JSON.parse(value);
+    return parsed && typeof parsed === "object" && !Array.isArray(parsed)
+      ? parsed
+      : {};
+  } catch (error) {
+    console.warn(`저장된 투표 상태를 초기화합니다: ${key}`, error);
+    localStorage.removeItem(key);
+    return {};
+  }
+}
+
 function getTargetVoteId(routePostId, search, hash) {
   const searchParams = new URLSearchParams(search);
   const candidates = [routePostId, searchParams.get("post"), searchParams.get("postId"), searchParams.get("vote"), searchParams.get("voteId"), searchParams.get("id"), getVoteFeedIdFromHash(hash)];
@@ -71,8 +87,8 @@ export default function VotePage() {
   const [isVotesLoading, setIsVotesLoading] = useState(true);
   const [votesError, setVotesError] = useState("");
   const [currentTime, setCurrentTime] = useState(() => Date.now());
-  const [selectedVotes, setSelectedVotes] = useState(() => JSON.parse(localStorage.getItem(`selectedVotes_${userId}`) || "{}"));
-  const [cardActions, setCardActions] = useState(() => JSON.parse(localStorage.getItem(`cardActions_${userId}`) || "{}"));
+  const [selectedVotes, setSelectedVotes] = useState(() => readStoredObject(`selectedVotes_${userId}`));
+  const [cardActions, setCardActions] = useState(() => readStoredObject(`cardActions_${userId}`));
   const [copiedCardId, setCopiedCardId] = useState("");
   const [commentCardId, setCommentCardId] = useState("");
   const [reportCardId, setReportCardId] = useState("");
@@ -86,8 +102,8 @@ export default function VotePage() {
 
   // Sync with localStorage
   useEffect(() => {
-    setSelectedVotes(JSON.parse(localStorage.getItem(`selectedVotes_${userId}`) || "{}"));
-    setCardActions(JSON.parse(localStorage.getItem(`cardActions_${userId}`) || "{}"));
+    setSelectedVotes(readStoredObject(`selectedVotes_${userId}`));
+    setCardActions(readStoredObject(`cardActions_${userId}`));
   }, [userId]);
 
   useEffect(() => {
@@ -133,14 +149,19 @@ export default function VotePage() {
     try {
       const data = await getVote(null, selectedTag, "random", isLoggedIn ? currentUser?.id : null, null, null, null, targetVoteId || null);
       if (fetchSequenceRef.current !== fetchId) return;
+      if (!Array.isArray(data)) {
+        throw new Error("Vote list response is not an array.");
+      }
 
       const serverVotes = {};
       const serverActions = {};
       const formattedCards = data.map(item => {
         const cardId = item.id.toString();
-        const total = (item.candidate_a_count || 0) + (item.candidate_b_count || 0);
+        const leftCount = Number(item.candidate_a_count) || 0;
+        const rightCount = Number(item.candidate_b_count) || 0;
+        const total = leftCount + rightCount;
         if (item.user_voted_side) serverVotes[cardId] = item.user_voted_side.toLowerCase();
-        serverActions[cardId] = { like: !!item.user_liked, likeCount: item.like_count || 0 };
+        serverActions[cardId] = { like: !!item.user_liked, likeCount: Number(item.like_count) || 0 };
 
         return {
           id: cardId, feedId: cardId, title: item.title, expiresAt: item.expires_at,
@@ -167,8 +188,8 @@ export default function VotePage() {
             tone: "dark",
           },
           shares: { 
-            left: total === 0 ? 50 : Math.round((item.candidate_a_count / total) * 100),
-            right: total === 0 ? 50 : Math.round((item.candidate_b_count / total) * 100)
+            left: total === 0 ? 50 : Math.round((leftCount / total) * 100),
+            right: total === 0 ? 50 : Math.round((rightCount / total) * 100)
           }
         };
       });
@@ -190,7 +211,8 @@ export default function VotePage() {
       setSelectedVotes(prev => ({ ...prev, ...serverVotes }));
       setCardActions(prev => ({ ...prev, ...serverActions }));
       setCards(pinTargetCard(sorted, targetVoteId));
-    } catch {
+    } catch (error) {
+      console.error("투표 목록 조회 실패:", error);
       if (fetchSequenceRef.current === fetchId) {
         setCards([]);
         setVotesError("투표 목록을 불러오지 못했습니다.");

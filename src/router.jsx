@@ -1,4 +1,4 @@
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, Navigate } from "react-router-dom";
 import Layout from "./components/Layout";
 import MainPage from "./pages/MainPage";
 import Login from "./pages/Login";
@@ -52,6 +52,10 @@ const router = createBrowserRouter([
       {
         path: "/vote",
         element: <VotePage />,
+      },
+      {
+        path: "/dev",
+        element: <Navigate to="/vote" replace />,
       },
       {
         path: "/vote/:postId",
