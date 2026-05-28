@@ -149,8 +149,8 @@
   border: 0;
   border-radius: 8px; /* 모서리가 둥근 네모 */
   appearance: none;
-  background: #333 !important; /* 어두운 배경 */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background: #fc92c7 !important; /* 픽픽 대표 핑크색 */
+  box-shadow: 0 2px 6px rgba(252, 146, 199, 0.24);
   color: #ffffff; /* 하얀색 X */
   font-family: inherit;
   line-height: 1;
@@ -160,9 +160,9 @@
 }
 
 .vote-filter-close:hover {
-  background: #111 !important; /* 마우스 올리면 더 진하게 */
+  background: #e881b5 !important; /* 마우스 올리면 더 진한 핑크 */
   transform: translateY(-50%) scale(1.05);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 10px rgba(252, 146, 199, 0.32);
 }
 
 .vote-filter-close svg {
