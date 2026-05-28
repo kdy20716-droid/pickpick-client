@@ -1,4 +1,4 @@
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, Navigate } from "react-router-dom";
 import Layout from "./components/Layout";
 import MainPage from "./pages/MainPage";
 import Login from "./pages/Login";
@@ -13,6 +13,7 @@ import Profile from "./pages/mypage/Profile";
 import Profileedit from "./pages/mypage/Default";
 import Like from "./pages/mypage/Like";
 import MyCreate from "./pages/mypage/MyCreate";
+
 import Admin from "./pages/Admin";
 
 const router = createBrowserRouter([
@@ -82,11 +83,10 @@ const router = createBrowserRouter([
             path: "mypoll",
             element: <MyCreate />,
           },
+
           {
             path: "contact",
-            element: (
-              <div style={{ padding: "40px" }}>CONTACT PAGE (COMING SOON)</div>
-            ),
+            element: <Navigate to="/mypage/faq" replace />,
           },
         ],
       },
