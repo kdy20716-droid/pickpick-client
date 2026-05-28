@@ -27,6 +27,15 @@ export const sendEmailCode = async (email) => {
   return response.data;
 };
 
+// 이메일 인증 코드 확인 API
+export const verifyEmailCode = async (email, code) => {
+  const response = await instance.post("/users/verify-email-code", {
+    email,
+    code,
+  });
+  return response.data;
+};
+
 // 임시 비밀번호 발송 API
 export const sendTempPassword = async (email) => {
   const response = await instance.post("/users/send-temp-password", { email });
