@@ -59,7 +59,7 @@ export const AuthProvider = ({ children }) => {
 
   // Monitor user changes and verify admin role
   useEffect(() => {
-    if (user) {
+    if (user && import.meta.env.DEV) {
       console.log("✅ 사용자 정보 업데이트:", {
         id: user.id,
         name: user.name,

@@ -23,7 +23,8 @@ export default function Report({ title, targetCardId, onClose, userId }) {
       return;
     }
 
-    const finalReason = selectedReason === "기타 사유" ? otherReason : selectedReason;
+    const finalReason =
+      selectedReason === "기타 사유" ? otherReason : selectedReason;
     if (selectedReason === "기타 사유" && !otherReason.trim()) {
       alert("상세 사유를 입력해주세요.");
       return;
@@ -36,12 +37,15 @@ export default function Report({ title, targetCardId, onClose, userId }) {
         userId: userId !== "guest" ? userId : null,
         reason: finalReason,
       });
-      
+
       alert("신고가 정상적으로 접수되었습니다. 검토 후 조치하겠습니다.");
       onClose();
     } catch (error) {
       console.error("신고 제출 실패:", error);
-      alert(error.response?.data?.message || "신고 접수에 실패했습니다. 다시 시도해주세요.");
+      alert(
+        error.response?.data?.message ||
+          "신고 접수에 실패했습니다. 다시 시도해주세요.",
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -56,20 +60,6 @@ export default function Report({ title, targetCardId, onClose, userId }) {
         onClick={onClose}
       />
       <aside className="report-modal">
-        <header className="report-modal-header">
-          <div>
-            <span className="report-modal-label">신고하기</span>
-            <h2>{title}</h2>
-          </div>
-          <button
-            type="button"
-            className="report-modal-close"
-            onClick={onClose}
-          >
-            닫기
-          </button>
-        </header>
-
         <div className="report-content">
           <p className="report-guide">신고 사유를 선택해 주세요.</p>
           <div className="report-reasons">
@@ -112,6 +102,6 @@ export default function Report({ title, targetCardId, onClose, userId }) {
         </footer>
       </aside>
     </div>,
-    document.body
+    document.body,
   );
 }

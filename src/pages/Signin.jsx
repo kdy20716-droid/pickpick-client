@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { signin, sendEmailCode } from "../api/users";
+import { signin, sendEmailCode, verifyEmailCode } from "../api/users";
 import { Eye, EyeOff } from "lucide-react";
 import "./Signin.css";
 
@@ -23,7 +23,6 @@ export default function Signin() {
   const [emailCodeSent, setEmailCodeSent] = useState(false);
   const [verificationInput, setVerificationInput] = useState("");
   const [isEmailVerified, setIsEmailVerified] = useState(false);
-  const [serverCode, setServerCode] = useState(""); // 실제로는 서버에서 처리하지만 현재는 프론트에서 관리
 
   // 모달 자동 닫기 (3초 후)
   useEffect(() => {
@@ -79,10 +78,7 @@ export default function Signin() {
 
     try {
       // 백엔드 API 호출하여 이메일 전송
-      const data = await sendEmailCode(form.email);
-
-      // 서버에서 전달받은 코드를 프론트엔드 상태로 저장 (프론트에서 검증하기 위함)
-      setServerCode(data.code);
+      await sendEmailCode(form.email);
       setEmailCodeSent(true);
 
       alert(`인증 코드가 발송되었습니다`);
@@ -97,12 +93,15 @@ export default function Signin() {
   };
 
   // 이메일 코드 확인
-  const handleVerifyEmailCode = () => {
-    if (verificationInput === serverCode && serverCode !== "") {
+  const handleVerifyEmailCode = async () => {
+    try {
+      await verifyEmailCode(form.email, verificationInput);
       setIsEmailVerified(true);
       alert("이메일 인증이 완료되었습니다.");
-    } else {
-      setErrorMsg("인증 코드가 일치하지 않습니다.");
+    } catch (error) {
+      const message =
+        error.response?.data?.message || "인증 코드 확인 중 오류가 발생했습니다.";
+      setErrorMsg(message);
       setShowModal(true);
     }
   };
