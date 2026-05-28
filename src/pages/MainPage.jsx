@@ -6,6 +6,9 @@ import { useMainPageAnimations } from "../hooks/useMainPageAnimations.js";
 import { useScrollToVote } from "./animations/useScrollToVote.js";
 import { mainRouteTransitions } from "./animations/routeTransitions.js";
 import { getMainFeaturedVote } from "../api/main.js";
+import { getCandidateThumbnail } from "../utils/image.js";
+
+import { getVoteHash } from "./vote/voteCards.js";
 
 const voteLinkState = { transition: mainRouteTransitions.link };
 
@@ -35,14 +38,17 @@ export default function MainPage() {
         const item = await getMainFeaturedVote();
         if (item) {
           setFeaturedVote({
+            id: item.id,
             title: item.title,
             leftCandidate: {
               name: item.candidate_a_name,
               image: item.candidate_a_image,
+              type: item.candidate_a_type,
             },
             rightCandidate: {
               name: item.candidate_b_name,
               image: item.candidate_b_image,
+              type: item.candidate_b_type,
             },
           });
         }
@@ -54,6 +60,8 @@ export default function MainPage() {
     };
     fetchPopularVote();
   }, []);
+
+  const voteLink = featuredVote ? `/vote${getVoteHash(featuredVote.id)}` : "/vote";
 
   return (
     <div
@@ -86,14 +94,14 @@ export default function MainPage() {
               {featuredVote && (
                 <>
                   <Link
-                    to="/vote"
+                    to={voteLink}
                     state={voteLinkState}
                     className="candidate-card"
                     aria-label={`${featuredVote.leftCandidate.name}${copy.candidateSuffix}`}
                   >
                     {featuredVote.leftCandidate.image && (
                       <img
-                        src={featuredVote.leftCandidate.image.startsWith('http') ? featuredVote.leftCandidate.image : `https://img.youtube.com/vi/${featuredVote.leftCandidate.image}/0.jpg`}
+                        src={getCandidateThumbnail(featuredVote.leftCandidate.image, featuredVote.leftCandidate.type)}
                         alt={featuredVote.leftCandidate.name}
                       />
                     )}
@@ -107,14 +115,14 @@ export default function MainPage() {
                   </div>
 
                   <Link
-                    to="/vote"
+                    to={voteLink}
                     state={voteLinkState}
                     className="candidate-card"
                     aria-label={`${featuredVote.rightCandidate.name}${copy.candidateSuffix}`}
                   >
                     {featuredVote.rightCandidate.image && (
                       <img
-                        src={featuredVote.rightCandidate.image.startsWith('http') ? featuredVote.rightCandidate.image : `https://img.youtube.com/vi/${featuredVote.rightCandidate.image}/0.jpg`}
+                        src={getCandidateThumbnail(featuredVote.rightCandidate.image, featuredVote.rightCandidate.type)}
                         alt={featuredVote.rightCandidate.name}
                       />
                     )}
@@ -128,7 +136,7 @@ export default function MainPage() {
           </article>
         </section>
 
-        <Link to="/vote" state={voteLinkState} className="next-vote">
+        <Link to={voteLink} state={voteLinkState} className="next-vote">
           {copy.nextVote}
         </Link>
       </main>
