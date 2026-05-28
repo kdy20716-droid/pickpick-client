@@ -134,24 +134,32 @@
 .vote-filter-close {
   position: absolute;
   top: 50%;
-  right: 15px;
+  right: 10px;
   flex: 0 0 auto;
-  width: 26px !important;
-  height: 26px !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: auto !important;
+  min-width: 0 !important;
+  height: auto !important;
+  min-height: 0 !important;
   margin: 0;
   padding: 0;
   border: 0;
   border-radius: 0;
-  background: transparent;
+  appearance: none;
+  background: transparent !important;
+  box-shadow: none;
   color: var(--filter-close-text);
+  font-family: inherit;
   font-size: 21px;
-  line-height: 26px;
+  line-height: 1;
   transform: translateY(-50%);
   cursor: pointer;
 }
 
 .vote-filter-close:hover {
-  background: transparent;
+  background: transparent !important;
   box-shadow: none;
   border-color: transparent;
   color: var(--filter-close-hover-text);

@@ -297,7 +297,7 @@ export default function VotePage() {
         <aside className="vote-filter-panel">
           <header className="vote-filter-header">
             <h2>카테고리</h2>
-            <button type="button" onClick={() => setIsFilterOpen(false)}>X</button>
+            <button type="button" className="vote-filter-close" onClick={() => setIsFilterOpen(false)}>X</button>
           </header>
           <div className="vote-filter-list">
             {tags.map(tag => (
