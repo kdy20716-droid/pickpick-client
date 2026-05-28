@@ -238,6 +238,32 @@ export function useVotePageScrollSnap({
       touchDeltaY = 0;
     };
 
+    const handleKeyDown = (event) => {
+      // Don't proxy if we're in an input or textarea
+      if (
+        event.target instanceof HTMLInputElement ||
+        event.target instanceof HTMLTextAreaElement
+      ) {
+        return;
+      }
+
+      const { key, shiftKey } = event;
+
+      if (key === "ArrowDown" || key === "PageDown") {
+        if (scrollToAdjacentCard(1)) {
+          event.preventDefault();
+        }
+      } else if (key === "ArrowUp" || key === "PageUp") {
+        if (scrollToAdjacentCard(-1)) {
+          event.preventDefault();
+        }
+      } else if (key === " ") {
+        if (scrollToAdjacentCard(shiftKey ? -1 : 1)) {
+          event.preventDefault();
+        }
+      }
+    };
+
     window.addEventListener("wheel", handleWheel, {
       capture: true,
       passive: false,
@@ -252,6 +278,7 @@ export function useVotePageScrollSnap({
     });
     window.addEventListener("touchend", handleTouchEnd, { capture: true });
     window.addEventListener("touchcancel", handleTouchEnd, { capture: true });
+    window.addEventListener("keydown", handleKeyDown, { capture: true });
 
     return () => {
       window.removeEventListener("wheel", handleWheel, { capture: true });
@@ -267,6 +294,7 @@ export function useVotePageScrollSnap({
       window.removeEventListener("touchcancel", handleTouchEnd, {
         capture: true,
       });
+      window.removeEventListener("keydown", handleKeyDown, { capture: true });
     };
   }, []);
 

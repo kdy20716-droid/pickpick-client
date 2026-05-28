@@ -1,4 +1,4 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import { motion as Motion } from "framer-motion";
 import Header from "./Header";
 import Footer from "./Footer";
@@ -6,6 +6,11 @@ import { useHeaderGlow } from "../hooks/useHeaderGlow";
 
 const Layout = () => {
   const { scaleY, opacity } = useHeaderGlow();
+  const location = useLocation();
+
+  const isVotePage =
+    location.pathname.startsWith("/vote") ||
+    location.pathname.startsWith("/post");
 
   return (
     <div>
@@ -15,7 +20,7 @@ const Layout = () => {
         aria-hidden="true"
         style={{ scaleY, opacity, transformOrigin: "top" }}
       />
-      
+
       {/* 상단 메뉴바 (Header) */}
       <Header />
 
@@ -25,7 +30,7 @@ const Layout = () => {
       </main>
 
       {/* 하단 푸터 (Footer) */}
-      <Footer />
+      {!isVotePage && <Footer />}
     </div>
   );
 };
