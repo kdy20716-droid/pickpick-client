@@ -2,6 +2,7 @@ import { Outlet, useLocation } from "react-router-dom";
 import { motion as Motion } from "framer-motion";
 import Header from "./Header";
 import Footer from "./Footer";
+import SidebarAd from "./SidebarAd";
 import { useHeaderGlow } from "../hooks/useHeaderGlow";
 
 const Layout = () => {
@@ -11,6 +12,12 @@ const Layout = () => {
   const isVotePage =
     location.pathname.startsWith("/vote") ||
     location.pathname.startsWith("/post");
+
+  const isMainPage = location.pathname === "/";
+  const isCreatePage = location.pathname.startsWith("/create");
+  const isRankingPage = location.pathname.startsWith("/ranking");
+
+  const showSideAds = isMainPage || isVotePage || isCreatePage || isRankingPage;
 
   return (
     <div>
@@ -23,6 +30,14 @@ const Layout = () => {
 
       {/* 상단 메뉴바 (Header) */}
       <Header />
+
+      {/* 사이드 광고 (MainPage, VotePage에서만 노출) */}
+      {showSideAds && (
+        <>
+          <SidebarAd side="left" />
+          <SidebarAd side="right" />
+        </>
+      )}
 
       {/* 하단 페이지 내용 (MainPage, LoginPage 등이 여기에 렌더링됨) */}
       <main className="site-main">

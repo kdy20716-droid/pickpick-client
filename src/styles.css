@@ -212,3 +212,10 @@ a {
     background-position: 200% center;
   }
 }
+
+/* Sidebar Ads Responsive Styles */
+@media (max-width: 1550px) {
+  .sidebar-ad {
+    display: none !important;
+  }
+}
