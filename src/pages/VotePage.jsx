@@ -64,8 +64,14 @@ export default function VotePage() {
   const [isVotesLoading, setIsVotesLoading] = useState(true);
   const [votesError, setVotesError] = useState("");
   const [currentTime, setCurrentTime] = useState(() => Date.now());
-  const [selectedVotes, setSelectedVotes] = useState(() => JSON.parse(localStorage.getItem(`selectedVotes_${userId}`) || "{}"));
-  const [cardActions, setCardActions] = useState(() => JSON.parse(localStorage.getItem(`cardActions_${userId}`) || "{}"));
+  const [selectedVotes, setSelectedVotes] = useState(() => {
+    if (userId === "guest") return {};
+    return JSON.parse(localStorage.getItem(`selectedVotes_${userId}`) || "{}");
+  });
+  const [cardActions, setCardActions] = useState(() => {
+    if (userId === "guest") return {};
+    return JSON.parse(localStorage.getItem(`cardActions_${userId}`) || "{}");
+  });
   const [copiedCardId, setCopiedCardId] = useState("");
   const [commentCardId, setCommentCardId] = useState("");
   const [reportCardId, setReportCardId] = useState("");
@@ -79,17 +85,36 @@ export default function VotePage() {
 
   // Sync with localStorage
   useEffect(() => {
-    setSelectedVotes(JSON.parse(localStorage.getItem(`selectedVotes_${userId}`) || "{}"));
-    setCardActions(JSON.parse(localStorage.getItem(`cardActions_${userId}`) || "{}"));
+    if (userId === "guest") {
+      setSelectedVotes({});
+      setCardActions({});
+    } else {
+      setSelectedVotes(JSON.parse(localStorage.getItem(`selectedVotes_${userId}`) || "{}"));
+      setCardActions(JSON.parse(localStorage.getItem(`cardActions_${userId}`) || "{}"));
+    }
   }, [userId]);
 
   useEffect(() => {
-    localStorage.setItem(`selectedVotes_${userId}`, JSON.stringify(selectedVotes));
+    if (userId !== "guest") {
+      localStorage.setItem(`selectedVotes_${userId}`, JSON.stringify(selectedVotes));
+    }
   }, [selectedVotes, userId]);
 
   useEffect(() => {
-    localStorage.setItem(`cardActions_${userId}`, JSON.stringify(cardActions));
+    if (userId !== "guest") {
+      localStorage.setItem(`cardActions_${userId}`, JSON.stringify(cardActions));
+    }
   }, [cardActions, userId]);
+
+  // Clean up guest keys on mount and unmount to prevent pollution
+  useEffect(() => {
+    localStorage.removeItem("selectedVotes_guest");
+    localStorage.removeItem("cardActions_guest");
+    return () => {
+      localStorage.removeItem("selectedVotes_guest");
+      localStorage.removeItem("cardActions_guest");
+    };
+  }, []);
 
   // Global event listener for like updates
   useEffect(() => {
@@ -192,8 +217,27 @@ export default function VotePage() {
   useActiveVoteHash(activeCardId, location);
 
   const handleVote = useCallback(async (cardId, candidateId) => {
+    // Already voted? Check current state.
+    if (selectedVotes[cardId]) {
+      toast("이미 투표된 페이지입니다.", {
+        duration: 3000,
+        position: "bottom-center",
+        style: {
+          background: "rgba(24, 24, 28, 0.95)",
+          color: "#fff",
+          border: "1px solid rgba(255,255,255,0.12)",
+          borderRadius: "99px",
+          padding: "12px 22px",
+          fontSize: "0.92rem",
+          fontWeight: 500,
+          boxShadow: "0 8px 32px rgba(0,0,0,0.25)",
+          fontFamily: "inherit",
+        },
+      });
+      return;
+    }
+
     if (userId === "guest") {
-      if (selectedVotes[cardId]) return;
       setSelectedVotes(prev => ({ ...prev, [cardId]: candidateId }));
       toast("비회원 투표는 투표에 반영되지 않습니다.", {
         duration: 3000,
@@ -212,8 +256,6 @@ export default function VotePage() {
       });
       return;
     }
-    // Already voted? Check current state.
-    if (selectedVotes[cardId]) return;
     
     const card = cards.find(c => c.feedId === cardId);
     if (!card) return;

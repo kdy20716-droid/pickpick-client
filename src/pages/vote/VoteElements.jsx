@@ -100,7 +100,7 @@ export const VoteCard = memo(({
                 )}
                 <div
                   className="vote-choice-inner" style={{ width: "100%", height: "100%" }}
-                  onClick={!isVideo && !hasVoted ? () => onSelect(card.feedId, candidate.id) : undefined}
+                  onClick={hasVoted || !isVideo ? () => onSelect(card.feedId, candidate.id) : undefined}
                 >
                   {candidate.image ? (
                     candidate.type === "youtube" ? (
