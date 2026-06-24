@@ -20,6 +20,7 @@ import {
   updateCardActionState
 } from "./vote/voteUtils.js";
 
+import { toast } from "sonner";
 import {
   getVote,
   submitVote,
@@ -70,12 +71,10 @@ export default function VotePage() {
   const [reportCardId, setReportCardId] = useState("");
   const [selectedTag, setSelectedTag] = useState("전체");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [showGuestNotice, setShowGuestNotice] = useState(false);
 
   const pageRef = useRef(null);
   const copyTimeoutRef = useRef(null);
   const fetchSequenceRef = useRef(0);
-  const guestToastTimerRef = useRef(null);
   const { activeCardId, cardRefs, feedRef, registerCardRef } = useActiveVoteCard(cards, targetVoteId);
 
   // Sync with localStorage
@@ -192,18 +191,26 @@ export default function VotePage() {
   useVotePageScrollSnap({ pageRef, feedRef, activeCardId, cardRefs, targetCardId: targetVoteId });
   useActiveVoteHash(activeCardId, location);
 
-  const showGuestToast = useCallback(() => {
-    setShowGuestNotice(true);
-    if (guestToastTimerRef.current) clearTimeout(guestToastTimerRef.current);
-    guestToastTimerRef.current = setTimeout(() => setShowGuestNotice(false), 3000);
-  }, []);
-
   const handleVote = useCallback(async (cardId, candidateId) => {
     // 비회원: UI만 반영하고 토스트 표시 (서버 호출 없음)
     if (userId === "guest") {
       if (selectedVotes[cardId]) return;
       setSelectedVotes(prev => ({ ...prev, [cardId]: candidateId }));
-      showGuestToast();
+      toast("비회원 투표는 투표에 반영되지 않습니다.", {
+        duration: 3000,
+        position: "bottom-center",
+        style: {
+          background: "rgba(24, 24, 28, 0.96)",
+          color: "#fff",
+          border: "1px solid rgba(255, 255, 255, 0.15)",
+          borderRadius: "99px",
+          padding: "12px 22px",
+          fontSize: "0.92rem",
+          fontWeight: 500,
+          boxShadow: "0 8px 32px rgba(0, 0, 0, 0.28)",
+          fontFamily: "inherit"
+        }
+      });
       return;
     }
     // Already voted? Check current state.
@@ -236,7 +243,7 @@ export default function VotePage() {
       });
       alert(err.response?.data?.message || "투표 처리에 실패했습니다.");
     }
-  }, [userId, cards, selectedVotes, showGuestToast]);
+  }, [userId, cards, selectedVotes]);
 
   const handleToggleAction = useCallback(async (cardId, actionId) => {
     const card = cards.find(c => c.feedId === cardId);
@@ -348,9 +355,6 @@ export default function VotePage() {
       {reportCard && (
         <Report title={reportCard.title} targetCardId={reportCard.feedId} onClose={handleCloseReport} userId={userId} />
       )}
-      <div className={`guest-vote-toast${showGuestNotice ? " is-visible" : ""}`} aria-live="polite">
-        비회원 투표는 투표에 반영되지 않습니다
-      </div>
     </div>
   );
 }
