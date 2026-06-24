@@ -16,50 +16,49 @@
   opacity: 0;
 }
 
+/* 텍스트 블록: 두 줄이 자연스럽게 위아래로 쌓임 */
 .intro-text-wrap {
-  position: relative;
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
 }
 
-/* 공통: 기본은 숨김 상태 */
 .intro-lead,
 .intro-accent {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  white-space: nowrap;
-  opacity: 0;
-  transition: opacity 0.4s ease, transform 0.4s ease;
   margin: 0;
   line-height: 1.2;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.45s ease, transform 0.45s ease;
 }
 
-/* is-visible 시 등장 */
 .intro-lead.is-visible,
 .intro-accent.is-visible {
   opacity: 1;
-  transform: translate(-50%, -50%) scale(1);
+  transform: translateY(0);
 }
 
 /* "결정하기 어려울 땐?" */
 .intro-lead {
   font-family: "Pretendard", "Segoe UI", sans-serif;
-  font-size: clamp(1.6rem, 4vw, 2.8rem);
+  font-size: clamp(1.4rem, 3.5vw, 2.4rem);
   font-weight: 600;
-  color: #333;
-  transform: translate(-50%, -50%) scale(0.95);
+  color: #555;
+  text-align: center;
 }
 
 /* "픽픽!" */
 .intro-accent {
   font-family: "Jersey 25", cursive;
-  font-size: clamp(4rem, 12vw, 8rem);
+  font-size: clamp(4.5rem, 13vw, 9rem);
   color: #fc92c7;
   letter-spacing: 0.03em;
-  transform: translate(-50%, -50%) scale(0.9);
+  text-align: center;
+  /* accent는 살짝 더 아래서 올라오는 느낌 */
+  transform: translateY(12px);
 }
 
 .intro-accent.is-visible {
-  transform: translate(-50%, -50%) scale(1);
+  transform: translateY(0);
 }
