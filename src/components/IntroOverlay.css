@@ -9,27 +9,27 @@
   justify-content: center;
   pointer-events: none;
   opacity: 1;
-  transition: opacity 0.5s ease;
+  transition: opacity 0.55s ease;
 }
 
 .intro-overlay--out {
   opacity: 0;
 }
 
-/* 텍스트 블록: 두 줄이 자연스럽게 위아래로 쌓임 */
+/* 텍스트 블록: 두 줄이 가운데 정렬로 자연스럽게 위아래 붙음 */
 .intro-text-wrap {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
+  gap: 0;
 }
 
 .intro-lead,
 .intro-accent {
   margin: 0;
-  line-height: 1.2;
+  line-height: 1.15;
   opacity: 0;
-  transform: translateY(6px);
+  transform: translateY(8px);
   transition: opacity 0.45s ease, transform 0.45s ease;
 }
 
@@ -39,26 +39,29 @@
   transform: translateY(0);
 }
 
-/* "결정하기 어려울 땐?" */
+/* "결정하기 어려울 땐?" — 작고 부드러운 소제목 */
 .intro-lead {
   font-family: "Pretendard", "Segoe UI", sans-serif;
-  font-size: clamp(1.4rem, 3.5vw, 2.4rem);
-  font-weight: 600;
-  color: #555;
+  font-size: clamp(1.3rem, 3vw, 2rem);
+  font-weight: 500;
+  color: #888;
+  letter-spacing: -0.01em;
   text-align: center;
 }
 
-/* "픽픽!" */
+/* "픽픽!" — 헤더 브랜드(.brand)와 동일한 폰트/색상, 크게 */
 .intro-accent {
   font-family: "Jersey 25", cursive;
-  font-size: clamp(4.5rem, 13vw, 9rem);
+  font-size: clamp(5rem, 14vw, 10rem);
   color: #fc92c7;
   letter-spacing: 0.03em;
+  line-height: 1;
   text-align: center;
-  /* accent는 살짝 더 아래서 올라오는 느낌 */
-  transform: translateY(12px);
+  transform: translateY(14px);
+  transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .intro-accent.is-visible {
+  opacity: 1;
   transform: translateY(0);
 }
