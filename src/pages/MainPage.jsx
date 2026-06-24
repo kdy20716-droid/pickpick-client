@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { useRef, useState, useEffect, useCallback } from "react";
+import { useRef, useState, useEffect } from "react";
 import "./MainPage.css";
 import vsLogo from "../assets/vs-logo.svg";
 import { useMainPageAnimations } from "../hooks/useMainPageAnimations.js";
@@ -7,7 +7,6 @@ import { useScrollToVote } from "./animations/useScrollToVote.js";
 import { mainRouteTransitions } from "./animations/routeTransitions.js";
 import { getMainFeaturedVote } from "../api/main.js";
 import { getCandidateThumbnail } from "../utils/image.js";
-import IntroOverlay, { introAlreadyShown } from "../components/IntroOverlay.jsx";
 
 import { getVoteHash } from "./vote/voteCards.js";
 
@@ -29,9 +28,6 @@ export default function MainPage() {
   const pageRef = useRef(null);
   const [featuredVote, setFeaturedVote] = useState(null);
   const [isFeaturedVoteLoading, setIsFeaturedVoteLoading] = useState(true);
-  const [showIntro, setShowIntro] = useState(() => !introAlreadyShown());
-
-  const handleIntroDone = useCallback(() => setShowIntro(false), []);
 
   const isLeavingForVote = useScrollToVote();
   useMainPageAnimations(pageRef, isLeavingForVote, featuredVote);
@@ -68,12 +64,10 @@ export default function MainPage() {
   const voteLink = featuredVote ? `/vote${getVoteHash(featuredVote.id)}` : "/vote";
 
   return (
-    <>
-      {showIntro && <IntroOverlay onDone={handleIntroDone} />}
-      <div
-        ref={pageRef}
-        className={`main-page${isLeavingForVote ? " is-leaving-for-vote" : ""}`}
-      >
+    <div
+      ref={pageRef}
+      className={`main-page${isLeavingForVote ? " is-leaving-for-vote" : ""}`}
+    >
       <main className="page-main">
         <section className="hero">
           <h1>
@@ -147,6 +141,5 @@ export default function MainPage() {
         </Link>
       </main>
     </div>
-    </>
   );
 }

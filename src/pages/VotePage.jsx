@@ -1,4 +1,3 @@
-// VotePage - 투표 피드 페이지 (비회원 투표 UI 반영 지원)
 import { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import { X } from "lucide-react";
@@ -21,7 +20,6 @@ import {
   updateCardActionState
 } from "./vote/voteUtils.js";
 
-import { toast } from "sonner";
 import {
   getVote,
   submitVote,
@@ -193,27 +191,7 @@ export default function VotePage() {
   useActiveVoteHash(activeCardId, location);
 
   const handleVote = useCallback(async (cardId, candidateId) => {
-    // 비회원: UI만 반영하고 토스트 표시 (서버 호출 없음)
-    if (userId === "guest") {
-      if (selectedVotes[cardId]) return;
-      setSelectedVotes(prev => ({ ...prev, [cardId]: candidateId }));
-      toast("비회원 투표는 투표에 반영되지 않습니다.", {
-        duration: 3000,
-        position: "bottom-center",
-        style: {
-          background: "rgba(24, 24, 28, 0.96)",
-          color: "#fff",
-          border: "1px solid rgba(255, 255, 255, 0.15)",
-          borderRadius: "99px",
-          padding: "12px 22px",
-          fontSize: "0.92rem",
-          fontWeight: 500,
-          boxShadow: "0 8px 32px rgba(0, 0, 0, 0.28)",
-          fontFamily: "inherit"
-        }
-      });
-      return;
-    }
+    if (userId === "guest") return alert("로그인 후 이용할 수 있습니다.");
     // Already voted? Check current state.
     if (selectedVotes[cardId]) return;
     
