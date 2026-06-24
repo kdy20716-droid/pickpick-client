@@ -217,6 +217,31 @@ export default function VotePage() {
   useActiveVoteHash(activeCardId, location);
 
   const handleVote = useCallback(async (cardId, candidateId) => {
+    const card = cards.find(c => c.feedId === cardId);
+    if (!card) return;
+
+    // Check if the vote is expired
+    const expiresAtTime = card.expiresAt ? new Date(card.expiresAt).getTime() : NaN;
+    const isExpired = Number.isFinite(expiresAtTime) && expiresAtTime <= Date.now();
+    if (isExpired) {
+      toast("마감된 투표입니다.", {
+        duration: 3000,
+        position: "bottom-center",
+        style: {
+          background: "rgba(24, 24, 28, 0.95)",
+          color: "#fff",
+          border: "1px solid rgba(255,255,255,0.12)",
+          borderRadius: "99px",
+          padding: "12px 22px",
+          fontSize: "0.92rem",
+          fontWeight: 500,
+          boxShadow: "0 8px 32px rgba(0,0,0,0.25)",
+          fontFamily: "inherit",
+        },
+      });
+      return;
+    }
+
     // Already voted? Check current state.
     if (selectedVotes[cardId]) {
       toast("이미 투표된 페이지입니다.", {
@@ -256,9 +281,6 @@ export default function VotePage() {
       });
       return;
     }
-    
-    const card = cards.find(c => c.feedId === cardId);
-    if (!card) return;
 
     // 1. Optimistic Update
     setSelectedVotes(prev => ({ ...prev, [cardId]: candidateId }));
