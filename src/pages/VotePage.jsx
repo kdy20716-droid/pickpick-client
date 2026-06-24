@@ -20,6 +20,7 @@ import {
   updateCardActionState
 } from "./vote/voteUtils.js";
 
+import { toast } from "sonner";
 import {
   getVote,
   submitVote,
@@ -191,7 +192,26 @@ export default function VotePage() {
   useActiveVoteHash(activeCardId, location);
 
   const handleVote = useCallback(async (cardId, candidateId) => {
-    if (userId === "guest") return alert("로그인 후 이용할 수 있습니다.");
+    if (userId === "guest") {
+      if (selectedVotes[cardId]) return;
+      setSelectedVotes(prev => ({ ...prev, [cardId]: candidateId }));
+      toast("비회원 투표는 투표에 반영되지 않습니다.", {
+        duration: 3000,
+        position: "bottom-center",
+        style: {
+          background: "rgba(24, 24, 28, 0.95)",
+          color: "#fff",
+          border: "1px solid rgba(255,255,255,0.12)",
+          borderRadius: "99px",
+          padding: "12px 22px",
+          fontSize: "0.92rem",
+          fontWeight: 500,
+          boxShadow: "0 8px 32px rgba(0,0,0,0.25)",
+          fontFamily: "inherit",
+        },
+      });
+      return;
+    }
     // Already voted? Check current state.
     if (selectedVotes[cardId]) return;
     

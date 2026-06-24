@@ -1,0 +1,65 @@
+/* ── 인트로 오버레이 ────────────────────────────────── */
+.intro-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9000;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 0.5s ease;
+}
+
+.intro-overlay--out {
+  opacity: 0;
+}
+
+.intro-text-wrap {
+  position: relative;
+  text-align: center;
+}
+
+/* 공통: 기본은 숨김 상태 */
+.intro-lead,
+.intro-accent {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.4s ease, transform 0.4s ease;
+  margin: 0;
+  line-height: 1.2;
+}
+
+/* is-visible 시 등장 */
+.intro-lead.is-visible,
+.intro-accent.is-visible {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+/* "결정하기 어려울 땐?" */
+.intro-lead {
+  font-family: "Pretendard", "Segoe UI", sans-serif;
+  font-size: clamp(1.6rem, 4vw, 2.8rem);
+  font-weight: 600;
+  color: #333;
+  transform: translate(-50%, -50%) scale(0.95);
+}
+
+/* "픽픽!" */
+.intro-accent {
+  font-family: "Jersey 25", cursive;
+  font-size: clamp(4rem, 12vw, 8rem);
+  color: #fc92c7;
+  letter-spacing: 0.03em;
+  transform: translate(-50%, -50%) scale(0.9);
+}
+
+.intro-accent.is-visible {
+  transform: translate(-50%, -50%) scale(1);
+}
