@@ -70,10 +70,12 @@ export default function VotePage() {
   const [reportCardId, setReportCardId] = useState("");
   const [selectedTag, setSelectedTag] = useState("전체");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [showGuestNotice, setShowGuestNotice] = useState(false);
 
   const pageRef = useRef(null);
   const copyTimeoutRef = useRef(null);
   const fetchSequenceRef = useRef(0);
+  const guestToastTimerRef = useRef(null);
   const { activeCardId, cardRefs, feedRef, registerCardRef } = useActiveVoteCard(cards, targetVoteId);
 
   // Sync with localStorage
@@ -190,8 +192,20 @@ export default function VotePage() {
   useVotePageScrollSnap({ pageRef, feedRef, activeCardId, cardRefs, targetCardId: targetVoteId });
   useActiveVoteHash(activeCardId, location);
 
+  const showGuestToast = useCallback(() => {
+    setShowGuestNotice(true);
+    if (guestToastTimerRef.current) clearTimeout(guestToastTimerRef.current);
+    guestToastTimerRef.current = setTimeout(() => setShowGuestNotice(false), 3000);
+  }, []);
+
   const handleVote = useCallback(async (cardId, candidateId) => {
-    if (userId === "guest") return alert("로그인 후 이용할 수 있습니다.");
+    // 비회원: UI만 반영하고 토스트 표시 (서버 호출 없음)
+    if (userId === "guest") {
+      if (selectedVotes[cardId]) return;
+      setSelectedVotes(prev => ({ ...prev, [cardId]: candidateId }));
+      showGuestToast();
+      return;
+    }
     // Already voted? Check current state.
     if (selectedVotes[cardId]) return;
     
@@ -222,7 +236,7 @@ export default function VotePage() {
       });
       alert(err.response?.data?.message || "투표 처리에 실패했습니다.");
     }
-  }, [userId, cards, selectedVotes]);
+  }, [userId, cards, selectedVotes, showGuestToast]);
 
   const handleToggleAction = useCallback(async (cardId, actionId) => {
     const card = cards.find(c => c.feedId === cardId);
@@ -334,6 +348,9 @@ export default function VotePage() {
       {reportCard && (
         <Report title={reportCard.title} targetCardId={reportCard.feedId} onClose={handleCloseReport} userId={userId} />
       )}
+      <div className={`guest-vote-toast${showGuestNotice ? " is-visible" : ""}`} aria-live="polite">
+        비회원 투표는 투표에 반영되지 않습니다
+      </div>
     </div>
   );
 }
