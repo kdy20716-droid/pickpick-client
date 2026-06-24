@@ -33,7 +33,7 @@ export default function IntroOverlay({ onDone }) {
   }, [onDone]);
 
   return (
-    <div className={`intro-overlay${phase === "out" ? " intro-overlay--out" : ""}`} aria-hidden="true">
+    <div className={`intro-overlay${phase === "out" ? " is-exiting" : ""}`} aria-hidden="true">
       <div className="intro-text-wrap">
         <p className={`intro-lead${phase !== "idle" ? " is-visible" : ""}`}>
           결정하기 어려울 땐?
