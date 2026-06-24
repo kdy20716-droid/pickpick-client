@@ -44,17 +44,7 @@ export default function IntroOverlay({ onDone }) {
       aria-hidden="true"
     >
       <span className="intro-lead">결정하기 어려울 땐?</span>
-      
-      <div className="intro-accent-container">
-        <span className={`intro-accent${popped ? " is-popped" : ""}`}>픽픽!</span>
-        
-        {/* 연핑크 체크무늬 버블들 */}
-        <div className="intro-bubbles">
-          {Array.from({ length: 12 }).map((_, i) => (
-            <div key={i} className={`intro-bubble bubble-${i}`} />
-          ))}
-        </div>
-      </div>
+      <span className={`intro-accent${popped ? " is-popped" : ""}`}>픽픽!</span>
     </div>
   );
 }
