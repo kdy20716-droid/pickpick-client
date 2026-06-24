@@ -84,3 +84,119 @@
     filter: drop-shadow(0 4px 20px rgba(252, 146, 199, 0.32));
   }
 }
+
+/* ─── 버블 컨테이너 ─── */
+.intro-accent-container {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.intro-bubbles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  overflow: visible;
+}
+
+/* ─── 공통 버블 스타일 (연핑크 체크무늬 Gingham) ─── */
+.intro-bubble {
+  position: absolute;
+  bottom: 10%;
+  left: 50%;
+  border-radius: 50%;
+  opacity: 0;
+  
+  /* 미세한 체크 무늬 패턴 */
+  background-color: #fff2f6;
+  background-image: 
+    linear-gradient(90deg, rgba(252, 146, 199, 0.16) 50%, transparent 50%),
+    linear-gradient(rgba(252, 146, 199, 0.16) 50%, transparent 50%);
+  background-size: 8px 8px;
+  
+  border: 1.5px solid rgba(252, 146, 199, 0.32);
+  box-shadow: 0 4px 12px rgba(252, 146, 199, 0.15);
+  
+  transform: translate(-50%, 0) scale(0.4);
+  will-change: transform, opacity;
+}
+
+/* 떠오르고 좌우 흔들리며 페이드아웃되는 애니메이션 */
+@keyframes bubble-float-up {
+  0% {
+    opacity: 0;
+    transform: translate(var(--start-x, -50%), 0) scale(0.4);
+  }
+  20% {
+    opacity: 0.85;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--end-x, -50%), var(--drift-y, -160px)) scale(1.15);
+  }
+}
+
+/* ─── 개별 버블 다채로운 설정 (크기, 딜레이, 방향 다르게) ─── */
+.bubble-0 {
+  width: 44px; height: 44px;
+  --start-x: -120%; --end-x: -210%; --drift-y: -180px;
+  animation: bubble-float-up 1.0s ease-out 1.05s forwards;
+}
+.bubble-1 {
+  width: 32px; height: 32px;
+  --start-x: 20%; --end-x: 110%; --drift-y: -140px;
+  animation: bubble-float-up 0.9s ease-out 1.1s forwards;
+}
+.bubble-2 {
+  width: 58px; height: 58px;
+  --start-x: -80%; --end-x: -60%; --drift-y: -220px;
+  animation: bubble-float-up 1.2s ease-out 1.0s forwards;
+}
+.bubble-3 {
+  width: 26px; height: 26px;
+  --start-x: 80%; --end-x: 160%; --drift-y: -130px;
+  animation: bubble-float-up 0.8s ease-out 1.2s forwards;
+}
+.bubble-4 {
+  width: 48px; height: 48px;
+  --start-x: -180%; --end-x: -250%; --drift-y: -190px;
+  animation: bubble-float-up 1.1s ease-out 1.15s forwards;
+}
+.bubble-5 {
+  width: 38px; height: 38px;
+  --start-x: 120%; --end-x: 70%; --drift-y: -170px;
+  animation: bubble-float-up 1.0s ease-out 1.25s forwards;
+}
+.bubble-6 {
+  width: 52px; height: 52px;
+  --start-x: -40%; --end-x: -120%; --drift-y: -200px;
+  animation: bubble-float-up 1.1s ease-out 1.05s forwards;
+}
+.bubble-7 {
+  width: 30px; height: 30px;
+  --start-x: -150%; --end-x: -90%; --drift-y: -150px;
+  animation: bubble-float-up 0.9s ease-out 1.3s forwards;
+}
+.bubble-8 {
+  width: 40px; height: 40px;
+  --start-x: 160%; --end-x: 240%; --drift-y: -185px;
+  animation: bubble-float-up 1.0s ease-out 1.1s forwards;
+}
+.bubble-9 {
+  width: 34px; height: 34px;
+  --start-x: -10%; --end-x: 50%; --drift-y: -160px;
+  animation: bubble-float-up 0.95s ease-out 1.35s forwards;
+}
+.bubble-10 {
+  width: 62px; height: 62px;
+  --start-x: 50%; --end-x: -10%; --drift-y: -240px;
+  animation: bubble-float-up 1.3s ease-out 1.0s forwards;
+}
+.bubble-11 {
+  width: 28px; height: 28px;
+  --start-x: -220%; --end-x: -180%; --drift-y: -125px;
+  animation: bubble-float-up 0.85s ease-out 1.2s forwards;
+}
+

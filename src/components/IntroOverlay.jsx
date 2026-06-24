@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import "./IntroOverlay.css";
 
-const INTRO_SESSION_KEY = "pickpick_intro_shown";
+// SPA 세션 메모리 변수: 페이지 새로고침 시 초기화되므로 새로고침 시 다시 볼 수 있음
+let hasShownIntro = false;
 
 // 타이밍 상수 (ms)
 const LEAD_ANIM_START   = 200;   // "결정하기 어려울 땐?" 페이드인 시작
@@ -30,7 +31,7 @@ export default function IntroOverlay({ onDone }) {
 
     // DOM 제거 & 부모에 완료 알림
     t(() => {
-      sessionStorage.setItem(INTRO_SESSION_KEY, "1");
+      hasShownIntro = true;
       onDone?.();
     }, UNMOUNT_DELAY);
 
@@ -43,14 +44,25 @@ export default function IntroOverlay({ onDone }) {
       aria-hidden="true"
     >
       <span className="intro-lead">결정하기 어려울 땐?</span>
-      <span className={`intro-accent${popped ? " is-popped" : ""}`}>픽픽!</span>
+      
+      <div className="intro-accent-container">
+        <span className={`intro-accent${popped ? " is-popped" : ""}`}>픽픽!</span>
+        
+        {/* 연핑크 체크무늬 버블들 */}
+        <div className="intro-bubbles">
+          {Array.from({ length: 12 }).map((_, i) => (
+            <div key={i} className={`intro-bubble bubble-${i}`} />
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
 
 /**
- * 이번 세션에서 이미 인트로를 보여줬으면 true
+ * 이번 SPA 세션에서 이미 인트로를 보여줬으면 true
  */
 export function introAlreadyShown() {
-  return sessionStorage.getItem(INTRO_SESSION_KEY) === "1";
+  return hasShownIntro;
 }
+
