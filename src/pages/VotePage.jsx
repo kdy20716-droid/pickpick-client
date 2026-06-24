@@ -1,3 +1,4 @@
+// VotePage - 투표 피드 페이지 (비회원 투표 UI 반영 지원)
 import { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import { X } from "lucide-react";
