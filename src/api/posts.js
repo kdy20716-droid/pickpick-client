@@ -112,7 +112,7 @@ export const submitVote = async (postId, user_id, selected_side) => {
   return response.data;
 };
 
-// 4. 좋아요 토글 API
+// 6. 좋아요 토글 API
 export const toggleLike = async (postId, user_id, liked = undefined) => {
   const payload = { user_id };
   if (typeof liked === "boolean") {
@@ -123,13 +123,13 @@ export const toggleLike = async (postId, user_id, liked = undefined) => {
   return response.data;
 };
 
-// 5. 댓글 목록 조회 API
+// 7. 댓글 목록 조회 API
 export const getComments = async (postId) => {
   const response = await instance.get(`/api/votes/${postId}/comments`);
   return response.data;
 };
 
-// 6. 댓글 추가 API
+// 8. 댓글 추가 API
 export const addComment = async (
   postId,
   user_id,
@@ -144,7 +144,7 @@ export const addComment = async (
   return response.data;
 };
 
-// 7. 댓글 삭제 API
+// 9. 댓글 삭제 API
 export const deleteComment = async (postId, commentId, user_id) => {
   const response = await instance.delete(
     `/api/votes/${postId}/comments/${commentId}`,
@@ -155,7 +155,7 @@ export const deleteComment = async (postId, commentId, user_id) => {
   return response.data;
 };
 
-// 8. 댓글 좋아요 토글 API
+// 10. 댓글 좋아요 토글 API
 export const toggleCommentLike = async (postId, commentId, user_id) => {
   const response = await instance.post(
     `/api/votes/${postId}/comments/${commentId}/like`,
@@ -166,13 +166,13 @@ export const toggleCommentLike = async (postId, commentId, user_id) => {
   return response.data;
 };
 
-// 9. 랭킹 데이터 조회 API
+// 11. 랭킹 데이터 조회 API
 export const getRanking = async () => {
   const response = await instance.get(`${VOTE_LIST_PATH}/ranking`);
   return response.data;
 };
 
-// 10. 조회수 증가 API
+// 12. 조회수 증가 API
 export const incrementView = async (postId) => {
   const response = await instance.post(`${VOTE_LIST_PATH}/${postId}/view`);
   return response.data;

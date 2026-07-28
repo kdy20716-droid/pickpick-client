@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { addVote, updateVote } from "../api/posts";
 import { useAuth } from "../contexts/AuthContext";
 import { Pencil, Trash2, Maximize, Minus, Plus } from "lucide-react";
-import { compressImage } from "../utils/image";
+import { compressImage, getYouTubeId } from "../utils/image";
 import vsLogo from "../assets/vs-logo.svg";
 import "./Create.css";
 
@@ -22,11 +22,7 @@ const TAGS = [
   "영화 / 드라마", "웹툰 / 웹소설", "유튜버 / 스트리머", "밸런스 게임", "밈", "기타",
 ];
 
-const getYouTubeId = (url) => {
-  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=|shorts\/)([^#&?]*).*/;
-  const match = url.match(regExp);
-  return (match && match[2].length === 11) ? match[2] : null;
-};
+// getYouTubeId는 utils/image.js에서 공통으로 제공됩니다.
 
 // 후보자 박스 컴포넌트 (중복 제거)
 const CandidateBox = ({ 

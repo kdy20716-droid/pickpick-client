@@ -29,19 +29,25 @@ export function getVoteHash(feedId) {
  * and are no longer used in the current API-driven architecture of VotePage.
  */
 
+/**
+ * 정렬된 카드 목록의 순서를 보존하며, 특정 targetCardId가 지정된 경우 해당 카드를 맨 위에 핀 고정합니다.
+ * @param {Array} cards - 정렬 완료된 카드 목록
+ * @param {string} targetCardId - 핀 고정할 카드 ID (선택)
+ * @returns {Array} 핀 고정 및 정렬이 보존된 카드 목록
+ */
 export function pinTargetCard(cards, targetCardId) {
   if (!targetCardId) {
-    return shuffleCards(cards);
+    return cards;
   }
 
   const pinnedCard = cards.find((card) => card.feedId === targetCardId);
 
   if (!pinnedCard) {
-    return shuffleCards(cards);
+    return cards;
   }
 
   return [
     pinnedCard,
-    ...shuffleCards(cards.filter((card) => card.feedId !== targetCardId)),
+    ...cards.filter((card) => card.feedId !== targetCardId),
   ];
 }

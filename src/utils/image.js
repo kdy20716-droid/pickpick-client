@@ -1,5 +1,18 @@
 import { API_BASE_URL } from "../api/config";
 
+/**
+ * 유튜브 URL에서 11자리 video ID를 추출합니다.
+ * youtu.be, watch?v=, shorts/, embed/ 형식 모두 지원합니다.
+ * @param {string} url
+ * @returns {string|null} videoId 또는 null
+ */
+export const getYouTubeId = (url) => {
+  if (!url) return null;
+  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=|shorts\/)([^#&?]*).*/;
+  const match = url.match(regExp);
+  return match && match[2].length === 11 ? match[2] : null;
+};
+
 export const getImageUrl = (imagePath) => {
   if (!imagePath) return null;
   if (imagePath.startsWith("http")) return imagePath;

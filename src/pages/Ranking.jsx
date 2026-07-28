@@ -9,8 +9,6 @@ import { getRanking } from "../api/posts.js";
 import { getVoteHash } from "./vote/voteCards.js";
 import { getCandidateThumbnail } from "../utils/image.js";
 
-const API_ORIGIN = "https://dolphin-app-onqn2.ondigitalocean.app";
-// "http://localhost:4000";
 
 function Ranking() {
   const [topRankings, setTopRankings] = useState([]);
@@ -36,9 +34,7 @@ function Ranking() {
           id: item.id,
           title: item.title,
           totalVotes: item.total_votes,
-          topImage: getCandidateThumbnail(item.candidate_a_image, item.candidate_a_type),
-          bottomImage: getCandidateThumbnail(item.candidate_b_image, item.candidate_b_type),
-          leftImage: getCandidateThumbnail(item.candidate_a_image, item.candidate_a_type),
+          leftImage:  getCandidateThumbnail(item.candidate_a_image, item.candidate_a_type),
           rightImage: getCandidateThumbnail(item.candidate_b_image, item.candidate_b_type),
         }));
 
@@ -106,20 +102,12 @@ function Ranking() {
                 className={`card ranking-link${ranking.isBig ? " big" : ""}`}
                 aria-label={`${ranking.title} 투표하기`}
               >
-                {ranking.topImage && (
-                  <img
-                    src={ranking.topImage}
-                    className="img top ranking-card-image"
-                    alt="candidate A"
-                  />
+                {ranking.leftImage && (
+                  <img src={ranking.leftImage} className="img top ranking-card-image" alt="candidate A" />
                 )}
                 <img src={vsImage} className="vs" alt="vs" />
-                {ranking.bottomImage && (
-                  <img
-                    src={ranking.bottomImage}
-                    className="img bottom ranking-card-image"
-                    alt="candidate B"
-                  />
+                {ranking.rightImage && (
+                  <img src={ranking.rightImage} className="img bottom ranking-card-image" alt="candidate B" />
                 )}
               </Link>
               <Link
