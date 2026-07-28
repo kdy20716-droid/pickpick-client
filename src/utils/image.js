@@ -1,9 +1,9 @@
+import { API_BASE_URL } from "../api/config";
+
 export const getImageUrl = (imagePath) => {
   if (!imagePath) return null;
   if (imagePath.startsWith("http")) return imagePath;
-  const baseUrl =
-    import.meta.env.VITE_API_URL || "https://dolphin-app-onqn2.ondigitalocean.app";
-  return `${baseUrl}/uploads/${imagePath}`;
+  return `${API_BASE_URL}/uploads/${imagePath}`;
 };
 
 /**

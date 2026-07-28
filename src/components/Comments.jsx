@@ -9,18 +9,14 @@ import {
   toggleCommentLike,
 } from "../api/posts.js";
 import { useAuth } from "../contexts/AuthContext";
+import { parseApiTimestamp } from "../utils/date";
 import { getImageUrl } from "../utils/image";
 
 const COMMENT_OVERLAY_BREAKPOINT = 950;
 const COMMENT_SIDE_BY_SIDE_MARGIN = 24;
 
 function toTimestamp(value) {
-  if (!value) {
-    return Date.now();
-  }
-
-  const timestamp = new Date(value).getTime();
-  return Number.isNaN(timestamp) ? Date.now() : timestamp;
+  return parseApiTimestamp(value);
 }
 
 function normalizeReply(reply) {
@@ -29,7 +25,7 @@ function normalizeReply(reply) {
     id: reply.id,
     name: reply.name ?? reply.author ?? reply.user_name ?? "익명",
     text: reply.text ?? reply.content ?? "",
-    createdAt: reply.createdAt ?? toTimestamp(reply.created_at),
+    createdAt: reply.createdAt ?? toTimestamp(reply.created_at_ms ?? reply.created_at),
     likes: reply.likes ?? 0,
     author_border: reply.author_border ?? null,
     author_image: reply.author_image ?? null,
@@ -46,7 +42,8 @@ function normalizeComment(comment, reaction = null) {
     parent_id: comment.parent_id ?? null,
     name: comment.name ?? comment.author ?? comment.user_name ?? "익명",
     text: comment.text ?? comment.content ?? "",
-    createdAt: comment.createdAt ?? toTimestamp(comment.created_at),
+    createdAt:
+      comment.createdAt ?? toTimestamp(comment.created_at_ms ?? comment.created_at),
     likes: comment.likes ?? 0,
     dislikes: reaction === "dislike" ? serverDislikes + 1 : serverDislikes,
     author_border: comment.author_border ?? null,
