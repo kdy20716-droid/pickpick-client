@@ -3,7 +3,10 @@ import { API_BASE_URL } from "../api/config";
 export const getImageUrl = (imagePath) => {
   if (!imagePath) return null;
   if (imagePath.startsWith("http")) return imagePath;
-  return `${API_BASE_URL}/uploads/${imagePath}`;
+  const baseUrl =
+    import.meta.env.VITE_API_URL ||
+    "https://dolphin-app-onqn2.ondigitalocean.app";
+  return `${baseUrl}/uploads/${imagePath}`;
 };
 
 /**
@@ -18,7 +21,7 @@ export const getCandidateThumbnail = (imagePath, type = "image") => {
   // 1. 유튜브 타입인 경우 썸네일 반환
   if (type === "youtube") {
     // ID만 있는 경우와 전체 URL이 있는 경우 대응
-    const videoId = imagePath.includes("v=") 
+    const videoId = imagePath.includes("v=")
       ? new URLSearchParams(new URL(imagePath).search).get("v")
       : imagePath;
     return `https://img.youtube.com/vi/${videoId}/0.jpg`;
@@ -46,7 +49,12 @@ export const getCandidateThumbnail = (imagePath, type = "image") => {
  * @param {number} quality - 품질 (0.1 ~ 1.0)
  * @returns {Promise<Blob>} 압축된 Blob
  */
-export const compressImage = (file, maxWidth = 1024, maxHeight = 1024, quality = 0.8) => {
+export const compressImage = (
+  file,
+  maxWidth = 1024,
+  maxHeight = 1024,
+  quality = 0.8,
+) => {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.readAsDataURL(file);
@@ -83,7 +91,7 @@ export const compressImage = (file, maxWidth = 1024, maxHeight = 1024, quality =
             }
           },
           "image/jpeg",
-          quality
+          quality,
         );
       };
       img.onerror = (err) => reject(err);
