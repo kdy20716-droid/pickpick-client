@@ -4,7 +4,7 @@ import { API_BASE_URL } from "./config";
 const instance = axios.create({
   // 개발 환경(localhost)일 경우 로컬 서버(4000포트)를 사용하고, 아닐 경우 배포 서버 사용
   // http://localhost:4000"
-  baseURL: "https://dolphin-app-onqn2.ondigitalocean.app/",
+  baseURL: "https://pickpickdev-101e39311560.herokuapp.com/",
 });
 
 // 인터셉터 (interceptor) : 요청 / 응답시 중간에 가로채는 함수
