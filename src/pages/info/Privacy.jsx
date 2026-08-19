@@ -102,8 +102,29 @@ const Privacy = () => {
         </div>
       </section>
 
+      <section>
+        <h2>6. 아동 안전 및 보호 정책 (Child Safety Standards)</h2>
+        <p>
+          PICKPICK은 아동 성적 학대 및 착취(CSAE/CSAM)와 아동 대상의 모든 유해 콘텐츠 및 행위를 엄격히 금지합니다.
+        </p>
+        <ul>
+          <li>
+            <strong>금지 행위:</strong> 아동·청소년 대상 성착취물, 그루밍, 아동 학대, 성희롱 등 유해 콘텐츠 일체의 게시 및 공유
+          </li>
+          <li>
+            <strong>조치 사항:</strong> 관련 콘텐츠 및 사용자 발견 시 사전 경고 없이 즉시 콘텐츠 영구 삭제, 계정 영구 정지 및 서비스 이용 차단
+          </li>
+          <li>
+            <strong>사법 기관 연계:</strong> 아동 성착취물 발견 시 관계 법령에 따라 NCMEC(미국 실종학대아동방지센터), 경찰청 등 관계 사법 당국에 지체 없이 신고 및 고발 조치
+          </li>
+          <li>
+            <strong>신고 및 문의:</strong> kdy20716@gmail.com (신고 접수 시 24시간 이내 즉각 조치)
+          </li>
+        </ul>
+      </section>
+
       <p style={{ marginTop: "40px", fontSize: "0.9rem", color: "#888" }}>
-        공고일자: 2026년 5월 27일 / 시행일자: 2026년 5월 27일
+        공고일자: 2026년 5월 27일 / 최근 개정일자: 2026년 8월 19일
       </p>
     </div>
   );

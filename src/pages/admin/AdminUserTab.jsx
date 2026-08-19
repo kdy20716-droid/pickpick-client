@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import instance from "../../api/instance";
 
 /**
@@ -9,12 +9,18 @@ export default function AdminUserTab({ token, loading, setLoading, pagination, s
   const [users, setUsers] = useState([]);
   const [deleteModal, setDeleteModal] = useState(false);
   const [itemToDelete, setItemToDelete] = useState(null);
+  const [userSearchQuery, setUserSearchQuery] = useState("");
 
   // 유저 삭제 2단계 인증 상태
   const [userDeleteStep, setUserDeleteStep] = useState(0); // 0: 초기, 1: 확인, 2: 코드 입력
   const [deleteVerifyCode, setDeleteVerifyCode] = useState("");
   const [deleteInputCode, setDeleteInputCode] = useState("");
   const [isSendingCode, setIsSendingCode] = useState(false);
+
+  // 탭 진입 시 자동으로 1페이지 로드
+  useEffect(() => {
+    handleLoadPage(1);
+  }, []);
 
   // 페이지네이션 컴포넌트
   const Pagination = () => {
@@ -116,6 +122,19 @@ export default function AdminUserTab({ token, loading, setLoading, pagination, s
 
   return (
     <>
+      <div className="admin-search-section">
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <h2>유저 목록 관리</h2>
+          <button
+            type="button"
+            className="load-all-btn"
+            onClick={() => handleLoadPage(1)}
+            disabled={loading}
+          >
+            {loading ? "로딩 중..." : "전체 유저 새로고침 / 조회"}
+          </button>
+        </div>
+      </div>
       <div className="content-section">
         <div className="users-table-container">
           <table className="users-table">

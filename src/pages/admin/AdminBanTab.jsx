@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import instance from "../../api/instance";
 
 /**
@@ -8,6 +8,11 @@ import instance from "../../api/instance";
 export default function AdminBanTab({ token, loading, setLoading, pagination, setPagination, onAuthError }) {
   const [bannedEmails, setBannedEmails] = useState([]);
   const [newBanEmail, setNewBanEmail] = useState("");
+
+  // 탭 진입 시 자동으로 1페이지 로드
+  useEffect(() => {
+    handleLoadPage(1);
+  }, []);
 
   // 페이지네이션 컴포넌트
   const Pagination = () => {

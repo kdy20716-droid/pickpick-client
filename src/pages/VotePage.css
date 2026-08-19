@@ -719,15 +719,19 @@
     --vote-action-active-icon-filter
   );
   position: relative;
-  display: grid;
-  place-items: center;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
   width: var(--vote-action-button-size);
   height: var(--vote-action-button-size);
+  padding: 0 !important;
+  margin: 0 !important;
   border: 0;
   border-radius: 999px;
   background: var(--vote-action-current-bg);
   box-shadow: var(--vote-action-shadow);
   cursor: pointer;
+  line-height: 0;
   transition:
     transform 180ms ease,
     box-shadow 180ms ease,
@@ -735,9 +739,13 @@
 }
 
 .vote-action-button img {
+  display: block;
+  margin: 0 auto;
   width: 40px;
   height: 40px;
+  object-fit: contain;
   opacity: var(--vote-action-icon-opacity);
+  pointer-events: none;
   transition:
     opacity 180ms ease,
     filter 180ms ease;
