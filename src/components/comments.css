@@ -633,7 +633,7 @@ p {
   animation-name: commentPanelDropIn;
 }
 
-@media (max-width: 0px) {
+@media (max-width: 768px) {
   .comment-modal-backdrop {
     display: block;
   }
@@ -684,9 +684,9 @@ p {
   }
 }
 
-@media (max-width: 0px) {
+@media (max-width: 768px) {
   .comment-modal {
-    width: min(430px, calc(var(--layout-vw) - 24px));
+    width: min(430px, calc(100vw - 24px));
   }
 
   .comment-modal-header,

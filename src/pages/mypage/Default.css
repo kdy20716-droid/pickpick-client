@@ -598,7 +598,7 @@
   margin-top: 0;
 }
 
-@media (max-width: 0px) {
+@media (max-width: 768px) {
   .profile-card {
     border-radius: 24px;
     padding: 24px 18px;

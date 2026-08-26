@@ -24,11 +24,17 @@ const normalizeGrade = (grade) => {
 const MyPage = () => {
   const navigate = useNavigate();
   const { user: currentUser, token, logout } = useAuth();
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [confirmModal, setConfirmModal] = useState(null); // 'logout', 'delete', or null
   const [promotionInfo, setPromotionInfo] = useState(null); // { oldGrade, newGrade } or null
   const [isSupportModalOpen, setIsSupportModalOpen] = useState(false);
   const { displayOutlet, transitionStage, onTransitionEnd, activePath } =
     useRouteAnimation();
+
+  // 경로 변경 시 모바일 사이드바 닫기
+  useEffect(() => {
+    setIsMobileSidebarOpen(false);
+  }, [activePath]);
 
   const getGradeEmoji = (grade) => {
     const g = normalizeGrade(grade);
@@ -117,9 +123,73 @@ const MyPage = () => {
 
   return (
     <div className={styles.wrapper}>
-      <nav className={styles.sidebar}>
-        <div className={styles.navLinks}>
+      {/* 모바일 화면용 메뉴 열기 버튼 */}
+      <button
+        type="button"
+        className={styles.mobileMenuBtn}
+        onClick={() => setIsMobileSidebarOpen(true)}
+        aria-label="메뉴 열기"
+      >
+        <svg
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <line x1="3" y1="12" x2="21" y2="12" />
+          <line x1="3" y1="6" x2="21" y2="6" />
+          <line x1="3" y1="18" x2="21" y2="18" />
+        </svg>
+        <span>MENU</span>
+      </button>
+
+      {/* 모바일 사이드바 배경 딤 */}
+      {isMobileSidebarOpen && (
+        <div
+          className={styles.sidebarBackdrop}
+          onClick={() => setIsMobileSidebarOpen(false)}
+          aria-hidden="true"
+        />
+      )}
+
+      {/* 사이드바 네비게이션 */}
+      <nav
+        className={`${styles.sidebar} ${
+          isMobileSidebarOpen ? styles.sidebarOpen : ""
+        }`}
+      >
+        <div className={styles.sidebarHeader}>
+          <span className={styles.sidebarHeaderTitle}>MY PAGE</span>
+          <button
+            type="button"
+            className={styles.sidebarCloseBtn}
+            onClick={() => setIsMobileSidebarOpen(false)}
+            aria-label="메뉴 닫기"
+          >
+            ✕
+          </button>
+        </div>
+
+        <div className={styles.navLinks} onClick={() => setIsMobileSidebarOpen(false)}>
           <Menu />
+        </div>
+
+        {/* 사이드바 하단 서포트 버튼 (모바일 및 드로어 모드) */}
+        <div className={styles.drawerSupportArea}>
+          <button
+            type="button"
+            className={styles.drawerSupportBtn}
+            onClick={() => {
+              setIsMobileSidebarOpen(false);
+              setIsSupportModalOpen(true);
+            }}
+          >
+            💬 Support
+          </button>
         </div>
       </nav>
 
@@ -138,6 +208,7 @@ const MyPage = () => {
         </div>
       </main>
 
+      {/* 데스크탑 전용 좌하단 고정 서포트 버튼 (화면 줄어들면 숨김) */}
       <button
         type="button"
         className={styles.supportButton}

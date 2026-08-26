@@ -188,3 +188,33 @@
   background-color: #ff2d78;
   transform: translateY(-2px);
 }
+
+@media (max-width: 600px) {
+  .modalContent {
+    padding: 20px 16px;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  .editorMain {
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .previewSection {
+    flex: none;
+    width: 100%;
+  }
+
+  .avatarWrapper {
+    width: 160px;
+    height: 160px;
+  }
+
+  .avatarContainer {
+    width: 130px;
+    height: 130px;
+  }
+}
+

@@ -20,8 +20,9 @@ body {
 
 /* 로그인 박스 */
 .login-box {
-  width: 400px;
-  padding: 40px;
+  width: min(400px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 40px 24px;
   background: white;
   border-radius: 20px;
   border: 1px solid #ddd;

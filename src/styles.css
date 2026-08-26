@@ -4,8 +4,8 @@ body {
 }
 
 :root {
-  --app-min-width: 950px;
-  --layout-vw: max(100vw, var(--app-min-width));
+  --app-min-width: 320px;
+  --layout-vw: 100vw;
   --bg: #FDFDFD;
   --point: #fc92c7;
   --text-dark: #111111;
@@ -16,10 +16,15 @@ body {
   box-sizing: border-box;
 }
 
+html {
+  overflow-x: hidden;
+}
+
 html,
 body,
 #root {
   width: 100%;
+  max-width: 100%;
   min-width: var(--app-min-width);
 }
 
@@ -39,6 +44,7 @@ a {
 .site-main {
   position: relative;
   width: 100%;
+  max-width: 100%;
   min-width: var(--app-min-width);
   z-index: auto; /* z-index를 auto로 설정하여 새로운 스태킹 컨텍스트를 만들지 않으면서도 DOM 순서상 빛(z-index: 0)보다 위에 오게 함 */
 }

@@ -19,19 +19,21 @@
 
 .brand {
   font-family: "Jersey 25", cursive;
-  font-size: 3.5rem;
+  font-size: clamp(1.35rem, 2.8vw, 3.2rem);
   line-height: 1;
   color: var(--point);
   letter-spacing: 0.03em;
+  flex-shrink: 0;
 }
 
 .site-nav {
   display: flex;
   align-items: center;
-  gap: clamp(14px, calc(var(--layout-vw) * 0.03), 36px);
-  font-size: 1.5rem;
-  font-weight: 300;
+  gap: clamp(6px, 1.4vw, 24px);
+  font-size: clamp(0.72rem, 1.25vw, 1.3rem);
+  font-weight: 400;
   white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .site-nav a:not(.account-link) {
@@ -58,19 +60,21 @@
 .account-link {
   display: grid;
   place-items: center;
-  padding: 10px; /* Increased padding to show glow */
-  overflow: visible; /* Ensure glow is not clipped */
+  padding: clamp(2px, 0.6vw, 6px);
+  overflow: visible;
+  flex-shrink: 0;
 }
 
 .header-profile-avatar {
-  width: clamp(34px, calc(var(--layout-vw) * 0.04), 42px); /* Slightly smaller to fit in header with glow */
-  height: clamp(34px, calc(var(--layout-vw) * 0.04), 42px);
+  width: clamp(22px, 2.4vw, 36px);
+  height: clamp(22px, 2.4vw, 36px);
   border-radius: 50%;
   position: relative;
   transition: transform 0.2s ease;
   display: flex;
   justify-content: center;
   align-items: center;
+  flex-shrink: 0;
 }
 
 .header-profile-inner {
@@ -91,8 +95,8 @@
 }
 
 .profile-img-small.default-icon {
-  width: 32px;
-  height: 32px;
+  width: 75%;
+  height: 75%;
   opacity: 0.6;
 }
 
@@ -111,3 +115,39 @@
   pointer-events: none; /* 클릭을 절대 방해하지 않음 */
   z-index: 0; /* 배경색 위로 렌더링되도록 0으로 설정 */
 }
+
+@media (max-width: 768px) {
+  .site-header {
+    height: 60px;
+  }
+
+  .header-inner {
+    width: calc(100% - 16px);
+    gap: 8px;
+  }
+
+  .background-glow {
+    top: 60px;
+  }
+}
+
+@media (max-width: 480px) {
+  .site-header {
+    height: 52px;
+  }
+
+  .header-inner {
+    width: calc(100% - 10px);
+    gap: 4px;
+  }
+
+  .site-nav {
+    gap: 4px;
+  }
+
+  .background-glow {
+    top: 52px;
+  }
+}
+
+

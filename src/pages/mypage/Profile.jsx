@@ -119,14 +119,11 @@ const Profile = () => {
     <>
       <div className={styles.topSearchRow}>
         <p className={styles.breadcrumb}>마이페이지 〉 내 프로필</p>
-        <div className={styles.searchBar}>
-          <input type="text" placeholder="" />
-          <span className={styles.searchIcon}>🔍</span>
-        </div>
       </div>
 
       <section className={styles.contentBody}>
-        <div className={styles.leftPanel}>
+        {/* 1. 프로필 헤더 (사진 + 닉네임) */}
+        <div className={styles.profileHeaderArea}>
           <div className={styles.profileHeader}>
             <div
               className={`${styles.card} ${styles.profileImgCard}`}
@@ -192,10 +189,10 @@ const Profile = () => {
               </button>
             </div>
           </div>
-          <Grade />
         </div>
 
-        <div className={styles.rightPanel}>
+        {/* 2. NOTIFICATION 알림 카드 (모바일에서는 회원등급 위에 위치) */}
+        <div className={styles.notifArea}>
           <div className={`${styles.card} ${styles.notifCard}`}>
             <h3 className={styles.panelTitle}>NOTIFICATION</h3>
 
@@ -234,6 +231,11 @@ const Profile = () => {
               </div>
             )}
           </div>
+        </div>
+
+        {/* 3. 회원등급 카드 (모바일에서는 알림 카드 아래에 위치하여 스크롤로 확인) */}
+        <div className={styles.gradeArea}>
+          <Grade />
         </div>
       </section>
 

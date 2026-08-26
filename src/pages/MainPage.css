@@ -23,7 +23,6 @@ html {
 body {
   margin: 0;
   width: 100%;
-  min-width: var(--app-min-width);
   background: var(--bg);
   color: var(--text);
   font-family: "REM", sans-serif;
@@ -46,7 +45,7 @@ img {
 }
 
 .page-main {
-  width: min(1180px, calc(100% - 50px));
+  width: min(1180px, calc(100% - 32px));
   margin: 0 auto;
   padding-bottom: 40px;
 }
@@ -56,9 +55,9 @@ img {
 }
 
 .hero h1 {
-  margin: 50px 0 0;
-  font-size: 3.5rem;
-  line-height: 1.12;
+  margin: 30px 0 0;
+  font-size: clamp(1.6rem, 4.5vw, 3.5rem);
+  line-height: 1.15;
   font-weight: 600;
 }
 
@@ -68,10 +67,11 @@ img {
 
 .hero p {
   width: min(780px, 100%);
-  margin: 16px auto 0;
-  font-size: 1.25rem;
-  line-height: 1.55;
+  margin: 12px auto 0;
+  font-size: clamp(0.85rem, 2vw, 1.25rem);
+  line-height: 1.5;
   font-weight: 700;
+  padding: 0 10px;
 }
 
 .vote-section {
@@ -91,7 +91,7 @@ img {
   padding: 7px 10px 7px 7px;
   border-radius: 20px 0 0 20px;
   background: var(--badge);
-  z-index: 0;
+  z-index: 5;
 }
 
 .rank-badge-inner {
@@ -126,7 +126,7 @@ img {
 .vote-card h2 {
   margin: 0 0;
   text-align: center;
-  font-size: 2.8rem;
+  font-size: clamp(1.6rem, 4vw, 2.8rem);
   font-weight: 550;
 }
 
@@ -175,7 +175,7 @@ img {
   overflow-wrap: anywhere;
   word-break: normal;
   white-space: normal;
-  font-size: 2.65rem;
+  font-size: clamp(1.3rem, 4vw, 2.65rem);
   font-weight: 900;
   line-height: 1.08;
   color: #ffffff;
@@ -216,9 +216,57 @@ img {
   display: block;
   margin-top: var(--space);
   text-align: center;
-  font-size: 1.2rem;
+  font-size: clamp(0.9rem, 1.8vw, 1.2rem);
   font-weight: 400;
   color: #555555;
   will-change: color;
 }
+
+@media (max-width: 1000px) {
+  .rank-badge {
+    left: 20px;
+    top: -16px;
+    border-radius: 12px;
+    padding: 4px 8px;
+    z-index: 5;
+    box-shadow: 0 4px 12px rgba(255, 181, 31, 0.35);
+  }
+
+  .rank-badge-inner {
+    padding: 3px 10px;
+    font-size: 1.1rem;
+    border-radius: 8px;
+  }
+}
+
+@media (max-width: 540px) {
+  .page-main {
+    width: calc(100% - 20px);
+  }
+
+  .main-page .vote-card {
+    padding: 16px 12px;
+    border-radius: 16px;
+  }
+
+  .vote-match {
+    gap: 10px;
+    padding-top: 14px;
+  }
+
+  .vs-mark img {
+    max-width: 52px;
+  }
+
+  .main-page .candidate-card {
+    border-radius: 14px;
+  }
+
+  .main-page .candidate-name {
+    padding: 0 8px;
+    bottom: 8px;
+    font-size: clamp(1.1rem, 3.8vw, 1.5rem);
+  }
+}
+
 

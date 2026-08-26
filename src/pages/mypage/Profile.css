@@ -205,3 +205,59 @@
   color: #888;
   cursor: pointer;
 }
+
+@media (max-width: 850px) {
+  .profile-container {
+    padding: 16px 8px;
+    min-height: auto;
+  }
+
+  .profile-card {
+    padding: 24px 16px;
+    border-radius: 24px;
+    max-width: 100%;
+  }
+
+  .card-content {
+    flex-direction: column;
+    gap: 24px;
+    align-items: center;
+  }
+
+  .profile-form {
+    width: 100%;
+  }
+
+  .image-circle {
+    width: 140px;
+    height: 140px;
+  }
+
+  .avatar-placeholder {
+    width: 90px;
+    height: 105px;
+  }
+
+  .birth-inputs,
+  .email-inputs {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .card-header {
+    justify-content: center;
+  }
+
+  .button-group {
+    display: flex;
+    width: 100%;
+    gap: 8px;
+  }
+
+  .button-group button {
+    flex: 1;
+    margin-left: 0;
+    padding: 10px 16px;
+  }
+}
+

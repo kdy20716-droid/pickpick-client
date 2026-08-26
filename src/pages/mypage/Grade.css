@@ -123,3 +123,53 @@
 .grade-master { color: #FF4B8D !important; }
 .grade-challenger { color: #70D1F4 !important; }
 
+@media (max-width: 850px) {
+  .gradeCard {
+    padding: 20px 14px;
+    border-radius: 24px;
+  }
+
+  .gradeHeader {
+    margin-bottom: 20px;
+  }
+
+  .gradeTabs {
+    margin-bottom: 20px;
+    gap: 12px;
+  }
+
+  .gradeTab {
+    font-size: 14px;
+  }
+
+  .gradeContent {
+    gap: 16px 8px;
+  }
+
+  .gradeItem {
+    flex: 0 0 46%;
+    min-width: 100px;
+    padding: 12px 4px;
+    gap: 8px;
+  }
+
+  .gradeIconWrapper {
+    width: 48px;
+    height: 48px;
+  }
+
+  .gradeIconPlaceholder {
+    width: 36px;
+    height: 36px;
+  }
+
+  .gradeName {
+    font-size: 14px;
+  }
+
+  .gradeRequirement {
+    font-size: 11px;
+  }
+}
+
+

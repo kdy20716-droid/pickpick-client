@@ -9,6 +9,7 @@ import { getCandidateThumbnail } from "../../utils/image";
 const MyCreate = () => {
   const [myVotes, setMyVotes] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [searchKeyword, setSearchKeyword] = useState("");
   const { user: currentUser } = useAuth();
   const navigate = useNavigate();
 
@@ -16,9 +17,9 @@ const MyCreate = () => {
     if (!currentUser) return;
     try {
       setLoading(true);
-      // author_id 파라미터를 사용하여 본인이 만든 투표만 조회
+      // author_id 파라미터 및 searchKeyword를 사용하여 본인이 만든 투표 조회
       const data = await getVote(
-        null,
+        searchKeyword,
         null,
         null,
         null,
@@ -32,7 +33,7 @@ const MyCreate = () => {
     } finally {
       setLoading(false);
     }
-  }, [currentUser]);
+  }, [currentUser, searchKeyword]);
 
   useEffect(() => {
     fetchMyVotes();
@@ -58,8 +59,34 @@ const MyCreate = () => {
 
   return (
     <div className="my-create-container">
-      <div className={styles.topSearchRow}>
+      <div className={styles.topSearchRow} style={{ marginBottom: "20px" }}>
         <p className={styles.breadcrumb}>마이페이지 〉 내가 만든 투표</p>
+      </div>
+
+      <div className="mycreate-search-section">
+        <div className="mycreate-search-bar">
+          <input
+            type="text"
+            placeholder="내가 만든 투표 검색"
+            value={searchKeyword}
+            onChange={(e) => setSearchKeyword(e.target.value)}
+          />
+          <span className="mycreate-search-icon">
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#fc92c7"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+          </span>
+        </div>
       </div>
 
       <div className="my-create-content">

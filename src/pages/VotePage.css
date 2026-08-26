@@ -36,11 +36,11 @@
   --vote-filter-panel-bg: rgba(255, 255, 255, 0.98);
   --vote-filter-panel-shadow: 0 22px 60px rgba(17, 17, 17, 0.08);
   --vote-filter-button-z-index: 90;
-  --vote-filter-button-size: 64px;
-  --vote-filter-button-icon-size: 42px;
-  --vote-filter-button-top: calc(var(--vote-header-offset) + 46px);
+  --vote-filter-button-size: clamp(38px, 4.5vw, 64px);
+  --vote-filter-button-icon-size: clamp(22px, 3vw, 42px);
+  --vote-filter-button-top: calc(var(--vote-header-offset) + 24px);
   --vote-filter-button-left: max(
-    0px,
+    12px,
     calc((var(--layout-vw) - var(--vote-page-width)) / 2 + 26px)
   );
   --vote-filter-gap: 25px;
@@ -61,8 +61,8 @@
   position: relative;
   z-index: var(--vote-page-z-index);
   isolation: isolate;
-  width: var(--vote-page-width);
-  min-width: var(--vote-page-width);
+  width: min(var(--vote-page-width), 100%);
+  min-width: 0;
   margin: 0 auto;
   height: calc(100vh - var(--vote-header-offset));
   padding: 0;
@@ -118,16 +118,16 @@
   justify-content: center;
   gap: 8px;
   flex: 0 0 auto;
-  min-height: 48px;
-  margin-bottom: 14px;
-  padding: 0 10px;
+  min-height: clamp(34px, 4.5vh, 48px);
+  margin-bottom: 10px;
+  padding: 0 8px;
   border-bottom: 1px solid rgba(17, 17, 17, 0.08);
 }
 
 .vote-filter-header h2 {
   margin: 0;
   color: #111111;
-  font-size: 19px;
+  font-size: clamp(14px, 1.4vw, 19px);
   font-weight: 700;
   line-height: 1;
 }
@@ -174,7 +174,7 @@
 .vote-filter-list {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: clamp(6px, 1vh, 12px);
   min-height: 0;
   overflow-y: auto;
   padding: 0 0 2px;
@@ -188,14 +188,14 @@
 .vote-filter-chip {
   flex: 0 0 auto;
   width: 100%;
-  min-height: 43px;
-  padding: 0 18px;
+  min-height: clamp(30px, 3.8vh, 43px);
+  padding: 0 clamp(8px, 1.2vw, 18px);
   border: 1px solid var(--filter-chip-border);
   border-radius: 999px;
   background: var(--filter-chip-bg);
   color: var(--filter-chip-text);
   box-shadow: var(--filter-chip-shadow);
-  font-size: 17px;
+  font-size: clamp(12px, 1.2vw, 17px);
   font-weight: 500;
   line-height: 1.2;
   cursor: pointer;
@@ -253,7 +253,7 @@
   --vote-action-space: calc(
     var(--vote-action-button-size) + var(--vote-rail-gap)
   );
-  --vote-sheet-fixed-width: 950px;
+  --vote-sheet-fixed-width: min(950px, calc(100vw - var(--vote-action-space) - 60px));
   --vote-filter-reserve-space: 40px;
   --vote-side-balance: max(
     var(--vote-filter-reserve-space),
@@ -286,8 +286,9 @@
 .vote-feed {
   position: relative;
   z-index: 0;
-  width: var(--vote-feed-width);
-  min-width: var(--vote-feed-width);
+  width: min(var(--vote-feed-width), 100%);
+  max-width: 100%;
+  min-width: 0;
   height: 100%;
   padding: var(--vote-sheet-glow-space);
   overflow-y: auto;
@@ -322,7 +323,7 @@
   min-height: calc(
     100% - var(--vote-sheet-glow-space) * 2 + var(--vote-sheet-extra-height)
   );
-  padding: 30px var(--vote-action-space) 23px var(--vote-side-balance);
+  padding: 14px var(--vote-action-space) 18px var(--vote-side-balance);
   scroll-snap-align: start;
   scroll-snap-stop: always;
   flex: 0 0
@@ -937,25 +938,29 @@
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1040px) {
   .vote-page.has-comment-modal .vote-layout {
     --vote-side-balance: var(--vote-action-space);
     transform: none;
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1040px) {
   .vote-page {
+    width: 100%;
+    min-width: 0;
     --vote-page-gutter: 16px;
     --vote-min-height: 540px;
-    --vote-filter-button-size: 54px;
-    --vote-filter-button-icon-size: 34px;
-    --vote-filter-button-left: 16px;
-    --vote-filter-button-top: calc(var(--vote-header-offset) + 18px);
-    --vote-filter-panel-left: 12px;
-    --vote-filter-panel-width: min(190px, calc(var(--layout-vw) - 24px));
+    --vote-sheet-fixed-width: 100%;
+    --vote-sheet-width: 100%;
+    --vote-filter-button-size: clamp(34px, 6vw, 46px);
+    --vote-filter-button-icon-size: clamp(20px, 3.8vw, 28px);
+    --vote-filter-button-left: 12px;
+    --vote-filter-button-top: calc(var(--vote-header-offset) + 12px);
+    --vote-filter-panel-left: 8px;
+    --vote-filter-panel-width: min(150px, calc(100vw - 16px));
     --vote-filter-panel-height: calc(
-      100dvh - var(--vote-filter-panel-top) - 20px
+      100dvh - var(--vote-filter-panel-top) - 16px
     );
     --vote-sheet-title-size: clamp(
       1.5rem,
@@ -970,16 +975,29 @@
   }
 
   .vote-layout {
+    width: 100%;
     --vote-rail-gap: 12px;
     --vote-action-button-size: 56px;
     --vote-action-space: 0px;
     --vote-side-balance: 0px;
-    --vote-sheet-glow-space: 12px;
+    --vote-sheet-glow-space: 8px;
     --vote-sheet-extra-height: 0px;
   }
 
+  .vote-feed {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    padding: 4px 8px;
+  }
+
+  .vote-sheet {
+    width: 100%;
+    max-width: 100%;
+  }
+
   .vote-feed-item {
-    padding: 72px 0 92px;
+    padding: 46px 0 74px;
   }
 
   .vote-action-rail {

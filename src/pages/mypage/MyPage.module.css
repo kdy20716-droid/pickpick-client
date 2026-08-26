@@ -40,6 +40,8 @@
   font-size: 19px;
   text-decoration: none;
   transition: color 0.3s;
+  white-space: nowrap;
+  word-break: keep-all;
 }
 
 .navLinks a.active {
@@ -121,13 +123,15 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 30px;
+  margin-bottom: 24px;
+  min-height: 38px;
 }
 
 .breadcrumb {
   color: #bbb;
   font-size: 14px;
   font-weight: 500;
+  margin: 0;
 }
 
 .searchBar {
@@ -138,40 +142,57 @@
 
 .searchBar input {
   width: 100%;
-  padding: 14px 30px;
+  padding: 12px 26px;
   border-radius: 40px;
-  border: none;
+  border: 1.5px solid rgba(252, 146, 199, 0.45);
   background: #fff;
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.03);
   outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.searchBar input:focus {
+  border-color: #fc92c7;
+  box-shadow: 0 0 12px rgba(252, 146, 199, 0.25);
 }
 
 .searchIcon {
   position: absolute;
-  right: 25px;
+  right: 20px;
   top: 50%;
   transform: translateY(-50%);
-  color: #f8bbd0;
-  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fc92c7;
 }
 
 /* 내부 카드 레이아웃 */
 .contentBody {
-  display: flex;
-  gap: 35px;
+  display: grid;
+  grid-template-columns: 2.3fr 1fr;
+  grid-template-areas:
+    "header notif"
+    "grade  notif";
+  gap: 30px;
+  width: 100%;
+  align-items: start;
+}
+
+.profileHeaderArea {
+  grid-area: header;
   width: 100%;
 }
 
-.leftPanel {
-  flex: 2.3;
-  display: flex;
-  flex-direction: column;
-  gap: 30px;
+.notifArea {
+  grid-area: notif;
+  width: 100%;
+  min-width: 320px;
 }
 
-.rightPanel {
-  flex: 1;
-  min-width: 340px;
+.gradeArea {
+  grid-area: grade;
+  width: 100%;
 }
 
 /* 공통 카드 스타일 */
@@ -183,23 +204,24 @@
 
 .profileHeader {
   display: flex;
-  gap: 30px;
+  gap: 24px;
 }
 
 .profileImgCard {
-  width: 200px;
-  height: 200px;
+  width: clamp(120px, 14vw, 170px);
+  height: clamp(120px, 14vw, 170px);
   display: flex;
   justify-content: center;
   align-items: center;
   position: relative;
   flex-shrink: 0;
+  border-radius: clamp(20px, 2.5vw, 35px);
   overflow: visible; /* Ensure border glow shows */
 }
 
 .circleBig {
-  width: 140px;
-  height: 140px;
+  width: clamp(84px, 10vw, 120px);
+  height: clamp(84px, 10vw, 120px);
   background: #fde8f0;
   border-radius: 50%;
   display: flex;
@@ -213,8 +235,8 @@
 }
 
 .silhouette {
-  width: 90px;
-  height: 90px;
+  width: 65%;
+  height: 65%;
   background: #f8bbd0;
   border-radius: 50% 50% 0 0;
   position: relative;
@@ -223,37 +245,38 @@
 .silhouette::before {
   content: "";
   position: absolute;
-  top: -50px;
-  left: 17px;
-  width: 56px;
-  height: 56px;
+  top: -40%;
+  left: 20%;
+  width: 60%;
+  height: 60%;
   background: #f8bbd0;
   border-radius: 50%;
 }
 
 .camIconWrapper {
   position: absolute;
-  bottom: 35px;
-  right: 35px;
+  bottom: clamp(10px, 1.8vw, 24px);
+  right: clamp(10px, 1.8vw, 24px);
 }
 
 .camIcon {
   background: #fff;
   border-radius: 50%;
-  width: 48px;
-  height: 48px;
+  width: clamp(30px, 3vw, 40px);
+  height: clamp(30px, 3vw, 40px);
   display: flex;
   justify-content: center;
   align-items: center;
   border: 2px solid #fdf7f9;
-  font-size: 20px;
+  font-size: clamp(13px, 1.3vw, 17px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   cursor: pointer;
 }
 
 .nicknameCard {
   flex: 1;
-  padding: 40px;
+  padding: clamp(20px, 2.5vw, 32px);
+  border-radius: clamp(20px, 2.5vw, 35px);
   position: relative;
   display: flex;
   flex-direction: column;
@@ -262,12 +285,17 @@
 
 .lvBadge {
   color: #bbb;
-  font-size: 18px;
+  font-size: clamp(13px, 1.3vw, 16px);
   font-weight: bold;
-  margin-bottom: 12px;
+  margin-bottom: 6px;
   display: flex;
   align-items: center;
   gap: 8px;
+}
+
+.nickname {
+  font-size: clamp(18px, 2vw, 24px);
+  margin: 0;
 }
 
 .qMark {
@@ -876,8 +904,247 @@
   50% { transform: translateY(-20px); }
 }
 
+/* Mobile Menu Button - 기본적으로 데스크탑에서는 숨김 */
+.mobileMenuBtn {
+  display: none;
+}
+
+.sidebarHeader {
+  display: none;
+}
+
+.sidebarBackdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 1000;
+  backdrop-filter: blur(2px);
+  animation: fadeIn 0.2s ease-out;
+}
+
+.drawerSupportArea {
+  display: none;
+}
+
 @keyframes fall {
   to {
     transform: translateY(100vh) rotate(720deg);
   }
 }
+
+@media (max-width: 850px) {
+  .mobileMenuBtn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    left: auto;
+    z-index: 50;
+    width: auto !important;
+    max-width: max-content !important;
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 1.5px solid rgba(252, 146, 199, 0.45);
+    background: rgba(255, 255, 255, 0.96);
+    box-shadow: 0 4px 14px rgba(252, 146, 199, 0.2);
+    color: #fc92c7;
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+    backdrop-filter: blur(8px);
+    white-space: nowrap;
+    transition: transform 0.2s, background 0.2s;
+  }
+
+  .mobileMenuBtn:active {
+    transform: scale(0.96);
+  }
+
+  .wrapper {
+    position: relative;
+    flex-direction: column;
+    gap: 10px;
+    padding-right: 0;
+    padding-top: 16px;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  .topSearchRow {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    min-height: 36px;
+    padding-right: 120px; /* MY MENU 버튼 영역 확보 */
+  }
+
+  .searchBar {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .contentBody {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .profileHeaderArea {
+    order: 1;
+    width: 100%;
+  }
+
+  .notifArea {
+    order: 2;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .gradeArea {
+    order: 3;
+    width: 100%;
+  }
+
+  .profileHeader {
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .profileImgCard {
+    width: 160px;
+    height: 160px;
+  }
+
+  .circleBig {
+    width: 120px;
+    height: 120px;
+  }
+
+  .nicknameCard {
+    width: 100%;
+    padding: 24px 20px;
+  }
+
+  /* 사이드바를 슬라이드 드로어로 변경 */
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: min(280px, 82vw);
+    min-width: min(280px, 82vw);
+    height: 100vh;
+    height: 100dvh;
+    z-index: 1010;
+    background: #ffffff;
+    border-radius: 0 28px 28px 0;
+    box-shadow: 10px 0 40px rgba(0, 0, 0, 0.15);
+    padding: 24px 20px 30px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transform: translateX(-100%);
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    overflow-y: auto;
+  }
+
+  .sidebar.sidebarOpen {
+    transform: translateX(0);
+  }
+
+  .sidebarHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 24px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #f2f2f2;
+    width: 100%;
+  }
+
+  .sidebarHeaderTitle {
+    font-size: 18px;
+    font-weight: 800;
+    color: #fc92c7;
+    white-space: nowrap;
+    word-break: keep-all;
+    flex-shrink: 0;
+  }
+
+  .sidebarCloseBtn {
+    background: transparent;
+    border: none;
+    font-size: 18px;
+    color: #999;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 8px;
+    flex-shrink: 0;
+  }
+
+  .sidebarCloseBtn:hover {
+    color: #fc92c7;
+    background: #fdf2f6;
+  }
+
+  .navLinks {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+
+  .navLinks a,
+  .navLinks button {
+    margin-bottom: 24px !important;
+    font-size: 17px;
+  }
+
+  .drawerSupportArea {
+    display: block;
+    margin-top: auto;
+    padding-top: 20px;
+    border-top: 1px solid #f2f2f2;
+  }
+
+  .drawerSupportBtn {
+    width: 100%;
+    padding: 12px 16px;
+    background: #fdf2f6;
+    color: #fc92c7;
+    border: 1px solid rgba(252, 146, 199, 0.35);
+    border-radius: 14px;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    text-align: center;
+    transition: background 0.2s, transform 0.2s;
+  }
+
+  .drawerSupportBtn:active {
+    transform: scale(0.98);
+    background: #fce4ee;
+  }
+
+  /* 작은 창에서는 데스크탑용 고정 서포트 버튼 숨김 */
+  .supportButton {
+    display: none !important;
+  }
+
+  .mainContent {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    padding: 0 10px 40px;
+  }
+}
+
+
